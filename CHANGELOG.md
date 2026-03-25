@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.1] - 2026-03-25
+
+### Fixed
+- Added scoring criteria + benchmarks to all skills (C8+C9 quality fix)
+- Added recovery/interrupt handling to all multi-phase skills (B6)
+- Added artifact discovery to all skills (E13)
+- Added per-project state conventions and config/memory (D12)
+- New shared file: `state-conventions.md`
+- New reference files: `success-criteria.md`, `build-benchmarks.md`, `generation-quality-checklist.md`, `workflow-benchmarks.md`
+
 ## [0.3.0] - 2026-03-25
 
 ### Added
