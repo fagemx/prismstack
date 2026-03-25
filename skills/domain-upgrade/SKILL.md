@@ -134,9 +134,18 @@ Route to the matched skill with clear instructions:
 
 **STOP GATE:** After dispatch completes, run the 3-question upgrade effect check:
 
-1. Workflow 更有用了嗎？
-2. 判斷比 baseline 更準了嗎？
-3. 有沒有破壞其他 skill 的銜接？
+### Upgrade Impact Score (3 questions, scored)
+| Question | -1 (Worse) | 0 (No change) | +1 (Better) |
+|----------|-----------|---------------|-------------|
+| Workflow 更有用了嗎？ | Broke a connection | Same | New/stronger connection |
+| 判斷比 baseline 更準了嗎？ | Less accurate | Same | More accurate (evidence required) |
+| 有沒有破壞銜接？ | Yes, broke something | No side effects | Actually improved adjacent skills |
+
+**Score range:** -3 to +3.
+- +2 to +3: Excellent upgrade
+- +1: Meaningful improvement
+- 0: Neutral (consider if worth the change)
+- Negative: Revert immediately
 
 Present results to user.
 

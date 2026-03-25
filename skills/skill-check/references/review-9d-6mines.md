@@ -257,3 +257,28 @@ Mines: _/6 踩雷
   2. ___
   3. ___
 ```
+
+---
+
+## Calibration Benchmarks
+
+### What scores mean in practice
+| Score Range | Grade | What It Means | Action |
+|-------------|-------|---------------|--------|
+| 14-18 | Production | Ready to ship. Minor polish only. | Ship it. |
+| 10-13 | Usable | Works but has gaps. Users will hit rough edges. | Prioritize top 2 weak dimensions. |
+| 6-9 | Draft | Structure exists but judgment is shallow. | Major revision needed. |
+| 0-5 | Skeleton | Just an outline. Not usable. | Rewrite or merge into another skill. |
+
+### Typical score distributions
+| Skill Origin | Expected Avg | Why |
+|-------------|-------------|-----|
+| gstack fork + domain vocab | 18-22 | Proven methodology, just needs domain terms |
+| LLM auto-generated | 12-16 | Structure OK, judgment shallow, gotchas generic |
+| Expert-upgraded | 20-26 | Deep domain knowledge, calibrated scoring |
+| Tool-type skill | 14-18 | Scripts solid, interaction design varies |
+
+### Red flags in scoring
+- All 2s → you're not being honest. Re-examine each with evidence.
+- All dimensions same score → you're not differentiating. Some must be stronger.
+- Dimension 7-9 (effects) all 0 → skill exists but doesn't help anyone. Rethink purpose.

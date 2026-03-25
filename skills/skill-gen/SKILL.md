@@ -107,6 +107,9 @@ allowed-tools:
 - PASS（≥ 5/7）→ 繼續
 - FAIL（< 5/7）→ 修正後重跑
 
+Before committing, score the generated skill using `references/generation-quality-checklist.md`.
+If score < 5/8, revise the weakest dimensions before proceeding.
+
 ### 3b: Wire Into Workflow
 
 1. 更新 domain routing skill — 加入新 skill 的觸發條件 + 互斥規則

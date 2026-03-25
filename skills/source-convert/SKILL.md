@@ -157,6 +157,16 @@ D. 跳過，不轉換
 
 轉換完成後，檢查品質。
 
+### Conversion Fidelity Score (4 checks, 0-2 each, 8 points max)
+| Check | 0 | 1 | 2 |
+|-------|---|---|---|
+| **Core Preserved** | Lost the main insight | Partially captured | Core judgment logic intact |
+| **Format Adapted** | Raw copy-paste | Partially formatted | Full gstack format (gates, questions, scoring) |
+| **No Conflict** | Contradicts existing content | Minor tension | Clean integration |
+| **Attribution** | No source noted | Source mentioned | Source with specific section/page reference |
+
+Pass threshold: 5/8. Below 5 → redo conversion.
+
 **轉換品質 checklist：**
 - [ ] 保留來源的核心判斷邏輯（substitution test：拿掉來源特有的東西，剩下的是不是 generic？）
 - [ ] 已適配 gstack 互動格式（有 AskUserQuestion、STOP gates — 如適用）

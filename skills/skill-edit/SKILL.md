@@ -99,6 +99,15 @@ Section 名稱對照（見 `references/editable-sections.md`）：
    - 只評分相關的維度（例如改 gotchas → 看 D3 Judgment Depth + D6 Density）
    - 不需要跑全部 9D — 只跑受影響的維度
 
+### Edit Impact Score
+After each edit, measure impact:
+- **Score delta:** Run /skill-check review dimensions on the affected section. Compare before/after.
+  - Improved (+1 or +2 on any dimension) → ✅ Successful edit
+  - No change (0 delta) → ⚠️ Edit may not be meaningful
+  - Decreased (-1 or more) → ❌ Revert and reconsider
+- **Side-effect check:** Did the edit break any other dimension?
+  - Read surrounding sections — are references still valid? Does flow still work?
+
 2. 對比：
    - 修改前的分數（如果可推斷）vs 修改後
    - 分數下降 → **明確警告**，建議 revert

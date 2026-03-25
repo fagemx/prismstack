@@ -239,6 +239,21 @@ PASS（≥ 5/7）→ 繼續。FAIL → 修正重跑。
 2. 找產出的 script/plugin → 從 Phase 7（Verify）繼續
 3. 什麼都沒有 → 從 Phase 1 開始
 
+### Automation Quality Score (Layer 1)
+| Check | 0 | 1 | 2 |
+|-------|---|---|---|
+| **Works end-to-end** | Fails at some step | Works with manual intervention | Fully automated, no human step |
+| **Error handling** | Crashes on unexpected input | Some error messages | Graceful handling + clear error messages |
+| **Discovery documented** | No notes | Partial notes | Complete discovery notes with tested: YES for each element |
+| **Reproducible** | Only works once/sometimes | Usually works | Consistent across multiple runs |
+
+Pass threshold: 5/8.
+
+### Skill Quality Score (Layer 2)
+Use the same generation quality checklist as /skill-gen: `references/generation-quality-checklist.md` equivalent.
+Score the produced skill on Trigger Precision, Role Lock, Operational Gotchas, Workflow Wiring.
+Pass threshold: 5/8.
+
 ## Completion
 
 ```

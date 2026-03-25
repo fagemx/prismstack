@@ -134,6 +134,9 @@ allowed-tools:
    - workflow-graph.md 跟 SKILL.md 內容同步？
 4. 輸出 validation report
 
+Score the workflow using `references/workflow-benchmarks.md`.
+Report: Workflow Complexity Score X/10, any red-flag metrics.
+
 **如果有 Error：**
 - 列出問題 + 建議修復方式
 - AskUserQuestion：要現在修嗎？
