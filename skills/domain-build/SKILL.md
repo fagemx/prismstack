@@ -61,6 +61,19 @@ allowed-tools:
 | ... | ... | ... | ... |
 ```
 
+### Knowledge Base
+在開始搭建前，讀取以下知識庫：
+- Read `{PRISM_DIR}/shared/knowledge/skill-writing-doctrine-nox.md` — 8 大寫作原則
+- Read `{PRISM_DIR}/shared/knowledge/skill-writing-patterns.md` — 7 pattern + template
+- Read `{PRISM_DIR}/shared/knowledge/gstack-domain-migration-playbook.md` — Phase 3-6 搭建方法
+- Read `{PRISM_DIR}/shared/knowledge/gstack-advanced-patterns.md` — 10 個系統 pattern
+
+參考實戰範本：
+- Read `{PRISM_DIR}/shared/knowledge/examples/gstack-game-balance-review.md` — review skill 怎麼寫（scoring + gotchas + forcing Qs 的真實範例）
+- Read `{PRISM_DIR}/shared/knowledge/examples/gstack-game-import.md` — import/gateway skill 怎麼寫
+
+{PRISM_DIR} = 找到的 Prismstack 安裝路徑（~/.claude/skills/prismstack 或 .claude/skills/prismstack）
+
 **STOP: 確認 skill map + 建置位置後才繼續。**
 
 ---
@@ -94,6 +107,25 @@ allowed-tools:
 ## Phase 3: 依序生成 Skills
 
 讀取 `references/skill-template-guide.md` + `references/quality-standards.md` + `references/ecc-compat-guide.md`。
+
+**每個 skill 生成前，檢查 8 大原則（skill-writing-doctrine）：**
+1. 先寫 trigger，不是內容
+2. Skill = 工作姿態切換，不是知識包
+3. 永遠外化 flow（不靠 Claude 記憶）
+4. 最高價值內容是 gotchas
+5. 脆弱的地方要嚴格
+6. 主 skill = 骨架，references = 細節
+7. 好 skill 定義 recovery
+8. Output 必須是下一步可讀的
+
+**每個 skill 生成後，對照 7 pattern（skill-writing-patterns）：**
+1. Single-role identity
+2. Progressive disclosure via folder
+3. State management via scripts
+4. Gotchas are highest-value
+5. Argument parsing + mode routing at entry
+6. Composability (skills call skills)
+7. Anti-sycophancy = forbidden phrases + forcing questions + pushback
 
 ### 建置順序
 
