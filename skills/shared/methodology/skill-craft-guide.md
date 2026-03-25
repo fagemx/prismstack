@@ -546,3 +546,91 @@ _OUT="$_PROJECTS_DIR/${_USER}-${_BRANCH}-{type}-$(date +%Y-%m-%d-%H%M).md"
 - 「把上一步的結果貼給我」（手動傳遞）
 - 產出只在對話中，沒存檔案（下游讀不到）
 - 存了但命名不規則（下游 glob 找不到）
+
+---
+
+### How-To 9: 辨識輸入品質並提取 Skill 規格
+
+**什麼時候用：** 任何時候用戶提供 domain 資訊或 skill 需求——不管是一句話還是一份完整 spec。
+
+**核心原則：不浪費用戶的輸入品質。用戶給多少，就提取多少。**
+
+**4 級輸入品質：**
+
+#### Level 1: Minimal（一句話）
+用戶說：「我做行銷」
+
+能提取的：
+- 領域名稱
+- （結束，靠 LLM 通識補其餘）
+
+代理行為：用 skill-map-methodology 的公式自動推導。不追問。
+
+#### Level 2: Moderate（幾句描述）
+用戶說：「我做行銷，主要是社群廣告素材生產，團隊 5 個人，每週出 20 張圖 + 5 支影片」
+
+能提取的：
+- 領域：行銷
+- 子領域：社群廣告素材
+- 規模：5 人團隊
+- 產出量：20 圖 / 5 影片 / 週
+- 暗示的 skill 需求：素材生產、批量處理、團隊分配
+
+代理行為：用提取的資訊調整 skill map（例如：增加 /batch-production skill，加 /task-dispatch skill）
+
+#### Level 3: Detailed（段落或筆記）
+用戶說：「審素材要看構圖、品牌一致、CTA 清晰度，其他不重要。之前有一批圖因為文字被角色頭髮擋住被退回。」
+
+能提取的：
+- **Scoring formula**：3 個維度（構圖、品牌一致、CTA）
+- **權重暗示**：「其他不重要」= 這 3 個佔高權重（合計 ≥ 60%）
+- **Gotcha**：文字被角色遮擋 → Claude-specific gotcha（Claude 生成構圖時常忽略文字區域）
+- **Real case**：退回案例 → 可變成 forcing question
+
+❌ 低 sensitivity（浪費）：把這些寫進 description 當說明文字
+✅ 高 sensitivity（對等）：
+  → 構圖 25% / 品牌一致 20% / CTA 清晰度 20% / 其他 35%
+  → Gotcha: 「Claude 容易在角色構圖中忽略文字可讀性。Redirect: 生成後檢查所有文字區域是否被遮擋。」
+  → Forcing Q: 「文字放在這個位置，縮到手機螢幕大小還看得到嗎？」
+
+#### Level 4: Expert（完整 spec 或專業短語）
+用戶給了一份 700 行的 spec，或是說：「ROAS 追蹤要看 D1/D3/D7 衰退曲線，CPM 超過 280 就要警告」
+
+能提取的：
+- **完整 skill 結構**（從 spec 的章節對應 skill 的 phases）
+- **Domain benchmarks**（ROAS 衰退曲線、CPM 280 門檻）
+- **Scoring calibration**（有具體數字 = 可直接寫進 scoring formula）
+- **專家級 gotchas**（能產出 gotchas 的人 = 知道 Claude 會在哪裡犯錯）
+
+代理行為：直接把用戶的結構當作 skill 結構的藍圖，不用自己推導。
+
+### 提取規則
+
+每次用戶提供輸入時，代理內部跑這個判斷：
+
+```
+1. 有沒有維度/指標/數字？
+   → 有 → 提取為 scoring formula 的維度 + benchmarks
+
+2. 有沒有「不要」「不重要」「要注意」？
+   → 有 → 提取為 gotchas 或 anti-trigger 或權重暗示
+
+3. 有沒有具體案例（成功或失敗）？
+   → 有 → 提取為 gotcha（失敗）或 example（成功）
+
+4. 有沒有流程描述（先做 X 再做 Y）？
+   → 有 → 提取為 Phase 結構
+
+5. 有沒有角色/人物提及（「主管審」「設計師做」）？
+   → 有 → 提取為 skill 的 role identity 或 STOP gate 位置
+
+6. 以上都沒有？
+   → Level 1，用 LLM 通識補
+```
+
+### 關鍵：不追問，提取
+
+❌ 用戶說「審素材看構圖、品牌、CTA」→ 代理問「那權重呢？門檻呢？」
+✅ 用戶說同樣的話 → 代理提取 3 維度 + 推斷權重 → 呈現給用戶確認「我理解的對嗎？」
+
+差異：不是問他答案，是給他你的解讀讓他確認。
