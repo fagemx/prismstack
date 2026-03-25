@@ -47,6 +47,11 @@ Forbidden phrases:
 
 ## Phase 0: Context Discovery
 
+### State
+- Reads: all skill SKILL.md files + `~/.gstack/projects/{slug}/.prismstack/check-results.json` (prior scores for delta)
+- Writes: `check-results.json` (current scores, replaces previous)
+- Reads: `domain-config.json` for context
+
 自動搜尋上游產出和先前執行紀錄：
 
 ```bash

@@ -60,6 +60,11 @@ done
 
 如果用戶選 A → 讀取該 skill map，跳到 Phase 3（修改模式）。
 
+### State
+- Writes: `~/.gstack/projects/{slug}/.prismstack/domain-config.json` (domain name, lifecycle) after Phase 1
+- Writes: `~/.gstack/projects/{slug}/.prismstack/skill-map.json` (structured map) after Phase 4
+- Reads: `domain-config.json` (if exists, pre-fill domain info — don't re-ask)
+
 ### 0b. 領域問題
 
 問用戶一個問題：

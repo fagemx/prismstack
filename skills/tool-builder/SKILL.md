@@ -36,6 +36,10 @@ Discovery notes 是你的核心產出，不是程式碼。程式碼是從 discov
 
 ## Phase 0: Context Discovery
 
+### State
+- Writes: `~/.gstack/projects/{slug}/.prismstack/discovery-notes.md` (already referenced in recovery)
+- Reads: `domain-config.json` for context
+
 自動搜尋上游產出和先前執行紀錄：
 
 ```bash

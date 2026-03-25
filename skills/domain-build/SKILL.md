@@ -36,6 +36,11 @@ allowed-tools:
 
 ## Phase 0: Artifact Discovery + 進度追蹤
 
+### State
+- Reads: `~/.gstack/projects/{slug}/.prismstack/skill-map.json`, `domain-config.json`
+- Writes: `build-progress.md` (already implemented)
+- Updates: `domain-config.json` → `last_build` timestamp
+
 1. 搜尋 `~/.gstack/projects/*/skill-map-*.md`，找到最新的 skill map
 2. 若找不到 → **STATUS: BLOCKED** — 建議先用 `/domain-plan`
 3. 搜尋目標目錄是否已有部分建置（`build-progress.md`、`skills/` 目錄）：

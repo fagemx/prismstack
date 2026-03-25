@@ -41,6 +41,11 @@ allowed-tools:
 
 在做任何修改之前，先建構完整的 workflow 圖。
 
+### State
+- Reads: `~/.gstack/projects/{slug}/.prismstack/skill-map.json` (planned workflow)
+- Writes: `workflow-snapshot.md` (current actual workflow — already in recovery)
+- Reads: `domain-config.json` for context
+
 ### 0a. 自動發現所有 skill
 
 ```bash

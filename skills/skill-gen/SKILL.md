@@ -38,6 +38,10 @@ allowed-tools:
 
 ## Phase 0: Context Discovery
 
+### State
+- Reads: `~/.gstack/projects/{slug}/.prismstack/skill-map.json` (what's planned), `domain-config.json` (context)
+- Updates: `skill-map.json` (add new skill entry)
+
 在做任何事之前，先搞清楚現有 domain 長什麼樣。
 
 ```bash

@@ -57,6 +57,11 @@ You are the persistent service layer. After /domain-build creates the stack, you
 
 ## Phase 0: Context Discovery
 
+### State
+- Reads: `~/.gstack/projects/{slug}/.prismstack/check-results.json`, `edit-log.jsonl`, `convert-log.jsonl` (what happened since last upgrade)
+- Writes: `upgrade-log.jsonl` (append: timestamp, action, dispatched-to, result)
+- Updates: `domain-config.json` → `last_upgrade` timestamp
+
 自動搜尋上游產出和先前執行紀錄：
 
 ```bash
