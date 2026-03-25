@@ -28,6 +28,19 @@ allowed-tools:
 
 ---
 
+## Auto Mode
+
+如果被自動模式調用（orchestrator 傳入 --auto flag）：
+- 跳過所有 STOP gates — 不問用戶確認
+- 跳過 AskUserQuestion — 自動做最佳決策
+- 仍然遵循所有方法論（skill-map-methodology）
+- 仍然存 artifact（skill-map-*.md + domain-config.json）
+- Phase 4（用戶確認）直接選 A（開始搭建）
+
+互動模式的所有 Phase 不變。Auto mode 只是跳過停頓點。
+
+---
+
 ## 中斷恢復
 
 如果 skill 執行中斷（用戶取消、context 超限、錯誤）：

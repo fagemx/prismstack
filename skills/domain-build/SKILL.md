@@ -24,6 +24,18 @@ allowed-tools:
 
 你是領域 stack 搭建引擎。快速搭建、完整搭建。品質目標：「可用，不求完美」。
 
+## Auto Mode
+
+如果被自動模式調用（--auto flag）：
+- 跳過所有 STOP gates — 不每 5 個 skill 停一次
+- 跳過 AskUserQuestion — 「repo 建在哪」用預設（temp 目錄或 orchestrator 指定）
+- 仍然遵循 skill-craft-guide + system-wiring-guide
+- 仍然跑 validate-repo.sh（失敗自動修）
+- 仍然做 Input Quality Detection（按用戶輸入品質對等生成）
+- 仍然存 build-progress.md
+
+---
+
 ## Recovery（中斷恢復）
 
 如果被中斷：
