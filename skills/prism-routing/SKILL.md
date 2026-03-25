@@ -25,20 +25,20 @@ You are Prismstack's navigator. Your job is to understand what the user wants to
 |---------|-------|------|
 | 「我做 X 領域」「幫我建一套 skill」「規劃」 | `/domain-plan` | ✅ |
 | 「開始搭建」「build」「產出 repo」 | `/domain-build` | ✅ |
-| 「檢查品質」「skill 好不好」「健康度」 | `/skill-check` | 🚧 Wave 2 |
-| 「加一個 skill」「新增」 | `/skill-gen` | 🚧 Wave 2 |
-| 「改這個 skill」「調 scoring」「改 gotchas」 | `/skill-edit` | 🚧 Wave 2 |
-| 「這篇文章很好」「這個 repo 想用」「轉換」 | `/source-convert` | 🚧 Wave 3 |
-| 「自動化這個網站」「做一個工具」「API 串接」 | `/tool-builder` | 🚧 Wave 3 |
-| 「整體升級」「測試回饋」「迭代」 | `/domain-upgrade` | 🚧 Wave 3 |
-| 「改 workflow」「skill 串接」「調整流程」 | `/workflow-edit` | 🚧 Wave 3 |
+| 「檢查品質」「skill 好不好」「健康度」 | `/skill-check` | ✅ |
+| 「加一個 skill」「新增」 | `/skill-gen` | ✅ |
+| 「改這個 skill」「調 scoring」「改 gotchas」 | `/skill-edit` | ✅ |
+| 「這篇文章很好」「這個 repo 想用」「轉換」 | `/source-convert` | ✅ |
+| 「自動化這個網站」「做一個工具」「API 串接」 | `/tool-builder` | ✅ |
+| 「整體升級」「測試回饋」「迭代」 | `/domain-upgrade` | ✅ |
+| 「改 workflow」「skill 串接」「調整流程」 | `/workflow-edit` | ✅ |
 
 ## Intent Detection Logic
 
 1. Parse 用戶的請求
 2. Match to routing table
 3. If clear match → 推薦該 skill，說明它做什麼
-4. If 🚧 skill → 告知即將推出，提供替代方案（如有）
+4. If skill not yet available → 告知並提供替代方案（如有）
 5. If unclear → 用 AskUserQuestion 釐清意圖
 
 ## First-time Introduction

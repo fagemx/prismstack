@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0] - 2026-03-25
+
+### Added
+- `/source-convert` — external source conversion (repo/prompt/video/article/ECC skill → skill content)
+- `/tool-builder` — dual-layer tool building (hands-on + meta mode)
+- `/domain-upgrade` — persistent stack improvement (listen/feedback/upgrade modes)
+- `/workflow-edit` — artifact flow and skill connection management
+
+### Changed
+- `/prism-routing` — all 10 skills now active (was 3/10)
+
 ## [0.2.0] - 2026-03-25
 
 ### Added
