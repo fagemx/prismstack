@@ -33,6 +33,13 @@ _HAS_CHECK_RESULTS=0
 # Artifact summary
 _ARTIFACT_COUNT=$(ls "$_PROJECTS_DIR"/*.md 2>/dev/null | wc -l | tr -d ' ')
 
+# Read accumulated context (if exists)
+_HAS_ACCUMULATED=0
+if [ -f "$_STATE_DIR/domain-config.json" ]; then
+  _ACCUMULATED=$(cat "$_STATE_DIR/domain-config.json" | grep -c '"accumulated"' 2>/dev/null || echo "0")
+  [ "$_ACCUMULATED" -gt 0 ] && _HAS_ACCUMULATED=1
+fi
+
 echo "SLUG: $_SLUG"
 echo "BRANCH: $_BRANCH"
 echo "PROJECTS_DIR: $_PROJECTS_DIR"
@@ -40,9 +47,16 @@ echo "STATE_DIR: $_STATE_DIR"
 echo "HAS_SKILL_MAP: $_HAS_SKILL_MAP"
 echo "HAS_DOMAIN_CONFIG: $_HAS_DOMAIN_CONFIG"
 echo "HAS_CHECK_RESULTS: $_HAS_CHECK_RESULTS"
+echo "HAS_ACCUMULATED: $_HAS_ACCUMULATED"
 echo "ARTIFACTS: $_ARTIFACT_COUNT"
 [ "$_ARTIFACT_COUNT" -gt 0 ] && ls -t "$_PROJECTS_DIR"/*.md 2>/dev/null | head -5 | while read f; do echo "  $(basename "$f")"; done
 ```
+
+**Accumulated Context:** If `HAS_ACCUMULATED=1`, read `domain-config.json` 的 `accumulated` section。用這些資訊調整你的行為：
+- `expertise` → 用在 scoring formula、phase 設計
+- `corrections` → 避免重複用戶已修正的錯誤
+- `preferences` → 調整互動風格（STOP 頻率、提問方式）
+- `benchmarks` → 用在 scoring calibration
 
 **Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs. All skills read from this directory on startup. All skills write their output here.
 

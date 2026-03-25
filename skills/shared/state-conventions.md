@@ -36,3 +36,56 @@
   "last_upgrade": null
 }
 ```
+
+## Context Accumulation（跨 session 脈絡累積）
+
+### 設計原則（來自 OpenSpace + edda 經驗）
+1. **執行中不記錄** — 代理做正事時完全不管記錄，不分心
+2. **Completion 時萃取** — 自然收尾動作裡做一步萃取（~5 秒，不影響體驗）
+3. **啟動時讀取** — Phase 0 讀 domain-config.json，自然知道之前的脈絡
+4. **Append-only log** — decision-log.jsonl 只追加不修改，歷史可追溯
+
+### 新增 State Files
+
+| File | 寫入時機 | 讀取時機 | 格式 |
+|------|---------|---------|------|
+| `domain-config.json` (擴展) | Completion 萃取 | Phase 0 | JSON snapshot |
+| `decision-log.jsonl` (新增) | Completion 萃取 | 需要歷史時 | JSONL append-only |
+
+### domain-config.json 擴展 Schema
+
+```json
+{
+  "domain": "行銷創意生產",
+  "created": "2026-03-25",
+  "lifecycle_stages": ["策略", "發想", "規格", "生產", "驗證", "投放"],
+  "skill_count": 31,
+  "last_build": "2026-03-25T14:30:00Z",
+  "last_check": null,
+  "last_upgrade": null,
+
+  "accumulated": {
+    "expertise": [
+      {"content": "審素材看構圖、品牌一致、CTA", "extracted_as": "scoring 3 dimensions", "session": "2026-03-25"}
+    ],
+    "corrections": [
+      {"content": "gotcha 不對，要查字型大小", "skill": "/ad-check", "section": "gotchas", "session": "2026-03-25"}
+    ],
+    "preferences": [
+      {"content": "STOP gates 太多", "applied_to": "simple Review skills", "session": "2026-03-25"}
+    ],
+    "benchmarks": [
+      {"content": "CPM 超過 280 要警告", "skill": "/performance-review", "session": "2026-03-25"}
+    ]
+  }
+}
+```
+
+### decision-log.jsonl 格式
+
+每行一筆，append-only：
+```jsonl
+{"ts":"2026-03-25T14:00:00Z","skill":"/domain-plan","type":"expertise","content":"審素材看構圖、品牌一致、CTA","extracted_as":"scoring 3 dimensions for /ad-check"}
+{"ts":"2026-03-25T15:00:00Z","skill":"/skill-edit","type":"correction","content":"gotcha 不對，要查字型","extracted_as":"new gotcha for /ad-check"}
+{"ts":"2026-03-25T16:00:00Z","skill":"/domain-upgrade","type":"preference","content":"STOP 太多","extracted_as":"reduce STOP frequency for simple Review skills"}
+```
