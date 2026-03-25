@@ -23,6 +23,10 @@ for skill_dir in "$REPO_DIR"/skills/*/; do
   echo "  ✓ $skill_name"
 done
 
+# Copy prism-routing as root SKILL.md (Claude Code entry point)
+cp "$REPO_DIR/skills/prism-routing/SKILL.md" "$TARGET/SKILL.md"
+echo "  ✓ root SKILL.md (routing entry point)"
+
 mkdir -p "$TARGET/shared"
 cp -r "$REPO_DIR/skills/shared/"* "$TARGET/shared/" 2>/dev/null || true
 echo "  ✓ shared resources"
