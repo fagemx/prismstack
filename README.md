@@ -1,20 +1,20 @@
 # Prismstack
 
-**把任何工作領域變成一套 AI skill 系統**
+**把你的專業知識變成一套 AI skill 系統**
 
 [繁體中文](#) | English
 
-10 個互動式 skill，把 gstack 方法論遷移到任何領域 — 行銷、教育、影劇、遊戲開發、或你的專業。一束光（gstack）進去，分散成多色（domain skills）出來。Built on [gstack](https://github.com/garrytan/gstack)'s engineering architecture, fully rewritten as a domain stack builder.
+你是行銷專家、教育工作者、遊戲設計師、或任何領域的專業人士。你有自己的工作流程、判斷標準、品質門檻。Prismstack 幫你把這些變成一套可運行、可共享、可持續改進的 AI skill 系統。
 
-> **What this IS:** A builder that creates complete, runnable skill stacks for any domain — with quality scoring, fix loops, and anti-sycophancy baked in.
-> **What this is NOT:** A collection of pre-made skills — it *generates* skills tailored to your domain.
+一束光（你的專業知識）進去，分散成多色（可操作的 AI skills）出來。
 
-gstack is Garry Tan's AI engineering workflow for Web/SaaS. Prismstack takes that same methodology and makes it portable: instead of using gstack's 25 skills directly, Prismstack builds you a custom set (10-30 skills) designed for *your* workflow. The engineering backbone (quality rubric, review methodology, artifact flow, completion protocol) maintains gstack-level rigor.
+> **What this IS:** 你的知識和流程的結構化——變成 AI 能遵循的工作系統，帶有品質評分、修復迴圈、和防止 AI 敷衍的機制。
+> **What this is NOT:** 通用 AI 工具合集——它生成的是*你的領域*的專屬 skill，不是萬用模板。
 
 **Who this is for:**
-- **Teams moving to AI workflows** — structured skill system instead of scattered prompts
-- **Domain specialists** — turn your expertise into a reusable, shareable skill pack
-- **Anyone who wants AI to follow their process** — not generic advice, your actual workflow
+- **有工作流程的團隊** — 把「每個人各自用 AI」升級成「團隊共用一套 AI 工作系統」
+- **領域專家** — 你的三句話裡有完整的評分公式和判斷標準，Prismstack 聽得懂、轉得出
+- **想讓 AI 照自己的方式工作的人** — 不是通用建議，是你的實際流程
 
 ---
 
@@ -169,59 +169,53 @@ Each skill feeds the next. `/domain-plan` produces a skill map that `/domain-bui
 
 ---
 
-## What makes this different from 30,000 other skills
+## 為什麼不直接寫 prompt？
 
-Most skills on the market are **knowledge packs** — best practices stuffed into markdown. Prismstack generates **interactive workflow systems**:
+你可以寫一個好的 prompt。但你的團隊有 5 個人，每個人寫不同的 prompt，品質不一致。有人離職了，prompt 就沒了。
 
-| | Market skills | Prismstack-generated skills |
+Prismstack 把你的專業變成**可管理的系統**：
+
+| | 散落的 prompt | Prismstack skill |
 |---|---|---|
-| **Essence** | Knowledge (Claude reads and knows more) | Work posture (Claude's behavior changes) |
-| **Interaction** | Runs to completion, dumps output | STOP gates, asks user at every judgment |
-| **Quality** | "Looks good" (no scoring) | Scoring formula + 0/1/2 per dimension + evidence |
-| **Error handling** | None | Fix loop: baseline → triage → fix → re-score → delta |
-| **Anti-sycophancy** | None (Claude says "great job") | Deny list + forcing questions + push-back |
-| **Connection** | Isolated (skills don't talk) | Artifact flow (upstream discovery → downstream consumption) |
-| **Memory** | Fresh every time | Config + logs (remembers what user said) |
+| **歸屬** | 在個人腦裡，人走就沒了 | 裝在團隊共享目錄，任何人都能用 |
+| **品質** | 靠感覺（「看起來不錯」） | 有評分公式、有維度、有證據 |
+| **AI 態度** | AI 什麼都說好 | 禁止空洞讚美 + 逼問 + 追問 |
+| **流程** | 一口氣跑完 | 每個判斷點停下來問你 |
+| **串接** | 各做各的 | 上一步的產出自動進下一步 |
+| **改進** | 下次又從零開始 | 記得你說過什麼，越用越準 |
+| **出錯** | 不知道哪裡壞 | 自動偵測 → 分類 → 修復 → 驗證 |
 
 ---
 
-## Methodology
+## 背後的方法論
 
-Prismstack's quality comes from 5 digested methodology files (834 lines total, adapted from gstack's knowledge base):
+Prismstack 有 5 份內建方法論，教 AI 怎麼幫你建好 skill：
 
-| File | What it teaches |
-|------|----------------|
-| `skill-map-methodology.md` | How to derive a skill map: lifecycle, gap analysis, independence tests |
-| `skill-craft-guide.md` | How to write a good skill: 8 principles, 7 patterns, 10 how-to's (scoring, gotchas, fix loop, STOP gates, anti-sycophancy, forcing questions, recovery, artifact flow, input sensitivity, proportional output) |
-| `quality-standards.md` | How to judge quality: 15D rubric, calibration benchmarks, 6 review principles |
-| `system-wiring-guide.md` | How to connect skills: artifact flow, chaining, completion protocol |
-| `fix-loop-guide.md` | How to fix issues: baseline → triage → AUTO-FIX/ASK/ESCALATE → re-score → delta |
+| 方法論 | 解決什麼問題 |
+|--------|-------------|
+| **Skill Map 推導法** | 怎麼從你的工作流程推導出需要哪些 skill |
+| **Skill 撰寫指南** | 怎麼寫出好的 skill：8 原則 + 7 結構 pattern + 10 個設計 how-to |
+| **品質標準** | 怎麼判斷 skill 好不好：15 維度 + 校準基準 + 6 個常見陷阱 |
+| **串接指南** | 怎麼讓 skill 之間自動傳遞資料 |
+| **修復迴圈** | 發現問題怎麼修：偵測 → 分類 → 修 → 驗證 → 對比 |
+
+10 個 how-to 覆蓋：評分公式設計、找 AI 盲點、修復迴圈設計、停頓點放置、反敷衍機制、逼問設計、中斷恢復、資料串接、輸入辨識、品質對等生成。
 
 ---
 
-## Relationship to gstack
+## 技術背景
 
-| | gstack | Prismstack |
-|---|--------|------------|
-| **Purpose** | AI engineering workflow (Web/SaaS) | Domain stack builder (any domain) |
-| **Skills** | 25 fixed skills (review, QA, ship...) | 10 builder skills that generate 10-30 domain skills |
-| **Vocabulary** | user, feature, API, MRR, churn | domain-specific (generated per domain) |
-| **Dependency** | Standalone | Standalone (no gstack required) |
+Prismstack 的工程方法論源自 [gstack](https://github.com/garrytan/gstack)（Garry Tan 的 AI 工程工作流），經過完整消化重寫，適配「幫用戶建 skill」的情境。不需要安裝 gstack。
 
-**Borrowed from gstack:**
-- Review methodology (classify → score → triage → fix → re-score)
-- Anti-sycophancy 3-layer system
-- Artifact flow (shared storage, discovery, supersedes chain)
-- Completion protocol (DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT)
-- AskUserQuestion 4-segment format
+**核心差異：**
+- gstack = 固定 25 個 Web/SaaS 工程 skill
+- Prismstack = 10 個 builder skill，能為任何領域生成 10-30 個專屬 skill
 
-**Original to Prismstack:**
-- Domain migration methodology (lifecycle → gap → independence → skill map)
-- 10 how-to's for designing skill mechanisms (scoring, gotchas, fix loop...)
-- Dual mode (interactive + autonomous with generator-evaluator separation)
-- Input sensitivity (4-level quality detection → proportional output)
-- Context accumulation (completion-time extraction, cross-session memory)
-- Tool builder (dual-layer: hands-on + meta)
+**Prismstack 獨有的能力：**
+- 雙模式（互動 + 自動，generator-evaluator 分離）
+- 輸入敏感度（你給一句話或一份 spec，品質對等生成）
+- 脈絡累積（記得你說過什麼，跨 session 越用越準）
+- 工具打造（雙層：直接自動化 + 產出能自動化的 skill）
 
 ---
 
