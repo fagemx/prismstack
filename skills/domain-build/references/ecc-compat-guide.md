@@ -71,15 +71,15 @@ Skills 安裝到：`~/.claude/skills/{domain}/`
 
 ## 禁止事項
 
-### 1. 不要使用 `{{PLACEHOLDER}}` 語法
+### 1. 不要使用雙大括號佔位符語法
 
 ```
-❌ {{domain_name}}
-❌ {{user_name}}
-❌ {{slug}}
+❌ PLACEHOLDER(domain_name)
+❌ PLACEHOLDER(user_name)
+❌ PLACEHOLDER(slug)
 ```
 
-`{{}}` 是 gstack template engine 的語法。ECC 不會處理模板變數。
+雙大括號是 gstack template engine 的語法。ECC 不會處理模板變數。
 SKILL.md 必須是**可直接讀取的 markdown**，不需要預處理。
 
 生成時直接寫入具體值：
@@ -118,7 +118,7 @@ description 是 routing rule，不是 metadata。Metadata 放其他 frontmatter 
 - [ ] YAML frontmatter 有 `origin: prismstack-generated`
 - [ ] YAML frontmatter 有 `version: 0.1.0`
 - [ ] 檔名是 `SKILL.md`（不是 `.tmpl`）
-- [ ] 沒有 `{{}}` 佔位符
+- [ ] 沒有雙大括號佔位符
 - [ ] 不依賴 gstack CLI
 - [ ] artifact 路徑用具體 slug（不是模板變數）
 - [ ] description 的第一句是做什麼，不是 metadata
