@@ -175,6 +175,12 @@ Report: Workflow Complexity Score X/10, any red-flag metrics.
 
 ## Phase 4: Completion
 
+### Completion 萃取
+報告 STATUS 前，回顧用戶在 workflow 編輯過程中的輸入。
+萃取 4 種信號（expertise / correction / preference / benchmark）到 `domain-config.json`。
+詳見 `shared/methodology/context-accumulation-guide.md`。
+大部分 session 不需要萃取。
+
 1. 儲存所有變更：
    ```
    git add skills/*/SKILL.md workflow-graph.md

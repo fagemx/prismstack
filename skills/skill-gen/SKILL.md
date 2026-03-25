@@ -154,6 +154,12 @@ If score < 5/8, revise the weakest dimensions before proceeding.
 
 ## Phase 4: Completion
 
+### Completion 萃取
+報告 STATUS 前，回顧用戶在生成過程中的輸入。
+萃取 4 種信號（expertise / correction / preference / benchmark）到 `domain-config.json`。
+詳見 `shared/methodology/context-accumulation-guide.md`。
+大部分 session 不需要萃取。
+
 1. 最終驗證：
    - [ ] YAML frontmatter 格式正確
    - [ ] SKILL.md < 200 行

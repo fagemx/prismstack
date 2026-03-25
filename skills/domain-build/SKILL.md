@@ -213,6 +213,12 @@ If Build Quality Score < 5, fix the weakest dimension before completing.
 
 ## Phase 7: Completion
 
+### Completion 萃取
+報告 STATUS 前，回顧用戶在搭建過程中的輸入。
+萃取 4 種信號（expertise / correction / preference / benchmark）到 `domain-config.json`。
+詳見 `shared/methodology/context-accumulation-guide.md`。
+大部分 session 不需要萃取。
+
 1. `git add -A && git commit -m "feat: initial domain gstack generation"`
 2. 呈現最終摘要：
 

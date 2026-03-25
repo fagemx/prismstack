@@ -375,6 +375,12 @@ These describe when /skill-check is triggered by other skills. The calling skill
 
 ## Completion
 
+### Completion 萃取
+報告 STATUS 前，回顧用戶在審查過程中的輸入。
+萃取 4 種信號（expertise / correction / preference / benchmark）到 `domain-config.json`。
+詳見 `shared/methodology/context-accumulation-guide.md`。
+大部分 session 不需要萃取。
+
 When done, output:
 
 ```

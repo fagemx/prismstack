@@ -244,6 +244,12 @@ Once the need is clear, route to either:
 
 ## Completion
 
+### Completion 萃取
+報告 STATUS 前，回顧用戶在升級過程中的輸入。
+萃取 4 種信號（expertise / correction / preference / benchmark）到 `domain-config.json`。
+詳見 `shared/methodology/context-accumulation-guide.md`。
+大部分 session 不需要萃取。
+
 When done, report:
 
 ```

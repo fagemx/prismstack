@@ -245,6 +245,12 @@ STATUS: DONE
 
 ## Completion Protocol
 
+### Completion 萃取
+報告 STATUS 前，回顧用戶在規劃過程中的輸入。
+萃取 4 種信號（expertise / correction / preference / benchmark）到 `domain-config.json`。
+詳見 `shared/methodology/context-accumulation-guide.md`。
+大部分 session 不需要萃取。
+
 | 狀態 | 條件 |
 |------|------|
 | **DONE** | 兩個 artifact 已儲存，用戶選了 A |
