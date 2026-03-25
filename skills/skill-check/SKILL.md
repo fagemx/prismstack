@@ -5,7 +5,7 @@ origin: prismstack
 description: |
   Prismstack 的品質審查 meta-skill。三個 mode：
   - design：規劃階段 7 問快速判斷（候選 skill 該不該建）
-  - review：完成後 9 維度 + 6 雷區掃描（skill 品質夠不夠）
+  - review：完成後 15 維度 + 6 雷區掃描（skill 品質夠不夠）
   - pack：整體結構健康度 7 項評估（pack 有沒有結構問題）
   Trigger: 用戶說「檢查品質」、「skill-check」、或自動觸發（/domain-plan 後、/domain-build 後、/skill-gen 後）。
   Do NOT use when: 要改 skill 內容（用 /skill-edit）。
@@ -75,10 +75,11 @@ At entry, determine mode from args or ask:
 
 ```
 Args parsing:
-  /skill-check design  → design mode
-  /skill-check review  → review mode
-  /skill-check pack    → pack mode
-  /skill-check         → AskUserQuestion: "哪個 mode？design（規劃檢查）/ review（品質審查）/ pack（結構健康度）"
+  /skill-check design         → design mode
+  /skill-check review         → review single skill (will ask which)
+  /skill-check review --all   → review ALL skills + cross-skill analysis
+  /skill-check pack           → pack mode
+  /skill-check                → AskUserQuestion: "哪個 mode？design（規劃檢查）/ review（品質審查）/ pack（結構健康度）"
 ```
 
 **Lock mode immediately.** Once a mode is selected, never switch mid-run. If the user wants a different mode, they start a new invocation.
@@ -122,20 +123,26 @@ Q7 獨立性：___        → PASS / FAIL（原因）
 
 ## Mode: review
 
-> 完成後品質審查。9 維度 + 6 雷區掃描。
+> 完成後品質審查。15 維度（5 層 × 3D）+ 6 雷區掃描。
 
 ### Procedure
 
-1. Read `references/review-9d-6mines.md` for the full scoring framework.
+1. Read `references/review-15d-6mines.md` for the full scoring framework.
 2. Identify target skill:
    - If args include skill name → review that skill.
-   - If no skill name → use Glob to list all skills, AskUserQuestion which one.
-   - If triggered by /domain-build → review all skills sequentially.
+   - If `--all` flag → batch mode (review all skills, see below).
+   - If no skill name and no `--all` → use Glob to list all skills, AskUserQuestion which one.
+   - If triggered by /domain-build → batch mode.
 3. Read the target skill's SKILL.md + all files in references/.
-4. Score 9 dimensions (0-2 each):
+4. Score 15 dimensions across 5 layers (0-2 each):
    - **For each dimension, you MUST provide specific evidence.** A score without evidence is invalid.
    - Quote the exact line or section that justifies the score.
    - If you can't find evidence for a score of 2, give 1 or 0.
+   - Layer A (Entry): A1 Trigger, A2 Role, A3 Mode
+   - Layer B (Flow): B4 Externalization, B5 STOP Gates, B6 Recovery
+   - Layer C (Knowledge): C7 Gotchas, C8 Scoring Rigor, C9 Benchmarks
+   - Layer D (Structure): D10 Disclosure, D11 Scripts, D12 Config
+   - Layer E (System): E13 Discovery, E14 Output, E15 Position
 5. Run 6 mine scans:
    - Each mine: describe the test you ran, what you found, and whether it's safe/borderline/triggered.
    - Mines catch structural issues that scores miss. Do NOT skip them.
@@ -147,27 +154,39 @@ To prevent score inflation:
 - **Score of 2 requires:** Specific evidence quoted from the skill. "It exists" is not enough — show what makes it complete.
 - **Score of 1 is the default** when something exists but isn't fully realized. Most skills will get mostly 1s.
 - **Score of 0 means:** You searched and it's genuinely not there.
-- **If you find yourself giving all 2s:** Stop. Re-read the 0/1/2 criteria. At least 3 dimensions should be < 2 for any skill that hasn't been through 2+ iteration cycles.
+- **If you find yourself giving all 2s:** Stop. Re-read the 0/1/2 criteria. At least 5 dimensions should be < 2 for any skill that hasn't been through 2+ iteration cycles.
 
 ### Output Format
 
 ```
 === Skill Review: /skill-name ===
 
-本體（6D）:
-  D1. Trigger Fit:        _/2  | 證據：___
-  D2. Workflow Fit:       _/2  | 證據：___
-  D3. Judgment Depth:     _/2  | 證據：___
-  D4. Interaction Quality: _/2  | 證據：___
-  D5. Output Clarity:     _/2  | 證據：___
-  D6. Density:            _/2  | 證據：___
+A. 入口層:
+  A1. Trigger Description:    _/2  | 證據：___
+  A2. Role Identity:          _/2  | 證據：___
+  A3. Mode Routing:           _/2  | 證據：___
 
-效果（3D）:
-  D7. Work Helpfulness:   _/2  | 證據：___
-  D8. Automation Leverage: _/2  | 證據：___
-  D9. Reusability:        _/2  | 證據：___
+B. 流程層:
+  B4. Flow Externalization:   _/2  | 證據：___
+  B5. STOP Gates:             _/2  | 證據：___
+  B6. Recovery:               _/2  | 證據：___
 
-TOTAL: _/18 → Grade: ___
+C. 知識層:
+  C7. Gotchas:                _/2  | 證據：___
+  C8. Scoring Rigor:          _/2  | 證據：___
+  C9. Domain Benchmarks:      _/2  | 證據：___
+
+D. 結構層:
+  D10. Progressive Disclosure: _/2  | 證據：___
+  D11. Helper Code:            _/2  | 證據：___
+  D12. Config / Memory:        _/2  | 證據：___
+
+E. 系統層:
+  E13. Artifact Discovery:     _/2  | 證據：___
+  E14. Output Contract:        _/2  | 證據：___
+  E15. Workflow Position:       _/2  | 證據：___
+
+TOTAL: _/30 → Grade: ___
 
 === Mine Scan ===
 Mine 1 Generic 包裝:         ✅ / ⚠️ / 💣  → ___
@@ -181,6 +200,63 @@ Mine 6 低密度:               ✅ / ⚠️ / 💣  → ___
   1. ___
   2. ___
   3. ___
+```
+
+### Batch Mode (review --all)
+
+When `--all` is specified:
+
+1. Discover all skills: `ls skills/*/SKILL.md`
+2. Review each skill using the 15D framework (same procedure as single)
+3. After all skills reviewed, output:
+   - **Summary table** (all skills x 15D scores)
+   - **Cross-skill pattern analysis** (see below)
+4. Save results to `check-results.json`
+
+### Cross-Skill Pattern Analysis
+
+After batch review, analyze patterns:
+
+1. **Dimension heatmap:** Which dimensions are systematically weak?
+   - If 60%+ skills score 0 on a dimension → SYSTEMIC WEAKNESS
+   - If 60%+ skills score 2 on a dimension → SYSTEMIC STRENGTH
+
+2. **Layer health:** Average score per layer
+   - A (Entry): avg _/6
+   - B (Flow): avg _/6
+   - C (Knowledge): avg _/6
+   - D (Structure): avg _/6
+   - E (System): avg _/6
+   → Weakest layer = highest priority fix
+
+3. **Top 5 systemic issues:** Rank by (number of affected skills x dimension importance)
+
+4. **Grade distribution:** How many Production / Usable / Draft / Skeleton?
+
+Output format:
+```
+=== Cross-Skill Analysis ===
+
+系統性弱點：
+  [dimension] — N/M skills score 0 → 原因分析 + 修復建議
+
+層級健康度：
+  A Entry:     avg _/6 (___%)
+  B Flow:      avg _/6 (___%)
+  C Knowledge: avg _/6 (___%)
+  D Structure: avg _/6 (___%)
+  E System:    avg _/6 (___%)
+  → 最弱層：___
+
+Grade 分布：
+  Production: N
+  Usable: N
+  Draft: N
+  Skeleton: N
+
+Top 5 修復優先順序：
+  1. [issue] — 影響 N 個 skills
+  2. ...
 ```
 
 ---
@@ -273,11 +349,17 @@ STATUS: DONE
   修正後再建：N 個
   不建：N 個
 
-[Mode: review]
+[Mode: review (single)]
 Skill: /skill-name
-Score: _/18 → Grade: ___
+Score: _/30 → Grade: ___
 Mines: _/6 踩雷
 Top priority: ___
+
+[Mode: review --all]
+Skills reviewed: N
+Grade distribution: Production N / Usable N / Draft N / Skeleton N
+Weakest layer: ___
+Top systemic issue: ___
 
 [Mode: pack]
 Pack: [name]
