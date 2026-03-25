@@ -144,7 +144,7 @@ Prismstack 本身是一組 gstack skills，安裝在 `~/.claude/skills/prismstac
 | 1 | `/domain-plan` | Bridge | 規劃者 | 推導 skill map + workflow + artifact flow，用戶確認 |
 | 2 | `/domain-build` | Production | 搭建者 | 自動搭建完整 domain gstack repo（scaffold + 所有 skill + mechanisms） |
 | 3 | `/prism-routing` | Control | 導航者 | Builder 的 routing skill，引導用戶到正確的 builder skill |
-| 4 | `/skill-check` | Review | 審查者 | 3 mode：design（規劃階段 7 問）/ review（完成後 9 維 + 6 雷區）/ pack（結構健康度 7 項評估） |
+| 4 | `/skill-check` | Review | 審查者 | 3 mode：design（規劃階段 7 問）/ review（完成後 15 維 + 6 雷區，支援 `--all` 批量 + cross-skill 分析）/ pack（結構健康度 7 項評估） |
 | 5 | `/skill-gen` | Production | 建造者 | 新增單一 domain skill（review / bridge / production / control 類） |
 | 6 | `/skill-edit` | Bridge | 編輯者 | 編輯 skill 內部：gotchas / scoring / forcing Qs / references / anti-sycophancy |
 | 7 | `/source-convert` | Bridge | 轉譯者 | 來源轉換：repo / prompt / 影片 / 文章 / 書 / SOP / 想法 → skill 或 skill 片段 |
@@ -425,28 +425,19 @@ Builder 內建一個 `/skill-check` skill，在設計和完成兩個時機自動
 
 #### `/skill-check review`（Quality Review — 完成後）
 
-在 Step 2（Build）完成後、Step 3（Upgrade）改完後自動跑。也可以手動觸發。
+在 Step 2（Build）完成後、Step 3（Upgrade）改完後自動跑。也可以手動觸發。支援 `--all` 批量審查所有 skill + cross-skill pattern analysis。
 
-檢查兩層：
-
-**Skill 本體（6 維）：**
+**15 維度（5 層 × 3D），每維 0-2 分，滿分 30：**
 
 ```
-1. Trigger Fit — 什麼時候用很清楚嗎？
-2. Workflow Fit — 在 pack 裡的位置清楚嗎？
-3. Judgment Depth — 有真的領域判斷嗎？（不只是 generic prompt）
-4. Interaction Quality — 問得剛好嗎？不會一口氣跑完嗎？
-5. Output Clarity — 產出清楚嗎？下游能接嗎？
-6. Density — 高訊號內容比例？
+A. 入口層:  A1 Trigger Description / A2 Role Identity / A3 Mode Routing
+B. 流程層:  B4 Flow Externalization / B5 STOP Gates / B6 Recovery
+C. 知識層:  C7 Gotchas / C8 Scoring Rigor / C9 Domain Benchmarks
+D. 結構層:  D10 Progressive Disclosure / D11 Helper Code / D12 Config/Memory
+E. 系統層:  E13 Artifact Discovery / E14 Output Contract / E15 Workflow Position
 ```
 
-**Skill 效果（3 維）：**
-
-```
-7. Work Helpfulness — 真的幫工作推進嗎？還是只多了一份報告？
-8. Automation Leverage — 幫使用者省了判斷/切換/整理成本嗎？
-9. Reusability — 換個相似專案還能不能用？
-```
+詳見 `skills/skill-check/references/review-15d-6mines.md`。
 
 **6 個雷區掃描：**
 
@@ -511,7 +502,7 @@ Builder 內建一個 `/skill-check` skill，在設計和完成兩個時機自動
 #### 外部參考文件
 
 `/skill-check` 的完整判斷邏輯、雷區解說、製作方法詳見：
-`docs/tech/gstack/builder/archive/skill-design-checklist.md`
+`skills/skill-check/references/review-15d-6mines.md`
 
 ---
 
@@ -1409,7 +1400,10 @@ domain gstack 是活的，會隨著使用持續演化。
 - routing skill 生成
 - bin/ 工具 fork
 - test 骨架
+- per-project state 管理（~/.gstack/projects/{slug}/.prismstack/）
 ```
+
+> **State conventions:** 每個 project 的 prismstack 狀態（check results, build progress, domain config）存放在 `~/.gstack/projects/{slug}/.prismstack/`。詳見 `skills/shared/state-conventions.md`。
 
 ### 用戶參與的部分
 
