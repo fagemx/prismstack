@@ -164,6 +164,20 @@ allowed-tools:
 2. 自動修復失敗項目
 3. 重新執行驗證
 
+### 驗收 Fix Loop
+
+如果 validate-repo.sh 有項目失敗：
+1. 記錄 baseline（N/5 pass）
+2. Read `{PRISM_DIR}/shared/methodology/fix-loop-guide.md`
+3. 每個失敗項自動修復：
+   - Routing skill missing → 生成 routing skill
+   - Skill count < 3 → 檢查哪些 skill 沒生成，補生成
+   - No artifact patterns → 在缺少的 skill 加 discovery/save
+   - install.sh missing/not executable → 生成/chmod
+   - < 3 interactive skills → 在缺少的 skill 加 AskUserQuestion
+4. Re-run validate-repo.sh
+5. 報告 delta（baseline → final）
+
 Score the build output using `references/build-benchmarks.md`.
 Report: Build Quality Score X/10, average skill quality Y/30.
 If Build Quality Score < 5, fix the weakest dimension before completing.

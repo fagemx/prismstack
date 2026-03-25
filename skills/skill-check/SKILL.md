@@ -213,6 +213,24 @@ Mine 6 低密度:               ✅ / ⚠️ / 💣  → ___
   3. ___
 ```
 
+### Fix Loop（review 完自動修復）
+
+Review 打完分後，如果 score < 18（Usable 門檻）或有 mine 踩雷，自動進入 fix loop：
+
+1. 記錄 baseline score
+2. Read `{PRISM_DIR}/shared/methodology/fix-loop-guide.md`
+3. 分類所有低分維度和踩雷項（AUTO-FIX / ASK / ESCALATE）
+4. 執行 fix loop
+5. Re-score
+6. 輸出 delta report
+
+如果 score >= 18 且 0 mines → 跳過 fix loop，直接報告。
+
+AskUserQuestion: 「review 發現 {N} 個問題。要進入自動修復嗎？
+  A) 是，自動修能修的 + 問我判斷題
+  B) 不要，我自己看報告決定
+  RECOMMENDATION: Choose A」
+
 ### Batch Mode (review --all)
 
 When `--all` is specified:
@@ -269,6 +287,14 @@ Top 5 修復優先順序：
   1. [issue] — 影響 N 個 skills
   2. ...
 ```
+
+### Batch Fix Loop（review --all 後）
+
+批量 review 完後，如果有 skill 低於 Usable：
+1. 按 score 排序（最低先修）
+2. 每個 skill 跑 fix loop
+3. 每修完一個 STOP gate（報告進度 + 問繼續嗎）
+4. 全部修完後輸出 batch delta report
 
 ---
 
