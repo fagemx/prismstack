@@ -65,7 +65,7 @@ You are the persistent service layer. After /domain-build creates the stack, you
 自動搜尋上游產出和先前執行紀錄：
 
 ```bash
-_SLUG=$(basename "$(pwd)")
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 _PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
 
 # Search for recent /skill-check results
@@ -259,4 +259,7 @@ Upgrade effect check:
 
 Pending (if any):
 - [C-class items or deferred work]
+
+建議下一步：
+1. `/skill-check review {changed-skill}` — 驗證修改效果
 ```

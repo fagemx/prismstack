@@ -32,7 +32,7 @@ allowed-tools:
 
 如果 skill 執行中斷（用戶取消、context 超限、錯誤）：
 
-1. **偵測狀態：** 搜尋 `~/.gstack/projects/*/skill-map-*.md` — 如果存在，表示 Phase 5 已完成或先前有執行紀錄
+1. **偵測狀態：** 搜尋 `$_PROJECTS_DIR/skill-map-*.md` — 如果存在，表示 Phase 5 已完成或先前有執行紀錄
 2. **恢復點：**
    - 如果 `skill-map-*.md` 已存在 → 問用戶要修改現有還是重新開始
    - 如果對話中已有生命週期確認（Phase 1-2 完成）→ 跳到 Phase 3
@@ -211,7 +211,10 @@ mkdir -p "$DIR"
 2. `workflow-graph-{datetime}.md` — artifact flow 圖
 
 STATUS: DONE
-建議下一步：執行 `/domain-build` 開始搭建 skill。
+
+建議下一步：
+1. `/domain-build` — 搭建 repo
+2. `/skill-check design` — 先檢查 skill map 品質（可選但建議）
 
 ---
 

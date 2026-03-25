@@ -103,7 +103,7 @@ else
   cp -r "$REPO_DIR/skills/shared/"* "$TARGET/prismstack/shared/" 2>/dev/null || true
   echo "  ✓ shared resources → prismstack/shared/"
 
-  SKILL_COUNT=$(ls -d "$TARGET"/domain-plan "$TARGET"/domain-build "$TARGET"/skill-check "$TARGET"/skill-gen "$TARGET"/skill-edit "$TARGET"/source-convert "$TARGET"/tool-builder "$TARGET"/domain-upgrade "$TARGET"/workflow-edit "$TARGET"/prismstack 2>/dev/null | wc -l | tr -d ' ')
+  SKILL_COUNT=$(find "$TARGET" -maxdepth 2 -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
 fi
 
 echo ""

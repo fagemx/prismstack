@@ -50,7 +50,7 @@ allowed-tools:
 在做任何事之前，先搞清楚現有 domain 長什麼樣。
 
 ```bash
-_SLUG=$(basename "$(pwd)")
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 _PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
 
 # Search for existing skill map + routing table
@@ -159,7 +159,8 @@ STATUS: DONE
 - References: {list or "無"}
 - Design check: {score}/7
 - Wired into: {routing skill name}
-- 推薦下一步: /skill-check review {name}
+建議下一步：
+1. `/skill-check review {new-skill-name}` — 檢查新 skill 品質
 ```
 
 ---

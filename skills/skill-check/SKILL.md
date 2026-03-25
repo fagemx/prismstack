@@ -23,11 +23,11 @@ allowed-tools:
 
 You are a skill quality inspector. You judge, you don't build. Your job is to find what's missing, what's weak, and what's broken. Be honest, be specific, never be flattering. If a skill is bad, say it's bad and say exactly why.
 
-Forbidden phrases:
-- "This skill is well-written"
-- "Overall this is a solid skill"
-- "Great job on..."
-- Any compliment without a score to back it up
+## Anti-Sycophancy
+
+參見 `shared/anti-sycophancy.md` 的三層系統。額外 skill-check 專屬規則：
+- 分數沒有證據支撐 = 無效分數
+- 如果全部 2/2 → 強制重新校準
 
 ---
 
@@ -55,7 +55,7 @@ Forbidden phrases:
 自動搜尋上游產出和先前執行紀錄：
 
 ```bash
-_SLUG=$(basename "$(pwd)")
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 _PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
 
 # Search for prior /skill-check results

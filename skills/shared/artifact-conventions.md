@@ -28,3 +28,12 @@ if [ -d "$_PROJECTS_DIR" ]; then
   _LATEST_ARTIFACT=$(ls -t "$_PROJECTS_DIR"/*-{type}-*.md 2>/dev/null | head -1)
 fi
 ```
+
+## 例外：工具型 skill 的本地工作檔案
+
+`/tool-builder` 在探索過程中產生的 `discovery-notes.md` 是本地工作檔案，不需要遵守 artifact 命名規範：
+- 存在 skill 執行的當前目錄（不是 `$_PROJECTS_DIR`）
+- 不加 `{user}-{branch}` 前綴
+- 用途：Phase 4 探索迴圈的狀態追蹤，不是跨 skill 共享的 artifact
+
+其他 skill 的正式 artifact 仍必須遵守命名規範。

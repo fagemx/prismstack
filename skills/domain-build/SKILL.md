@@ -211,9 +211,11 @@ Validation: {pass}/{total}
 Pack Health: {warnings count} warnings
 
 建議下一步：
-1. 安裝: bash bin/install.sh
-2. 測試: 用真實工作流跑一輪
-3. 迭代: 根據使用回饋調整（/skill-edit, /domain-upgrade）
+1. `/skill-check review --all` — 檢查所有生成的 skill 品質
+2. `/skill-check pack` — 檢查整體結構健康度
+3. 安裝: bash bin/install.sh
+4. 測試: 用真實工作流跑一輪
+5. 迭代: 根據使用回饋調整（/skill-edit, /domain-upgrade）
 ```
 
 ---
