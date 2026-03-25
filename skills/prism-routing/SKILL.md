@@ -1,12 +1,36 @@
 ---
-name: prism-routing
-version: 0.1.0
+name: prismstack
+version: 0.4.0
 origin: prismstack
 description: |
-  Prismstack 的導航 skill。當用戶不確定該用哪個 Prismstack skill 時使用。
-  也用於首次接觸 Prismstack 時的介紹。
-  Trigger: 用戶說「help」、「我要做什麼」、「Prismstack 有什麼」、或任何不明確的請求。
-  Do NOT use when: 用戶已經知道要用哪個 skill（直接用該 skill）。
+  Prismstack — Domain Stack Builder. 10 個互動式 skill 把 gstack 方法論遷移到任何領域。
+  從規劃到搭建到持續迭代的完整工具鏈。
+
+  When you notice the user is at these stages, suggest the appropriate skill:
+  - User wants to build a domain skill stack → suggest /domain-plan
+  - User says "我做 X 領域", "幫我建一套 skill", "規劃" → suggest /domain-plan
+  - User has a skill map and wants to build the repo → suggest /domain-build
+  - User says "開始搭建", "build", "產出 repo" → suggest /domain-build
+  - User wants to check skill quality → suggest /skill-check
+  - User says "檢查品質", "skill 好不好", "健康度" → suggest /skill-check
+  - User wants to add a single new skill → suggest /skill-gen
+  - User says "加一個 skill", "新增" → suggest /skill-gen
+  - User wants to edit skill internals → suggest /skill-edit
+  - User says "改這個 skill", "調 scoring", "改 gotchas" → suggest /skill-edit
+  - User has external content to convert into a skill → suggest /source-convert
+  - User says "這篇文章很好", "這個 repo 想用", "轉換" → suggest /source-convert
+  - User wants to automate a website, API, or tool → suggest /tool-builder
+  - User says "自動化這個網站", "做一個工具", "API 串接" → suggest /tool-builder
+  - User wants to upgrade or iterate on existing stack → suggest /domain-upgrade
+  - User says "升級", "測試回饋", "迭代", "這裡不好用" → suggest /domain-upgrade
+  - User wants to change skill connections or workflow → suggest /workflow-edit
+  - User says "改 workflow", "skill 串接", "調整流程" → suggest /workflow-edit
+
+  First-time users: suggest starting with /domain-plan — "告訴我你要做什麼領域".
+
+  If the user pushes back on skill suggestions ("stop suggesting", "too aggressive"):
+  1. Stop suggesting for the rest of this session
+  2. Say: "Got it — I'll stop suggesting skills."
 allowed-tools:
   - Read
   - Glob
@@ -80,11 +104,14 @@ ls ~/.claude/skills/prismstack/*/SKILL.md 2>/dev/null
 
 範例：
 ```
-Prismstack 目前有 2 個可用 skill。根據你說的，我猜你想要...
+Prismstack 有 10 個 skill。根據你說的，我猜你想要...
 
-1. `/domain-plan` — 規劃一套新的領域 skill（適合剛開始）
-2. `/domain-build` — 把規劃好的 skill 產出成 repo（適合已經有計畫）
-3. 其他 — 告訴我更多你想做的事
+RECOMMENDATION: 選 A — 你看起來是第一次，從規劃開始最合理。
+
+A. `/domain-plan` — 規劃一套新的領域 skill（適合剛開始）
+B. `/domain-build` — 把規劃好的 skill 產出成 repo（適合已經有計畫）
+C. `/domain-upgrade` — 改進現有的 stack（適合已經有 stack）
+D. 其他 — 告訴我更多你想做的事
 ```
 
 ## Routing Effectiveness
