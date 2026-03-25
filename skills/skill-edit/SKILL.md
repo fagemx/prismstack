@@ -47,11 +47,8 @@ Section 名稱對照（見 `references/editable-sections.md`）：
 - Reads: `~/.gstack/projects/{slug}/.prismstack/check-results.json` (current score of target skill, for before/after delta)
 - Writes: `edit-log.jsonl` (append: timestamp, skill, section, change summary)
 
-### Knowledge Base（編輯時參考）
-- Read `{PRISM_DIR}/shared/knowledge/skill-quality-rubric.md` — 知道 15D 的哪些維度會受影響
-- 如果編輯 gotchas → Read `skill-writing-patterns.md` Pattern 4（Gotchas are highest-value）
-- 如果編輯 scoring → Read `skill-quality-assessment-20260322.md`（真實 scoring 案例參考）
-- 如果編輯 anti-sycophancy → Read `gstack-review-methodology.md` Principle 6
+### 方法論（編輯時參考）
+- Read `{PRISM_DIR}/shared/methodology/quality-standards.md` — 15D rubric、評分校準案例、review 原則（含 gotchas / scoring / anti-sycophancy 各維度的標準）
 
 {PRISM_DIR} = ~/.claude/skills/prismstack 或 .claude/skills/prismstack
 

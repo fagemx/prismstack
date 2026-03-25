@@ -77,14 +77,8 @@ done
 - 用戶回答簡短 → 用你的領域知識補齊，繼續。
 - 用戶回答詳細 → 全部用上。
 
-### Knowledge Base
-在開始規劃前，讀取以下知識庫（完整原文，不是摘要）：
-- Read `{PRISM_DIR}/shared/knowledge/skill-orchestration-methodology.md` — 5 層推導法
-- Read `{PRISM_DIR}/shared/knowledge/gstack-domain-migration-playbook.md` — Phase 0-2
-- Read `{PRISM_DIR}/shared/knowledge/gstack-review-methodology.md` — 規劃 review skill 時用
-
-參考實戰案例：
-- Read `{PRISM_DIR}/shared/knowledge/examples/gstack-game-triage.md` — 看 gstack-game 的 triage 怎麼做
+### 方法論
+- Read `{PRISM_DIR}/shared/methodology/skill-map-methodology.md` — skill map 推導的完整方法（生命週期、缺口法、獨立性測試、分類、數量校準）
 
 {PRISM_DIR} = 找到的 Prismstack 安裝路徑（~/.claude/skills/prismstack 或 .claude/skills/prismstack）
 
@@ -96,7 +90,7 @@ done
 
 讀 `references/skill-map-derivation.md` Step 1-3。
 
-使用 `skill-orchestration-methodology.md` 的方法：
+使用 `skill-map-methodology.md` 的方法：
 1. 從領域推導工作生命週期（5-8 stages）
 2. 對標 gstack 的 10 個通用姿態（Ideator, Decision Maker, Reviewer, Tester, Shipper...）
 3. 找不對齊的 stage → 候選 domain-specific skill
@@ -117,12 +111,12 @@ done
 讀 `references/skill-map-derivation.md` Step 4-5。
 讀 `references/skill-type-guide.md` 分類每個候選 skill。
 
-使用 `skill-orchestration-methodology.md` 的三缺口法（原文）：
+使用 `skill-map-methodology.md` 的三缺口法：
 - 審查缺口：通用 /review 抓不到的品質維度
 - 工作流缺口：專業人士日常做的、AI 能幫但通用工具做不到的
 - 交接缺口：步驟之間最容易掉東西的
 
-使用 `gstack-domain-migration-playbook.md` Phase 0.3 的 Domain Judgment Gaps Inventory。
+使用 `skill-map-methodology.md` 的 Domain Judgment Gaps Inventory。
 
 執行三個缺口法：
 

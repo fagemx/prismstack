@@ -46,9 +46,8 @@ allowed-tools:
 - Writes: `~/.gstack/projects/{slug}/.prismstack/convert-log.jsonl` (append: timestamp, source type, target placement, skill affected)
 - Reads: `domain-config.json` for context
 
-### Knowledge Base（轉換時參考）
-- Read `{PRISM_DIR}/shared/knowledge/skill-writing-patterns.md` — 轉換後的 skill 要符合哪些 pattern
-- Read `{PRISM_DIR}/shared/knowledge/skill-writing-doctrine-nox.md` — 8 大原則作為轉換品質標準
+### 方法論（轉換時參考）
+- Read `{PRISM_DIR}/shared/methodology/skill-craft-guide.md` — skill 寫作原則、pattern、模板（轉換後的 skill 必須符合這些標準）
 
 {PRISM_DIR} = ~/.claude/skills/prismstack 或 .claude/skills/prismstack
 

@@ -67,10 +67,8 @@ ls skills/*/SKILL.md 2>/dev/null
 
 如果找到先前的 skill-check 結果 → 告知用戶上次的審查結果摘要，問要重新審查還是只審查有變動的 skill。
 
-### Knowledge Base（審查時必讀）
-- Read `{PRISM_DIR}/shared/knowledge/skill-quality-rubric.md` — 15D rubric 原文（不用自己的摘要版，用這個）
-- Read `{PRISM_DIR}/shared/knowledge/skill-quality-assessment-20260322.md` — 4 個真實 skill 的完整評估案例，作為評分校準參考
-- Read `{PRISM_DIR}/shared/knowledge/gstack-review-methodology.md` — 6 大 review 原則
+### 方法論（審查時必讀）
+- Read `{PRISM_DIR}/shared/methodology/quality-standards.md` — 15D rubric、評分校準案例、6 大 review 原則
 
 {PRISM_DIR} = ~/.claude/skills/prismstack 或 .claude/skills/prismstack
 
@@ -136,7 +134,7 @@ Q7 獨立性：___        → PASS / FAIL（原因）
 
 1. Read `references/review-15d-6mines.md` for the full scoring framework.
 
-**校準：** 在打分前，先讀 `shared/knowledge/skill-quality-assessment-20260322.md` 裡的真實案例。那 4 個 skill 的分數是經過校準的。用它們作為你的 anchor：
+**校準：** 在打分前，先讀 `shared/methodology/quality-standards.md` 裡的真實案例。那 4 個 skill 的分數是經過校準的。用它們作為你的 anchor：
 - balance-review 拿了 16/30 — 看看它長什麼樣
 - pitch-review 拿了 16/30 — 看看它的強項和弱項
 - 如果你的打分跟這些案例的趨勢差很遠，重新校準

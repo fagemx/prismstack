@@ -61,16 +61,9 @@ allowed-tools:
 | ... | ... | ... | ... |
 ```
 
-### Knowledge Base
-在開始搭建前，讀取以下知識庫：
-- Read `{PRISM_DIR}/shared/knowledge/skill-writing-doctrine-nox.md` — 8 大寫作原則
-- Read `{PRISM_DIR}/shared/knowledge/skill-writing-patterns.md` — 7 pattern + template
-- Read `{PRISM_DIR}/shared/knowledge/gstack-domain-migration-playbook.md` — Phase 3-6 搭建方法
-- Read `{PRISM_DIR}/shared/knowledge/gstack-advanced-patterns.md` — 10 個系統 pattern
-
-參考實戰範本：
-- Read `{PRISM_DIR}/shared/knowledge/examples/gstack-game-balance-review.md` — review skill 怎麼寫（scoring + gotchas + forcing Qs 的真實範例）
-- Read `{PRISM_DIR}/shared/knowledge/examples/gstack-game-import.md` — import/gateway skill 怎麼寫
+### 方法論
+- Read `{PRISM_DIR}/shared/methodology/skill-craft-guide.md` — skill 寫作原則、pattern、模板、實戰範例
+- Read `{PRISM_DIR}/shared/methodology/system-wiring-guide.md` — 搭建流程、系統 pattern、artifact flow 接線
 
 {PRISM_DIR} = 找到的 Prismstack 安裝路徑（~/.claude/skills/prismstack 或 .claude/skills/prismstack）
 
