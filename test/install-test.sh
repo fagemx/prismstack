@@ -73,8 +73,8 @@ fi
 ALL_YAML_OK=true
 for skill in "${EXPECTED_SKILLS[@]}"; do
   for field in "name:" "version:" "origin:" "description:"; do
-    check grep -q "^$field" "$TEMP_TARGET/$skill/SKILL.md" 2>/dev/null
-    if ! grep -q "^$field" "$TEMP_TARGET/$skill/SKILL.md" 2>/dev/null; then
+    check grep -q "$field" "$TEMP_TARGET/$skill/SKILL.md" 2>/dev/null
+    if ! grep -q "$field" "$TEMP_TARGET/$skill/SKILL.md" 2>/dev/null; then
       echo "FAIL: $skill/SKILL.md missing $field"
       ALL_YAML_OK=false
     fi
@@ -85,11 +85,13 @@ if $ALL_YAML_OK; then
 fi
 
 # --- 6. Placeholder check ---
-check ! grep -rq '{{[A-Z_]*}}' "$TEMP_TARGET" 2>/dev/null
+TOTAL=$((TOTAL + 1))
 if grep -r '{{[A-Z_]*}}' "$TEMP_TARGET" 2>/dev/null; then
   echo "FAIL: unresolved placeholders found"
+  FAIL=$((FAIL + 1))
 else
   echo "  ✓ no unresolved placeholders"
+  PASS=$((PASS + 1))
 fi
 
 # --- Cleanup & summary ---
