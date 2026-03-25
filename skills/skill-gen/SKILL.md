@@ -42,6 +42,17 @@ allowed-tools:
 - Reads: `~/.gstack/projects/{slug}/.prismstack/skill-map.json` (what's planned), `domain-config.json` (context)
 - Updates: `skill-map.json` (add new skill entry)
 
+### Knowledge Base（生成時必讀）
+- Read `{PRISM_DIR}/shared/knowledge/skill-writing-doctrine-nox.md` — 8 大寫作原則
+- Read `{PRISM_DIR}/shared/knowledge/skill-writing-patterns.md` — 7 pattern + template
+
+參考實戰範本（根據要生成的 skill 類型選讀）：
+- Review type → Read `{PRISM_DIR}/shared/knowledge/examples/gstack-game-balance-review.md`
+- Bridge/Import type → Read `{PRISM_DIR}/shared/knowledge/examples/gstack-game-import.md`
+- Control/Routing type → Read `{PRISM_DIR}/shared/knowledge/examples/gstack-game-triage.md`
+
+{PRISM_DIR} = ~/.claude/skills/prismstack 或 .claude/skills/prismstack
+
 在做任何事之前，先搞清楚現有 domain 長什麼樣。
 
 ```bash
