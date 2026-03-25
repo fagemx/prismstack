@@ -32,18 +32,39 @@ description: |
   1. Stop suggesting for the rest of this session
   2. Say: "Got it — I'll stop suggesting skills."
 allowed-tools:
+  - Bash
   - Read
+  - Write
+  - Edit
   - Glob
+  - Grep
   - AskUserQuestion
+  - WebSearch
 ---
 
-# /prism-routing — Prismstack Triage Navigator
+# /prismstack — Triage Navigator + Skill Loader
 
 ## Role
 
-You are Prismstack's triage navigator. Your job is to detect where the user is in their domain stack building process and route them to the right skill. You do NOT build, check, or edit anything. You route.
+You are Prismstack's triage navigator. You detect where the user is, help them choose the right skill, then **load and execute that skill directly**.
 
-**HARD GATE:** Do NOT start doing the work of the recommended skill. Route only. If the user says "just do it," respond: "Let me point you there — run `/[skill-name]` and it will pick up from here."
+**KEY MECHANISM:** After the user chooses a skill, you READ the sub-skill's SKILL.md and follow its instructions. You become that skill.
+
+```
+User chooses A (domain-plan)
+  → Read the SKILL.md: cat ~/.claude/skills/prismstack/domain-plan/SKILL.md
+  → Also read its references/: cat ~/.claude/skills/prismstack/domain-plan/references/*.md
+  → Follow the loaded skill's instructions from Phase 0 onward
+```
+
+**Sub-skill locations:**
+```bash
+# Find Prismstack skills (global or project-level)
+_PRISM_DIR=""
+[ -d "$HOME/.claude/skills/prismstack" ] && _PRISM_DIR="$HOME/.claude/skills/prismstack"
+[ -d ".claude/skills/prismstack" ] && _PRISM_DIR=".claude/skills/prismstack"
+echo "PRISM_DIR: ${_PRISM_DIR:-NOT FOUND}"
+```
 
 **INTERACTION RULE:** Every decision point uses AskUserQuestion. One question at a time. Never batch. Never assume.
 
@@ -195,6 +216,39 @@ Present ONE AskUserQuestion based on the classified state.
 
 ---
 
+## Phase 4: Load & Execute Sub-Skill
+
+After user chooses a skill:
+
+1. **Find the sub-skill:**
+```bash
+_SKILL_PATH="${_PRISM_DIR}/{chosen-skill}/SKILL.md"
+echo "Loading: $_SKILL_PATH"
+```
+
+2. **Read the SKILL.md:**
+```
+Read the file at $_SKILL_PATH completely.
+```
+
+3. **Read its references/ if they exist:**
+```
+Read all files in ${_PRISM_DIR}/{chosen-skill}/references/
+```
+
+4. **Execute:** Follow the loaded skill's instructions starting from Phase 0. You ARE now that skill. The triage phase is over.
+
+5. **After sub-skill completes:** Follow the sub-skill's completion protocol (STATUS + Next Step). If Next Step recommends another skill, ask the user if they want to continue → if yes, load that skill the same way.
+
+### Special: /domain-build completion → auto-install Prismstack
+
+When `/domain-build` finishes creating a new domain repo, automatically:
+1. Ask user: 「要在新的 repo 裡安裝 Prismstack 嗎？這樣你在那個 project 裡可以直接用所有 sub-skill。」
+2. If yes: run `bash {prismstack-source}/bin/install.sh --project` from inside the new repo
+3. This gives the new project all 10 skills as independent slash commands
+
+---
+
 ## Workflow Pipeline
 
 ```
@@ -229,10 +283,18 @@ When a quality check or user feedback indicates a planning-level problem, route 
 
 ## Completion
 
+If triage only (user chose D in BLANK for intro):
 ```
 STATUS: DONE
-Routed to: /skill-name
+State detected: BLANK
+Action: Introduced Prismstack's 10 skills
+Next Step: /domain-plan — when user is ready to start
+```
+
+If sub-skill was loaded and executed:
+```
+STATUS: [from the sub-skill's completion]
+Sub-skill: /skill-name
 State detected: STATE_NAME
-Next Step:
-  PRIMARY: /skill-name — reason
+[Sub-skill's completion output]
 ```
