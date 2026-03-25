@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.0] - 2026-03-25
+
+### Changed
+- `/skill-check` review mode upgraded from 9D to **15D** rubric (A1-A3 Entry, B4-B6 Flow, C7-C9 Knowledge, D10-D12 Structure, E13-E15 System)
+- Scoring scale: 18 points → 30 points
+- Added `review --all` batch mode (review all skills at once)
+- Added cross-skill pattern analysis (dimension heatmap, layer health, grade distribution, top 5 systemic issues)
+- Now aligned with gstack `skill-quality-rubric.md` gold standard
+
 ## [0.3.1] - 2026-03-25
 
 ### Fixed
