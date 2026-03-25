@@ -101,6 +101,20 @@ allowed-tools:
 
 讀取 `references/skill-template-guide.md` + `references/quality-standards.md` + `references/ecc-compat-guide.md`。
 
+### Input Quality Detection
+
+在生成前，判斷可用輸入的品質等級：
+
+```
+Level 1: skill-map 只有 skill 名稱和類型 → Draft 品質
+Level 2: skill-map 有描述和上下游 → Draft+ 品質
+Level 3: skill-map 有詳細描述 + 用戶在規劃中提供了案例/判斷標準 → Usable 品質
+Level 4: 用戶提供了完整 spec（如 marketing-creative-stack-v2.md 級別）→ Production 品質
+```
+
+讀 `shared/methodology/skill-craft-guide.md` How-To 10 的品質對等標準。
+每個 skill 按偵測到的品質等級生成。
+
 **每個 skill 生成前，檢查 8 大原則（skill-writing-doctrine）：**
 1. 先寫 trigger，不是內容
 2. Skill = 工作姿態切換，不是知識包

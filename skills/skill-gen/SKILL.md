@@ -93,6 +93,16 @@ ls skills/*/SKILL.md 2>/dev/null
 
 ## Phase 2: Generate
 
+### Input Quality Detection
+
+判斷用戶對這個 skill 提供了多少資訊：
+- 只有名稱和用途 → Level 1
+- 有描述 + 上下游 → Level 2
+- 有案例、判斷標準、或參考材料 → Level 3-4
+
+讀 `shared/methodology/skill-craft-guide.md` How-To 10，按品質等級生成。
+生成後在 completion 裡標記品質等級和提升建議。
+
 1. 讀 `references/generation-workflow.md`
 2. 分類 skill 類型（Review / Bridge / Production / Control / Runtime Helper）
 3. 讀 `skills/domain-build/references/skill-template-guide.md` 取對應模板

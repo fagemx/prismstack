@@ -634,3 +634,64 @@ _OUT="$_PROJECTS_DIR/${_USER}-${_BRANCH}-{type}-$(date +%Y-%m-%d-%H%M).md"
 ✅ 用戶說同樣的話 → 代理提取 3 維度 + 推斷權重 → 呈現給用戶確認「我理解的對嗎？」
 
 差異：不是問他答案，是給他你的解讀讓他確認。
+
+---
+
+### How-To 10: 品質對等生成（Proportional Output）
+
+**什麼時候用：** /domain-build 生成 skill、/skill-gen 新增 skill 時。
+
+**核心原則：用戶輸入品質 = skill 輸出品質。不浪費高品質輸入，不假裝低品質輸入能產出高品質。**
+
+**對等標準：**
+
+| 輸入品質 | 目標分數 | Scoring | Gotchas | Forcing Qs | Benchmarks |
+|---------|---------|---------|---------|-----------|-----------|
+| Level 1 (一句話) | 12-15/30 Draft | LLM 推測維度，通用權重 | 通識級（Claude 通病） | 通用逼問 | 無 |
+| Level 2 (幾句描述) | 16-19/30 Draft+ | 從描述提取維度，推測權重 | 通識 + 從描述推斷的 1-2 個 | 從描述衍生 | 無或粗略 |
+| Level 3 (段落/筆記) | 20-23/30 Usable | 用戶的維度 + 用戶暗示的權重 | 從案例提取 + 通識補充 | 從案例衍生 | 如果用戶提到數字就用 |
+| Level 4 (完整 spec) | 24-28/30 Production | 用戶定義的完整公式 | 用戶的專業 + 通識補充 | 用戶的判斷點 | 用戶的數字 |
+
+**每個品質級別具體生成什麼：**
+
+#### Level 1 生成的 skill：
+```
+- YAML frontmatter: trigger + anti-trigger（LLM 推斷）
+- Role: 通用角色（「你是 X 領域審查者」）
+- Phases: 3-4 個（LLM 推斷的標準流程）
+- Scoring: 通用維度，等權重
+- Gotchas: 3 個 Claude 通病（諂媚、跳過驗算、預設常見情境）
+- STOP gates: 每個 phase 結尾
+- Completion: 標準格式
+```
+
+#### Level 3 生成的 skill（差異標記 ★）：
+```
+- YAML frontmatter: trigger + anti-trigger（★ 從用戶描述提取）
+- Role: ★ 尖銳角色（從用戶的用語風格推斷）
+- Phases: ★ 從用戶描述的流程提取
+- Scoring: ★ 用戶的維度 + 從暗示推斷的權重
+- Gotchas: ★ 從用戶案例提取 + Claude 通病
+- Forcing Qs: ★ 從用戶的判斷點衍生
+- STOP gates: ★ 在用戶提到的決策點放
+- Completion: 標準格式 + ★ 用戶提到的下游
+```
+
+#### Level 4 生成的 skill（再多 ★★）：
+```
+- 所有 Level 3 的 +
+- Scoring: ★★ 用戶定義的完整公式 + 校準基準
+- Benchmarks: ★★ 用戶提供的數字
+- Gotchas: ★★ 用戶的專業級 gotchas
+- references/: ★★ 從 spec 拆出的詳細 section
+- Fix loop: ★★ 從用戶的 QA 流程提取 AUTO-FIX 範圍
+```
+
+**誠實標記：**
+生成 skill 後，在 completion 裡標記品質等級：
+```
+生成品質：Level 2 (Draft+, ~17/30)
+  提升方式：提供更多 scoring 維度的細節 → 可達 Level 3 (Usable)
+```
+
+不要假裝 Level 1 輸入能產出 Production 品質。
