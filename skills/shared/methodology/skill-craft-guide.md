@@ -274,3 +274,275 @@ References 拆到 `references/`：gotchas.md, scoring.md, examples/, recovery.md
 - [ ] SKILL.md < 200 行？（超過 → 拆 references/）
 - [ ] 下游 skill 能讀你的產出？
 - [ ] 互動設計完整？（AskUserQuestion + section transitions + escape hatch）
+
+---
+
+## How-To：怎麼設計 Skill 的核心機制
+
+> 以下是給代理的操作指令。生成 skill 時，對每個機制按照 how-to 設計，不是只列「要有」。
+
+---
+
+### How-To 1: 設計 Scoring Formula
+
+**什麼時候用：** 生成 Review type skill 時，或任何需要量化判斷的 skill。
+
+**步驟：**
+1. 列出這個領域評判品質的 **3-7 個維度**
+   - 問自己：「這個領域的專家看一個成品，他腦中的 checklist 有哪幾項？」
+   - 例（廣告審查）：構圖、文字可讀性、品牌一致、色彩對比、CTA 清晰度
+2. 每個維度定義 **0/1/2 標準**
+   - 0 = 不存在或完全不及格（具體描述）
+   - 1 = 有但不完整（具體描述）
+   - 2 = 到位（具體描述，需要可引用的證據）
+3. 給 **權重**
+   - 最重要的維度 20-30%，次要 10-15%
+   - 所有權重加總 100%
+4. 定義 **門檻**
+   - 幾分算 pass？幾分要 fix？幾分要重做？
+   - 例：≥70% = pass, 50-69% = fix loop, <50% = 重做
+5. 加 **校準錨點**
+   - 舉一個拿滿分的例子長什麼樣（1-2 句）
+   - 舉一個剛好 pass 的例子長什麼樣
+   - 舉一個 fail 的例子長什麼樣
+
+**❌ 不要：**
+- 「AI 覺得 8/10」（沒有公式的直覺分）
+- 所有維度同權重（一定有主次）
+- 分數定義模糊（「好」「不好」不是標準）
+
+**✅ 要：**
+- 每個分數都能指向具體證據
+- 公式寫在 skill 裡，不在 Claude 的腦中
+
+---
+
+### How-To 2: 找 Gotchas
+
+**什麼時候用：** 生成任何 skill 時。
+
+**步驟：**
+1. **想像 Claude 第一次跑這個 skill**，它最可能犯什麼錯？
+   - Claude 的通病：諂媚、跳過細節、給看似合理但未驗證的數字、預設最常見情境
+2. **按領域找 Claude 的盲點：**
+   - 行銷：Claude 會說「這個 campaign 有創意」而不指出目標受眾模糊
+   - 教育：Claude 會設計偏向閱讀型學習，忽略動手操作
+   - 遊戲：Claude 會預設 F2P 手遊，忽略平台差異
+   - 工程：Claude 會跳過 error handling 說「基本架構完成」
+3. **每個 gotcha 都要有 redirect：**
+   - 不只說「Claude 會犯這個錯」
+   - 要說「在 prompt 裡寫什麼能防止」
+
+**生成 gotcha 的公式：**
+```
+領域 × Claude 通病 = Gotcha
+
+Claude 通病清單：
+- 諂媚（說好不說壞）
+- 預設最常見情境（忽略邊界）
+- 跳過驗算（給看起來對的數字）
+- 正面框架（「用戶會喜歡」而不是中性觀察）
+- 一口氣做完（不停下來問）
+- 表面修復（改症狀不改根因）
+```
+
+**每個 skill 至少 3 個 gotchas，用 Gotcha 格式寫（見上方）。**
+
+---
+
+### How-To 3: 設計 Fix Loop
+
+**什麼時候用：** 生成有審查/驗收功能的 skill 時。
+
+**步驟：**
+1. **定義什麼是 AUTO-FIX**（機械問題，有唯一正確答案）
+   - 問自己：「這個修復有沒有判斷空間？」沒有 → AUTO-FIX
+   - 例：缺少 YAML field → 加上（唯一答案）
+   - 例：文字被圖片遮擋 → 調整位置（唯一方向）
+2. **定義什麼是 ASK**（需要用戶判斷）
+   - 問自己：「有兩種以上合理的修法嗎？」有 → ASK
+   - 例：scoring 權重要改 → 改成多少？問用戶
+3. **定義什麼是 ESCALATE**（不是修一個東西能解決的）
+   - 問自己：「這個問題的根因在 skill 之外嗎？」是 → ESCALATE
+   - 例：workflow 斷了 → 不是改 skill 能修的，要回去改架構
+4. **設計安全閥**
+   - AUTO-FIX 超過 N 個 → 停下來確認
+   - 修了一個但別的變差 → 考慮 revert
+   - ASK 太多 → 分批問
+5. **設計 delta 報告**
+   - 修復前分數（baseline）
+   - 修復後分數（final）
+   - 每個維度的變化
+
+**模板（寫進 skill 裡）：**
+```
+## Fix Loop
+
+審查發現問題時進入：
+
+1. Baseline: 記錄當前分數
+2. Triage:
+   - AUTO-FIX: [列出這個 skill 的 auto-fix 範圍]
+   - ASK: [列出需要用戶判斷的問題類型]
+   - ESCALATE: [列出要上報的結構問題]
+3. Fix: 按 severity 排序修復
+4. Safety: [N] 個 auto-fix 後停下確認
+5. Re-score: 重新打分
+6. Report: baseline → final → delta
+```
+
+---
+
+### How-To 4: 放 STOP Gates
+
+**什麼時候用：** 生成任何多 phase 的 skill 時。
+
+**規則：**
+1. **每個 phase 結尾一定有** — 這是最低要求
+2. **不可逆操作前加一個** — 寫檔案、刪東西、送出去
+3. **長時間執行中間加** — 超過 5 分鐘的工作，每 5 分鐘停一次
+4. **判斷分叉前加一個** — 走 A 路還是 B 路，問用戶
+
+**STOP gate 必須包含什麼：**
+```
+STOP.
+[剛完成什麼的摘要]
+[關鍵發現（如果有）]
+AskUserQuestion:
+  A) 繼續下一個 phase
+  B) 回去調整
+  C) 停在這裡
+```
+
+**❌ 不要：**
+- 連跑 3 個 phase 不停
+- STOP 了但沒有摘要（用戶不知道剛發生什麼）
+- STOP 了但只有「繼續嗎？」（沒有選項）
+
+---
+
+### How-To 5: 設計 Anti-Sycophancy
+
+**什麼時候用：** 生成任何有判斷功能的 skill 時。
+
+**三層設計：**
+
+**Layer 1 — Deny List（找領域空話）：**
+- 問自己：「這個領域裡，什麼話聽起來正面但其實沒有資訊量？」
+- 行銷：「這個 campaign 很有創意」「受眾很廣」
+- 教育：「學生會很有興趣」「教學設計很完整」
+- 遊戲：「玩法很有趣」「畫風很獨特」
+- 每個 skill 列 5-10 個 forbidden phrases
+
+**Layer 2 — Forcing Questions（設計逼問）：**
+- 規則：不能是 yes/no 問題
+- 規則：必須要求具體證據
+- 模板：
+  ```
+  「[做出斷言] 的證據是什麼？不是感覺，是 [可量化/可觀察的指標]。」
+  「如果把 [這個東西] 拿掉，會失去什麼？如果答不出來，它可能不需要。」
+  「[這個判斷] 在 [極端情境] 下還成立嗎？」
+  ```
+
+**Layer 3 — Push-Back（追問模式）：**
+- 第一次得到的答案通常是包裝過的
+- 追問：「具體說——是哪個部分？」
+- 再追問（if needed）：「最壞情況呢？」
+
+---
+
+### How-To 6: 寫 Forcing Questions
+
+**什麼時候用：** 在 skill 的關鍵判斷點。
+
+**好的 forcing question 的標準：**
+1. **不可逃避** — 不能用「都可以」回答
+2. **要求具體** — 不能用抽象概念回答
+3. **暴露矛盾** — 如果有矛盾會被逼出來
+4. **二選一或三選一** — 不是開放式
+
+**模板：**
+```
+選擇型：「你的核心 hook 是 A 還是 B？你現在的 [X] 寫的是 A，但 [Y] 是 B 的語氣。要改哪個？」
+證據型：「你說 [斷言]。最強的證據是什麼？不是『有人感興趣』，是 [具體可驗證的東西]。」
+移除型：「如果把 [這個] 拿掉，workflow 會斷嗎？如果不會，它可能不需要獨立存在。」
+極端型：「這個設計在 [10倍規模 / 最差情境 / 完全不同的用戶] 下還能用嗎？」
+```
+
+**每個 Review skill 至少 3 個 forcing questions，放在關鍵判斷點。**
+
+---
+
+### How-To 7: 設計 Recovery
+
+**什麼時候用：** 生成任何多 phase 的 skill 時。
+
+**步驟：**
+1. **定義 state file** — 追蹤進度的檔案
+   - 格式：markdown table 或 JSON
+   - 位置：`~/.gstack/projects/{slug}/.prismstack/` 或 skill 內部
+   - 內容：每個 phase 的狀態（pending / done / in-progress）
+2. **定義偵測點** — 怎麼知道上次做到哪
+   - 檢查 state file
+   - 檢查已產出的 artifact
+   - 檢查 git log 最近的 commit
+3. **定義恢復路徑** — 從偵測到的狀態繼續
+   - 已完成的 phase → 跳過
+   - 進行中的 phase → 從該 phase 重新開始
+   - 已問過的問題 → 不重問（從 state file 讀答案）
+4. **通知用戶**
+   - 「偵測到上次的進度：Phase 1-3 已完成，Phase 4 進行中。要繼續還是重新開始？」
+
+**模板：**
+```
+## 中斷恢復
+
+1. 偵測：檢查 [state file] 或 [artifact] 是否存在
+2. 已完成的 phase 不重做
+3. 已回答的問題不重問
+4. 告知用戶恢復狀態，確認繼續或重來
+```
+
+---
+
+### How-To 8: 設計 Artifact Flow
+
+**什麼時候用：** 生成任何需要上下游串接的 skill 時。
+
+**步驟：**
+1. **定義這個 skill 消費什麼**（upstream artifact）
+   - 什麼類型的 artifact？
+   - 從哪裡找？（`$_PROJECTS_DIR/*-{type}-*.md`）
+   - 找不到怎麼辦？（BLOCKED / 問用戶 / 用預設值）
+2. **定義這個 skill 產出什麼**（downstream artifact）
+   - 檔名格式：`{user}-{branch}-{type}-{datetime}.md`
+   - 存到 `~/.gstack/projects/{slug}/`
+   - 內容格式：下游 skill 能直接 parse 的結構
+3. **定義 supersedes chain**
+   - 如果有舊版 artifact → 新版頂部標記 `Supersedes: {old filename}`
+4. **定義 next step**
+   - 完成時推薦哪個下游 skill
+   - 把推薦寫在 completion section
+
+**Discovery 模板（寫進 skill 的 Phase 0）：**
+```bash
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+_UPSTREAM=$(ls -t "$_PROJECTS_DIR"/*-{upstream-type}-*.md 2>/dev/null | head -1)
+if [ -n "$_UPSTREAM" ]; then
+  echo "Found upstream: $_UPSTREAM"
+else
+  echo "No upstream artifact found"
+fi
+```
+
+**Save 模板（寫進 skill 的 Completion）：**
+```bash
+_OUT="$_PROJECTS_DIR/${_USER}-${_BRANCH}-{type}-$(date +%Y-%m-%d-%H%M).md"
+# Write structured content to $_OUT
+```
+
+**❌ 不要：**
+- 「把上一步的結果貼給我」（手動傳遞）
+- 產出只在對話中，沒存檔案（下游讀不到）
+- 存了但命名不規則（下游 glob 找不到）
