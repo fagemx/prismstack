@@ -115,6 +115,9 @@ allowed-tools:
 6. 依賴什麼 runtime？（無 runtime 的 runtime helper → 砍）
 7. 獨立 skill 還是某 skill 的 section？
 
+After assembling the skill map, score it using `references/success-criteria.md`.
+Present the score to the user. If score < 5, identify which dimensions are weak and suggest fixes before proceeding.
+
 ### 3d. Artifact Flow
 
 畫出完整的 artifact flow 圖（格式見 references/artifact-flow-template.md）。

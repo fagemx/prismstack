@@ -74,6 +74,15 @@ Prismstack 目前有 2 個可用 skill。根據你說的，我猜你想要...
 3. 其他 — 告訴我更多你想做的事
 ```
 
+## Routing Effectiveness
+
+Track routing success:
+- Successful route: user confirmed the recommended skill was correct
+- Re-route: user tried a skill and came back (wrong recommendation)
+- Unresolved: couldn't determine intent after AskUserQuestion
+
+If re-routes > 20% of interactions, review the routing table for gaps or ambiguous triggers.
+
 ## Completion
 
 結束時回報：

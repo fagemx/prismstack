@@ -130,6 +130,10 @@ allowed-tools:
 2. 自動修復失敗項目
 3. 重新執行驗證
 
+Score the build output using `references/build-benchmarks.md`.
+Report: Build Quality Score X/10, average skill quality Y/30.
+If Build Quality Score < 5, fix the weakest dimension before completing.
+
 **STOP: 呈現驗證結果。全部通過才繼續。**
 
 ---
