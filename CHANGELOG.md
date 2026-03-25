@@ -1,4 +1,14 @@
 # Changelog
+## [0.5.0] - 2026-03-25
+
+### Changed
+- Replaced copied gstack knowledge base (3814 lines) with 4 digested methodology files (834 lines)
+  - `skill-map-methodology.md` — how to derive a skill map from any domain
+  - `skill-craft-guide.md` — how to write a good skill (8 principles + 7 patterns + 5 templates)
+  - `quality-standards.md` — how to judge skill quality (15D + calibration + 6 review principles)
+  - `system-wiring-guide.md` — how to connect skills (artifact flow + chaining + completion protocol)
+- All 6 affected skills now reference digested methodology, not copied originals
+- Prismstack is now self-contained: no external dependencies on gstack knowledge base
 
 ## [0.4.0] - 2026-03-25
 
