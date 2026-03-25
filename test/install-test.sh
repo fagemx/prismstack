@@ -18,9 +18,9 @@ check() {
   fi
 }
 
-echo "Testing Prismstack install to $TEMP_TARGET..."
+echo "Testing Prismstack install (project mode) to $TEMP_TARGET..."
 
-TARGET="$TEMP_TARGET" bash "$REPO_DIR/bin/install.sh"
+TARGET="$TEMP_TARGET" bash "$REPO_DIR/bin/install.sh" --project
 
 # --- 1. Check all 10 skills ---
 EXPECTED_SKILLS=("prism-routing" "domain-plan" "domain-build" "skill-check" "skill-gen" "skill-edit" "source-convert" "tool-builder" "domain-upgrade" "workflow-edit")
