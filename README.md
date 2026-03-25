@@ -25,15 +25,15 @@ bash bin/install.sh
 | 1 | `/prism-routing` | Control | Builder routing — directs workflow to the right skill | ✅ |
 | 2 | `/domain-plan` | Bridge | Domain skill map planning — designs the skill set for a target domain | ✅ |
 | 3 | `/domain-build` | Production | Auto-generate domain gstack repo — scaffolds and populates the output | ✅ |
-| 4 | `/skill-check` | Review | Validate skill quality, format, and completeness | 🚧 |
-| 5 | `/skill-gen` | Production | Generate individual skill files from specs | 🚧 |
-| 6 | `/skill-edit` | Bridge | Edit and refine existing skill content | 🚧 |
-| 7 | `/source-convert` | Bridge | Convert reference materials into skill-ready format | 🚧 |
-| 8 | `/tool-builder` | Production | Build custom tool definitions for skills | 🚧 |
-| 9 | `/domain-upgrade` | Bridge | Upgrade existing domain packs to newer versions | 🚧 |
-| 10 | `/workflow-edit` | Control | Edit and customize the builder workflow | 🚧 |
+| 4 | `/skill-check` | Review | Validate skill quality, format, and completeness | ✅ |
+| 5 | `/skill-gen` | Production | Generate individual skill files from specs | ✅ |
+| 6 | `/skill-edit` | Bridge | Edit and refine existing skill content | ✅ |
+| 7 | `/source-convert` | Bridge | Convert reference materials into skill-ready format | ✅ |
+| 8 | `/tool-builder` | Production | Build custom tool definitions for skills | ✅ |
+| 9 | `/domain-upgrade` | Bridge | Upgrade existing domain packs to newer versions | ✅ |
+| 10 | `/workflow-edit` | Control | Edit and customize the builder workflow | ✅ |
 
-**Legend:** ✅ Wave 1 (current) | 🚧 Wave 2-3 (planned)
+**All 10 skills are implemented and active (v0.4.0).**
 
 ## How It Works
 
