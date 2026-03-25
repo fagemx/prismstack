@@ -89,3 +89,41 @@
 {"ts":"2026-03-25T15:00:00Z","skill":"/skill-edit","type":"correction","content":"gotcha 不對，要查字型","extracted_as":"new gotcha for /ad-check"}
 {"ts":"2026-03-25T16:00:00Z","skill":"/domain-upgrade","type":"preference","content":"STOP 太多","extracted_as":"reduce STOP frequency for simple Review skills"}
 ```
+
+## Auto Mode State (auto-run-state.json)
+
+自動模式的進度追蹤檔案，位於 `$_STATE_DIR/auto-run-state.json`。
+
+```json
+{
+  "mode": "auto",
+  "domain": "行銷",
+  "domain_input": "用戶原始輸入（可能 1 句話或整份 spec path）",
+  "quality_threshold": 18,
+  "max_fix_rounds": 3,
+  "current_state": "PLAN|BUILD|CHECK|FIX|DONE|DONE_WITH_CONCERNS",
+  "round": 1,
+  "started_at": "2026-03-26T10:00:00Z",
+  "plan": {
+    "status": "pending|done",
+    "skill_count": null,
+    "artifact": null
+  },
+  "build": {
+    "status": "pending|done",
+    "repo_path": null,
+    "skills_generated": null
+  },
+  "check": {
+    "status": "pending|done",
+    "round": 0,
+    "avg_score": null,
+    "below_threshold": []
+  },
+  "fix": {
+    "rounds_completed": 0,
+    "total_fixes": 0,
+    "last_avg_score": null
+  }
+}
+```

@@ -111,6 +111,10 @@ _HAS_CHECK_RESULTS=0
 _ARTIFACT_COUNT=$(ls "$_PROJECTS_DIR"/*.md 2>/dev/null | wc -l | tr -d ' ')
 [ "$_ARTIFACT_COUNT" -gt 0 ] && echo "ARTIFACTS: $_ARTIFACT_COUNT" && ls -t "$_PROJECTS_DIR"/*.md 2>/dev/null | head -5 | while read f; do echo "  $(basename "$f")"; done
 
+# Auto mode state
+_HAS_AUTO_RUN=0
+[ -f "$_STATE_DIR/auto-run-state.json" ] && _HAS_AUTO_RUN=1 && echo "AUTO_RUN: found ($(cat "$_STATE_DIR/auto-run-state.json" | grep -o '"current_state":"[^"]*"' 2>/dev/null))"
+
 echo "---"
 echo "HAS_DOMAIN_CONFIG=$_HAS_DOMAIN_CONFIG"
 echo "HAS_SKILL_MAP=$_HAS_SKILL_MAP"
@@ -119,6 +123,7 @@ echo "HAS_DOMAIN_STACK=$_HAS_DOMAIN_STACK"
 echo "DOMAIN_SKILL_COUNT=$_DOMAIN_SKILL_COUNT"
 echo "HAS_CHECK_RESULTS=$_HAS_CHECK_RESULTS"
 echo "ARTIFACTS=$_ARTIFACT_COUNT"
+echo "HAS_AUTO_RUN=$_HAS_AUTO_RUN"
 ```
 
 ---
@@ -127,6 +132,7 @@ echo "ARTIFACTS=$_ARTIFACT_COUNT"
 
 Based on detection results, classify into exactly one state. First match wins:
 
+0. **AUTO_RESUMING** — `HAS_AUTO_RUN=1`: A previous auto mode run was interrupted. Offer to resume.
 1. **ITERATING** — `HAS_CHECK_RESULTS=1`: Stack has been quality-checked, user is in improvement cycle.
 2. **BUILT** — `HAS_DOMAIN_STACK=1` AND `DOMAIN_SKILL_COUNT >= 3`: A domain stack has been built.
 3. **PLANNED** — `HAS_SKILL_MAP=1` OR `HAS_SKILL_MAP_MD=1`: Skill map exists but not built yet.
@@ -140,19 +146,31 @@ Based on detection results, classify into exactly one state. First match wins:
 
 Present ONE AskUserQuestion based on the classified state.
 
+### AUTO_RESUMING
+
+> [Re-ground] 偵測到上次的自動搭建。領域：{domain}，停在 {current_state} 階段。
+>
+> A) 繼續自動模式 — 從 {current_state} 接著跑
+> B) 切換到互動模式 — 我來一步一步帶你
+> C) 放棄上次的 — 重新開始
+>
+> RECOMMENDATION: Choose A — 接續上次的進度。
+
 ### BLANK
 
 > [Re-ground] 正在對 {project} 做 Prismstack 導航。沒有找到任何 domain stack 相關的 artifact。
 >
-> [Simplify] 你看起來是第一次用 Prismstack。Prismstack 幫你把 gstack 的方法論搬到任何工作領域 — 行銷、遊戲開發、教育、影劇、或任何你的專業。
+> [Simplify] 你看起來是第一次用 Prismstack。Prismstack 幫你把 gstack 的方法論搬到任何工作領域。
 >
-> 你在做什麼？
-> A) 我想建一套新的領域 skill stack → /domain-plan（從這裡開始）
-> B) 我有現成的材料想轉成 skill → /source-convert
-> C) 我想自動化一個工具/網站 → /tool-builder
+> 你想怎麼建？
+> A) **互動模式** — 我帶你一步一步走，每步確認
+>    適合：你有特定需求、有材料想整合、想參與決策
+> B) **自動模式** — 告訴我領域，我自己跑完 plan → build → check → fix
+>    適合：先出一版能跑的，之後再調
+> C) 我有現成的材料想轉成 skill → /source-convert
 > D) 我只是看看 Prismstack 能做什麼 → 介紹 10 個 skill
 >
-> RECOMMENDATION: Choose A — 告訴我你的領域，我帶你走完規劃流程。
+> RECOMMENDATION: 第一次建議 A。了解流程後用 B 更快。
 
 ### CONFIGURED
 
@@ -246,6 +264,173 @@ When `/domain-build` finishes creating a new domain repo, automatically:
 1. Ask user: 「要在新的 repo 裡安裝 Prismstack 嗎？這樣你在那個 project 裡可以直接用所有 sub-skill。」
 2. If yes: run `bash {prismstack-source}/bin/install.sh --project` from inside the new repo
 3. This gives the new project all 10 skills as independent slash commands
+
+---
+
+## Auto Mode: 自動 Plan → Build → Check → Fix 迴圈
+
+當用戶選擇 B（自動模式）時進入此流程。
+
+### Auto Phase 0: 收集輸入
+
+問兩個問題（僅此兩問，不再多問）：
+
+1. 「你的領域是什麼？（一句話就好，也可以給檔案路徑或詳細描述）」
+2. 「品質門檻？」
+   - A) Draft（12/30）— 最快，骨架版
+   - B) Usable（18/30）— 推薦（預設）
+   - C) Production（24/30）— 最慢，需要更多材料
+
+收到後建立 `auto-run-state.json`，開始自動執行。
+
+**從這裡開始，用戶不再被打斷。** 所有步驟自動進行直到完成或觸發 safety valve。
+
+### Auto Phase 1: PLAN
+
+```
+dispatch Agent(subagent_type="general-purpose", prompt="""
+你是 Prismstack 的 /domain-plan skill。
+
+讀取方法論：
+  cat {PRISM_DIR}/shared/methodology/skill-map-methodology.md
+
+用戶的領域輸入：{domain_input}
+
+按 /domain-plan 的 Phase 0-5 執行，但：
+- 跳過所有 STOP gates（自動模式，不問用戶）
+- 跳過 AskUserQuestion（自動做最佳決策）
+- 品質級別按 How-To 9 偵測輸入品質
+- 產出存到 {PROJECTS_DIR}/
+
+完成後報告：skill_count, artifact_path
+""")
+```
+
+更新 state: plan.status = "done", current_state = "BUILD"
+
+### Auto Phase 2: BUILD
+
+```
+dispatch Agent(subagent_type="general-purpose", prompt="""
+你是 Prismstack 的 /domain-build skill。
+
+讀取方法論：
+  cat {PRISM_DIR}/shared/methodology/skill-craft-guide.md
+  cat {PRISM_DIR}/shared/methodology/system-wiring-guide.md
+
+Skill map: {plan.artifact}
+建到: {repo_path}
+
+按 /domain-build 的 Phase 0-7 執行，但跳過 STOP gates。
+每個 skill 按 How-To 10 品質對等生成。
+完成後跑 validate-repo.sh，失敗的自動修。
+
+報告：skills_generated, repo_path
+""")
+```
+
+更新 state: build.status = "done", current_state = "CHECK"
+
+### Auto Phase 3: CHECK（Independent Evaluator）
+
+**關鍵：這是獨立的 evaluator，fresh context，不知道 generator 做了什麼。**
+
+```
+dispatch Agent(subagent_type="general-purpose", prompt="""
+你是 Prismstack 的 /skill-check 品質審查員。
+
+讀取標準：
+  cat {PRISM_DIR}/shared/methodology/quality-standards.md
+
+審查目標：{repo_path}/skills/*/SKILL.md
+模式：review --all（15D + 6 mines + cross-skill analysis）
+
+你不知道這些 skill 是怎麼生成的。你只看到成品。
+嚴格打分。每個 2 分都要有證據。
+
+報告：per-skill scores, avg_score, below_threshold skills, mines triggered
+""")
+```
+
+讀取結果。更新 state。
+
+### Auto Phase 4: FIX or DONE
+
+```
+if check.avg_score >= quality_threshold AND mines == 0:
+    current_state = "DONE"
+elif fix.rounds_completed >= max_fix_rounds:
+    current_state = "DONE_WITH_CONCERNS"
+elif fix.last_avg_score != null AND check.avg_score <= fix.last_avg_score:
+    # 分數沒有進步，停下來
+    current_state = "DONE_WITH_CONCERNS"
+else:
+    # 進入 fix
+    fix.last_avg_score = check.avg_score
+
+    dispatch Agent(prompt="""
+    你是 Prismstack 的 fix loop 執行者。
+
+    讀取指南：
+      cat {PRISM_DIR}/shared/methodology/fix-loop-guide.md
+
+    審查結果：{check_results}
+    修復目標：score < {threshold} 的 skills
+
+    AUTO-FIX 項目直接修。ASK 項目選最佳選項（不問用戶）。
+    ESCALATE 項目標記但不修。
+    每個修改都 atomic commit。
+
+    報告：fixes_applied, escalated_items
+    """)
+
+    fix.rounds_completed += 1
+    current_state = "CHECK"  # re-check
+```
+
+### Auto Phase 5: 交付
+
+```
+if current_state == "DONE":
+    向用戶報告：
+    「✅ 自動搭建完成。
+
+     領域：{domain}
+     Skills：{skill_count} 個
+     品質：avg {avg_score}/30（{grade}）
+     Fix 輪數：{rounds}
+
+     Repo 在：{repo_path}
+     安裝：cd {repo_path} && bash bin/install.sh --project
+
+     建議下一步：在新 repo 裡跑 /skill-check review --all 做更深度的檢查」
+
+elif current_state == "DONE_WITH_CONCERNS":
+    向用戶報告：
+    「⚠️ 自動搭建完成，但有未解決問題。
+
+     品質：avg {avg_score}/30
+     未通過的 skills：{below_threshold}
+     ESCALATE 項目：{escalated}
+
+     建議：切換到互動模式，用 /skill-edit 手動改進。」
+```
+
+### Safety Valves
+
+```
+| 條件 | 動作 |
+|------|------|
+| fix 3 輪後分數還不夠 | DONE_WITH_CONCERNS |
+| 連續 2 輪分數不升 | DONE_WITH_CONCERNS（避免死循環） |
+| 用戶打斷（任何輸入） | 停下來，報告當前狀態，問要繼續還是切互動模式 |
+```
+
+### Resumability
+
+如果中斷（context 溢出、用戶關閉 session）：
+- 下次啟動 /prismstack → Phase 1 偵測到 auto-run-state.json
+- 顯示上次進度：「偵測到上次的自動搭建：{domain}，停在 {current_state}。要繼續嗎？」
 
 ---
 
