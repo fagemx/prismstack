@@ -34,6 +34,53 @@ Your job:
 
 You are the persistent service layer. After /domain-build creates the stack, you are the "always-on" mode.
 
+## 中斷恢復
+
+如果 skill 執行中斷（用戶取消、context 超限、錯誤）：
+
+1. **偵測狀態：** 搜尋 `upgrade-log.md` — 記錄了什麼被請求、什麼被派遣、什麼已完成
+2. **恢復點：**
+   - 如果 `upgrade-log.md` 存在 → 讀取，從最後一個 `pending` 或 `dispatched` 項目繼續
+   - 如果有已分類但未處理的 feedback（Step 3 完成但 Step 4 未完成）→ 從執行階段繼續
+   - 如果 git diff 顯示有未 commit 的升級改動 → 從 verify 階段繼續
+3. **不重做：** 不重新收集已分類的 feedback、不重新派遣已完成的改動
+4. **通知用戶：** 告知升級進度，確認繼續或重新開始
+
+**Upgrade Log 格式（中斷時自動建立）：**
+```
+| Item | Type | Dispatch To | Status | Notes |
+|------|------|------------|--------|-------|
+| ... | A/B/C | /skill-edit | pending/done | |
+```
+
+---
+
+## Phase 0: Context Discovery
+
+自動搜尋上游產出和先前執行紀錄：
+
+```bash
+_SLUG=$(basename "$(pwd)")
+_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+
+# Search for recent /skill-check results
+ls "${_PROJECTS_DIR}"/skill-check-*.md 2>/dev/null
+
+# Search for recent /skill-edit commits
+git log --oneline -10 --grep="skill-edit" 2>/dev/null
+
+# Search for recent /source-convert additions
+git log --oneline -10 --grep="source-convert" 2>/dev/null
+
+# Search for prior upgrade logs
+ls upgrade-log.md 2>/dev/null
+```
+
+如果找到先前的 skill-check 結果 → 摘要呈現，作為升級的起點參考。
+如果找到先前的 upgrade-log → 讀取，告知用戶先前的升級進度。
+
+---
+
 ## Entry: Mode Routing
 
 Check if user provided a mode argument. If not, ask:

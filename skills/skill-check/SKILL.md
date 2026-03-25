@@ -31,6 +31,39 @@ Forbidden phrases:
 
 ---
 
+## 中斷恢復
+
+如果 skill 執行中斷（用戶取消、context 超限、錯誤）：
+
+1. **偵測狀態：** 檢查對話中已完成的 review 輸出 — 每個 skill 的 score card 是否已呈現
+2. **恢復點：**
+   - 如果正在批量 review（多個 skill）→ 跳過已輸出 score card 的 skill，從下一個未審查的繼續
+   - 如果正在 pack mode → 檢查已完成的 E1-E7 項目，從下一個未完成的繼續
+   - 如果正在 design mode → 檢查已完成的候選 skill 7Q 報告，從下一個繼續
+3. **不重做：** 已輸出完整 score card 的 skill 不重新審查
+4. **通知用戶：** 告知已完成 N/M 個 skill 的審查，確認繼續或重新開始
+
+---
+
+## Phase 0: Context Discovery
+
+自動搜尋上游產出和先前執行紀錄：
+
+```bash
+_SLUG=$(basename "$(pwd)")
+_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+
+# Search for prior /skill-check results
+ls "${_PROJECTS_DIR}"/skill-check-*.md 2>/dev/null
+
+# Auto-discover all SKILL.md files in current pack
+ls skills/*/SKILL.md 2>/dev/null
+```
+
+如果找到先前的 skill-check 結果 → 告知用戶上次的審查結果摘要，問要重新審查還是只審查有變動的 skill。
+
+---
+
 ## Mode Routing
 
 At entry, determine mode from args or ask:

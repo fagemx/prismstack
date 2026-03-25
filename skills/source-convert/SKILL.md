@@ -42,6 +42,21 @@ allowed-tools:
 
 ## Phase 0: Source Intake
 
+### 0a. 先前轉換偵測
+
+```bash
+# Search for prior conversions — recent skill additions that came from /source-convert
+git log --oneline --all --grep="source-convert" -10 2>/dev/null
+
+# Check for uncommitted conversion work
+git diff --name-only skills/ 2>/dev/null
+```
+
+如果找到先前的轉換紀錄 → 告知用戶，作為上下文參考。
+如果有未 commit 的轉換產出 → 問用戶要繼續驗證還是重新開始。
+
+### 0b. 來源確認
+
 確認用戶帶來了什麼。
 
 1. 判斷輸入類型：
@@ -213,10 +228,19 @@ STATUS: DONE
 - 必須列出來源中對 skill 沒用的部分
 - 必須指出來源的局限性
 
-## Recovery
+## 中斷恢復
 
-如果中斷：
-1. 檢查對話歷史 — 確認已完成到哪個 phase
-2. 如果 Phase 2 已完成（落點已確認）→ 從 Phase 3 繼續
-3. 如果 Phase 1 已完成（分析已確認）→ 從 Phase 2 繼續
-4. 如果什麼都沒有 → 從 Phase 0 開始
+如果 skill 執行中斷（用戶取消、context 超限、錯誤）：
+
+1. **偵測狀態：** 檢查以下進度指標：
+   - 對話中是否已有來源分析結果（Phase 1 完成）
+   - 對話中是否已有落點確認（Phase 2 完成）
+   - 目標 skill 目錄是否有新增/修改的檔案（Phase 3 進行中）
+   - `git diff` 是否有未 commit 的轉換產出
+2. **恢復點：**
+   - 如果有未 commit 的轉換檔案 → 呈現給用戶，從 Phase 4（Verify）繼續
+   - 如果 Phase 2 已完成（落點已確認）→ 從 Phase 3 繼續
+   - 如果 Phase 1 已完成（分析已確認）→ 從 Phase 2 繼續
+   - 如果什麼都沒有 → 從 Phase 0 開始
+3. **不重做：** 不重新取得/分析已確認的來源內容、不重問已確認的落點
+4. **通知用戶：** 告知恢復狀態，確認繼續或重新開始

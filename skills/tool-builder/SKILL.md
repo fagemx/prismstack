@@ -34,6 +34,24 @@ Discovery notes 是你的核心產出，不是程式碼。程式碼是從 discov
 
 ---
 
+## Phase 0: Context Discovery
+
+自動搜尋上游產出和先前執行紀錄：
+
+```bash
+# Search for existing automation scripts or plugins in the project
+ls scripts/ bin/ plugins/ 2>/dev/null
+ls *-discovery.md discovery-notes*.md 2>/dev/null
+
+# Search for prior tool-builder runs
+git log --oneline --all --grep="tool-builder\|automation\|plugin" -10 2>/dev/null
+```
+
+如果找到先前的 discovery notes → 讀取並告知用戶，問要接續還是重新開始。
+如果找到現有的自動化腳本 → 列出，避免重複建置。
+
+---
+
 ## Entry: Mode Routing
 
 進入時，先判斷走哪一層：
@@ -232,12 +250,18 @@ PASS（≥ 5/7）→ 繼續。FAIL → 修正重跑。
 - 每說「成功」之前，必須有對應的測試證據（screenshot / response / output）
 - 每說「完成」之前，必須跑過 Phase 7
 
-## Recovery
+## 中斷恢復
 
-如果中斷：
-1. 找 discovery notes 文件 → 從最後一個未完成的 checklist 項目繼續
-2. 找產出的 script/plugin → 從 Phase 7（Verify）繼續
-3. 什麼都沒有 → 從 Phase 1 開始
+如果 skill 執行中斷（用戶取消、context 超限、錯誤）：
+
+1. **偵測狀態：** Discovery notes 文件是核心狀態指標。搜尋工作目錄中的 `discovery-notes*.md` 或 `*-discovery.md`
+2. **恢復點：**
+   - 如果 discovery notes 存在且有 checklist → 讀取，從最後一個未完成（未打勾）的項目繼續
+   - 如果有產出的 script/plugin 但未驗證 → 從 Phase 7（Verify）繼續
+   - 如果有完整的 SKILL.md（Layer 2）但未 wire → 從 Phase 5（Wire Into Stack）繼續
+   - 什麼都沒有 → 從 Phase 1 開始
+3. **不重做：** 不重問已確認的需求、不重新探索已記錄在 discovery notes 中的元素
+4. **通知用戶：** 告知找到的 discovery notes 狀態，確認繼續或重新開始
 
 ### Automation Quality Score (Layer 1)
 | Check | 0 | 1 | 2 |

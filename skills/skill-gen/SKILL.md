@@ -40,10 +40,23 @@ allowed-tools:
 
 在做任何事之前，先搞清楚現有 domain 長什麼樣。
 
+```bash
+_SLUG=$(basename "$(pwd)")
+_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+
+# Search for existing skill map + routing table
+ls "${_PROJECTS_DIR}"/skill-map-*.md 2>/dev/null
+ls skills/*/SKILL.md 2>/dev/null
+
+# Check for gaps in skill map vs actual skills
+# (skill map may list skills not yet built)
+```
+
 1. `ls skills/` — 列出所有現有 skill
 2. 讀 routing skill（通常是 `skills/{domain}-routing/SKILL.md`）
-3. 讀 `skill-map.md`（如果存在）
+3. 讀 `skill-map.md`（如果存在）— 比對已建 skill vs 計畫中的 skill，標出缺口
 4. 記錄：現有 skill 名稱、各自的觸發條件、artifact 命名
+5. 如果 skill map 中有尚未建立的 skill → 告知用戶，建議是否要建其中之一
 
 **STOP gate:** 確認已理解現有 domain context。如果找不到 routing skill 或 skill map，告知用戶但繼續。
 
@@ -159,10 +172,15 @@ STATUS: DONE
 - "如果這個 skill 跟 {最相似的現有 skill} 合併，會失去什麼？"
 - "這個 skill 最可能被誤觸發的情境是什麼？"
 
-## Recovery
+## 中斷恢復
 
-如果中斷：
-1. 檢查 `skills/{name}/` 是否已建立
-2. 如果 SKILL.md 存在 → 從 Phase 3（Quality + Wiring）繼續
-3. 如果只有目錄 → 從 Phase 2（Generate）繼續
-4. 如果什麼都沒有 → 從 Phase 0 開始
+如果 skill 執行中斷（用戶取消、context 超限、錯誤）：
+
+1. **偵測狀態：** 檢查 `skills/{name}/` 是否已建立、SKILL.md 是否存在且完整
+2. **恢復點：**
+   - 如果 SKILL.md 完整存在（有 Completion section）→ 從 Phase 3（Quality + Wiring）繼續
+   - 如果 SKILL.md 部分寫入（無 Completion section）→ 提示用戶：完成寫入還是重新生成
+   - 如果只有目錄沒有 SKILL.md → 從 Phase 2（Generate）繼續
+   - 如果什麼都沒有 → 從 Phase 0 開始
+3. **不重做：** 不重問用戶已回答的 skill 意圖（Phase 1 的問題）、不重跑已通過的獨立性測試
+4. **通知用戶：** 告知恢復狀態，確認繼續或重新開始

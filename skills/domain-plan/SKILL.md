@@ -28,7 +28,39 @@ allowed-tools:
 
 ---
 
+## 中斷恢復
+
+如果 skill 執行中斷（用戶取消、context 超限、錯誤）：
+
+1. **偵測狀態：** 搜尋 `~/.gstack/projects/*/skill-map-*.md` — 如果存在，表示 Phase 5 已完成或先前有執行紀錄
+2. **恢復點：**
+   - 如果 `skill-map-*.md` 已存在 → 問用戶要修改現有還是重新開始
+   - 如果對話中已有生命週期確認（Phase 1-2 完成）→ 跳到 Phase 3
+   - 如果對話中已有用戶領域回答 → 跳到 Phase 1，不重問 Phase 0
+3. **不重做：** 不重問用戶已回答的領域描述、不重新推導已確認的生命週期
+4. **通知用戶：** 告知恢復狀態，確認繼續或重新開始
+
+---
+
 ## Phase 0: Domain Discovery
+
+### 0a. 先前執行偵測
+
+```bash
+# Search for prior skill maps from any domain
+for f in ~/.gstack/projects/*/skill-map-*.md; do
+  [ -f "$f" ] && echo "FOUND: $f"
+done
+```
+
+如果找到先前的 skill map → 告知用戶：
+> 我找到先前的 skill map：{path}。你要：
+> A. 基於這份 map 修改
+> B. 從零開始規劃新領域
+
+如果用戶選 A → 讀取該 skill map，跳到 Phase 3（修改模式）。
+
+### 0b. 領域問題
 
 問用戶一個問題：
 

@@ -43,6 +43,21 @@ Section 名稱對照（見 `references/editable-sections.md`）：
 
 ## Phase 0: Target Identification
 
+### 0a. 先前編輯偵測
+
+```bash
+# Detect uncommitted changes from prior interrupted edit
+git diff --name-only skills/ 2>/dev/null
+
+# Search git log for recent edits to any skill
+git log --oneline -10 -- skills/ 2>/dev/null
+```
+
+如果偵測到未 commit 的改動 → 告知用戶，問要繼續驗證還是放棄。
+如果 git log 顯示近期有編輯 → 告知用戶最近的修改歷史，作為上下文參考。
+
+### 0b. 確認目標
+
 1. 確認目標 skill：
    - `ls skills/` 列出所有 skill
    - 讀目標 skill 的 SKILL.md + `ls skills/{name}/references/`
@@ -194,9 +209,13 @@ Push-back：如果用戶要求的改動會降低分數，不要順從 — 展示
 
 ---
 
-## Recovery
+## 中斷恢復
 
-如果中斷：
-1. `git diff skills/{target-skill}/` — 看是否有未 commit 的改動
-2. 如果有 diff → 從 Phase 2（Verify）繼續
-3. 如果沒有 diff → 從 Phase 0（Target Identification）重新開始
+如果 skill 執行中斷（用戶取消、context 超限、錯誤）：
+
+1. **偵測狀態：** `git diff skills/{target-skill}/` — 檢查是否有未 commit 的改動
+2. **恢復點：**
+   - 如果有未 commit 的 diff → 呈現 diff 給用戶，從 Phase 2（Verify）繼續
+   - 如果沒有 diff → 從 Phase 0（Target Identification）重新開始
+3. **不重做：** 不重問已確認的修改目標（skill + section + 改什麼），不重新讀已讀過的檔案
+4. **通知用戶：** 告知偵測到未完成的編輯，確認繼續驗證或放棄（revert）

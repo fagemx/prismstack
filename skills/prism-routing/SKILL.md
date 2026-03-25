@@ -33,6 +33,19 @@ You are Prismstack's navigator. Your job is to understand what the user wants to
 | 「整體升級」「測試回饋」「迭代」 | `/domain-upgrade` | ✅ |
 | 「改 workflow」「skill 串接」「調整流程」 | `/workflow-edit` | ✅ |
 
+## Skill Discovery
+
+每次啟動時，自動偵測已安裝的 skill 以確保 routing table 準確：
+
+```bash
+# Auto-discover installed skills
+ls ~/.claude/skills/prismstack/*/SKILL.md 2>/dev/null
+```
+
+如果發現的 skill 與上方 routing table 不一致（有新增或缺少）→ 告知用戶 routing table 需要更新。
+
+---
+
 ## Intent Detection Logic
 
 1. Parse 用戶的請求

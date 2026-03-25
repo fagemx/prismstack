@@ -38,7 +38,11 @@ allowed-tools:
 
 1. 搜尋 `~/.gstack/projects/*/skill-map-*.md`，找到最新的 skill map
 2. 若找不到 → **STATUS: BLOCKED** — 建議先用 `/domain-plan`
-3. 讀取 skill map，用 AskUserQuestion 確認：
+3. 搜尋目標目錄是否已有部分建置（`build-progress.md`、`skills/` 目錄）：
+   - 如果有 `build-progress.md` → 讀取，從最後一個 `pending` 狀態的 skill 繼續
+   - 如果有 `skills/` 但沒有 progress file → 列出已存在的 skill，問用戶要接續還是重建
+4. 搜尋 `~/.gstack/projects/` 其他 domain 的已建 stack，列出可能相關的（用戶可能想參考）
+5. 讀取 skill map，用 AskUserQuestion 確認：
    - 確認 skill 清單正確
    - 詢問 repo 建立位置（預設：當前目錄）
    - 詢問 domain slug（用於 artifact 路徑）
