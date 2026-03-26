@@ -75,7 +75,7 @@ allowed-tools:
 1. 維度名稱 + 定義
 2. 評分公式（明確，例：`完整性 = 已覆蓋面向 / 必要面向 × 10`）
 3. 0/5/10 基準說明
-4. STOP gate: 此維度有 P0 問題 → 呈現問題 → 等用戶確認才繼續
+4. STOP gate（用可靠語法，見下方）: 此維度有 P0 問題 → 呈現問題 → 等用戶確認才繼續
 
 ## Scoring
 
@@ -152,8 +152,21 @@ STOP: 無法辨識輸入格式 → 詢問用戶
 
 ## STOP Gates
 
+使用可靠語法（**必須用此格式**，否則模型不呼叫工具）：
+
+```markdown
+**STOP.** AskUserQuestion to confirm [什麼事]:
+
+> [摘要 + RECOMMENDATION + 選項]
+
+**One question only. Wait for answer before proceeding.**
+```
+
+觸發條件：
 - 必要欄位缺失 > 3 個 → STOP，呈現缺失清單
 - 輸入格式無法解析 → STOP，建議手動修正
+
+詳見 `shared/ask-format.md`。
 
 ## Output Contract
 

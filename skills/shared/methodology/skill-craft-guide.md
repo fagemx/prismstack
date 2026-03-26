@@ -403,21 +403,41 @@ Claude 通病清單：
 3. **長時間執行中間加** — 超過 5 分鐘的工作，每 5 分鐘停一次
 4. **判斷分叉前加一個** — 走 A 路還是 B 路，問用戶
 
-**STOP gate 必須包含什麼：**
-```
-STOP.
-[剛完成什麼的摘要]
-[關鍵發現（如果有）]
-AskUserQuestion:
-  A) 繼續下一個 phase
-  B) 回去調整
-  C) 停在這裡
+**STOP gate 的唯一正確寫法（已驗證）：**
+
+```markdown
+**STOP.** AskUserQuestion to confirm [什麼事]:
+
+> [摘要：剛完成什麼 + 關鍵發現]
+>
+> RECOMMENDATION: Choose A — [理由]
+>
+> A) 繼續下一個 phase
+> B) 回去調整
+> C) 停在這裡
+
+**One question only. Wait for answer before proceeding.**
 ```
 
-**❌ 不要：**
+**為什麼必須是這個格式：**
+- `**STOP.**` — 模型辨識為停止點
+- `AskUserQuestion to confirm` — 明確指示呼叫工具（不是印文字）
+- `>` blockquote — 模型辨識為工具的 input
+- 字母選項 `A) B) C)` — 映射成結構化 options
+- `**One question only.**` — 防止模型一次問多題
+
+**❌ 不可靠的格式（不要在 SKILL.md 裡用）：**
+- `🛑 STOP Gate：AskUserQuestion` — 標題風格，模型當裝飾跳過
+- `━━━ Phase 1 完成 ━━━` — 裝飾邊框，模型照印成文字
+- `請確認：A. 繼續 B. 調整` — 文字風格，不會觸發工具呼叫
+- 沒有 blockquote 的選項列表 — 模型不一定辨識為工具 input
+
+**❌ 也不要：**
 - 連跑 3 個 phase 不停
 - STOP 了但沒有摘要（用戶不知道剛發生什麼）
 - STOP 了但只有「繼續嗎？」（沒有選項）
+
+詳見 `shared/ask-format.md` 的完整說明和範例。
 
 ---
 

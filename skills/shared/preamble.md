@@ -62,13 +62,25 @@ echo "ARTIFACTS: $_ARTIFACT_COUNT"
 
 **State directory:** `$_STATE_DIR` (`~/.prismstack/projects/{slug}/.prismstack/`) stores machine-readable state (domain-config.json, skill-map.json, check-results.json, logs).
 
-## AskUserQuestion Format
+## AskUserQuestion 格式（可靠觸發語法）
 
-**ALWAYS follow this structure for every AskUserQuestion call:**
-1. **Re-ground:** Project, branch, what we're doing. Assume user was away 20 minutes.
-2. **Simplify:** 用白話解釋，16 歲的人也能聽懂。
-3. **Recommend:** `RECOMMENDATION: Choose [X] because [reason]` — include completeness score per option.
-4. **Options:** `A) ... B) ... C) ... D) Skip/Defer` — always include an escape option.
+**STOP gate 必須用此格式寫，否則模型不會呼叫 AskUserQuestion 工具：**
+
+```markdown
+**STOP.** AskUserQuestion to confirm [什麼事]:
+
+> [Re-ground + Simplify + RECOMMENDATION + 字母選項]
+
+**One question only. Wait for answer before proceeding.**
+```
+
+四段內容：
+1. **Re-ground:** 在哪個 skill、哪個 Phase。假設用戶離開了 20 分鐘。
+2. **Simplify:** 白話解釋，16 歲的人也能聽懂。
+3. **Recommend:** `RECOMMENDATION: Choose X — 理由`
+4. **Options:** `A) ... B) ... C) ... D) Skip/先停` — 永遠有逃生門。
+
+詳見 `shared/ask-format.md`。
 
 ## Completion Status Protocol
 

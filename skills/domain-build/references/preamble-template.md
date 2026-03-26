@@ -53,13 +53,19 @@
 
 ## 互動格式
 
-參見 `shared/ask-format.md`（AskUserQuestion 四段格式）。
+參見 `shared/ask-format.md`（可靠觸發語法 + 四段內容格式）。
 
-所有 skill 與用戶互動時：
-1. 一次只問一個問題
-2. 提供明確選項（A/B/C/D）
-3. 給出預設建議
-4. 說明如何回答
+**STOP gate 必須用此格式才能可靠觸發 AskUserQuestion 工具：**
+
+```markdown
+**STOP.** AskUserQuestion to confirm [什麼事]:
+
+> [摘要 + RECOMMENDATION + 字母選項]
+
+**One question only. Wait for answer before proceeding.**
+```
+
+❌ 不要用 `🛑`、`━━━` 邊框、`請確認：` — 這些格式模型不會可靠呼叫工具。
 
 ## 完成協議
 
