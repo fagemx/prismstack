@@ -23,6 +23,8 @@ description: |
   - User says "自動化這個網站", "做一個工具", "API 串接" → suggest /tool-builder
   - User has materials and wants to extract methodology → suggest /methodology-extract
   - User says "這個可能有用", "去看看", "幫我整理方法論", "我覺得這跟...有關" → suggest /methodology-extract
+  - User wants to consolidate team members' prompts/SOPs/standards → suggest /methodology-extract
+  - User says "整合團隊的材料", "合併大家的 prompt", "每個人都有自己的做法" → suggest /methodology-extract
   - User wants to upgrade or iterate on existing stack → suggest /domain-upgrade
   - User says "升級", "測試回饋", "迭代", "這裡不好用" → suggest /domain-upgrade
   - User wants to change skill connections or workflow → suggest /workflow-edit
