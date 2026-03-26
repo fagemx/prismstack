@@ -2,171 +2,169 @@
 
 **把你的專業知識變成一套 AI skill 系統**
 
-[繁體中文](#) | English
-
 你是行銷專家、教育工作者、遊戲設計師、或任何領域的專業人士。你有自己的工作流程、判斷標準、品質門檻。Prismstack 幫你把這些變成一套可運行、可共享、可持續改進的 AI skill 系統。
 
-一束光（你的專業知識）進去，分散成多色（可操作的 AI skills）出來。
+一束光（你的專業知識）進去，分散成多色（可操作的 AI skill）出來。
 
-> **What this IS:** 你的知識和流程的結構化——變成 AI 能遵循的工作系統，帶有品質評分、修復迴圈、和防止 AI 敷衍的機制。
-> **What this is NOT:** 通用 AI 工具合集——它生成的是*你的領域*的專屬 skill，不是萬用模板。
+> **這是什麼：** 你的知識和流程的結構化——變成 AI 能遵循的工作系統，帶有品質評分、修復迴圈、和防止 AI 敷衍的機制。
+> **這不是什麼：** 通用 AI 工具合集——它生成的是*你的領域*的專屬 skill，不是萬用模板。
 
-**Who this is for:**
+**適合誰用：**
 - **有工作流程的團隊** — 把「每個人各自用 AI」升級成「團隊共用一套 AI 工作系統」
 - **領域專家** — 你的三句話裡有完整的評分公式和判斷標準，Prismstack 聽得懂、轉得出
 - **想讓 AI 照自己的方式工作的人** — 不是通用建議，是你的實際流程
 
 ---
 
-## Quick start: your first 10 minutes
+## 快速開始：10 分鐘上手
 
-1. Install Prismstack (30 seconds — see below)
-2. Run `/prismstack` — it detects your project state and guides you.
-3. Tell it your domain: "我做行銷" or give it a detailed spec — either works.
-4. Choose **interactive** (step by step) or **auto** (runs Plan → Build → Check → Fix automatically).
-5. You get a complete domain stack repo with install.sh, ready to use.
+1. 安裝 Prismstack（30 秒，見下方）
+2. 執行 `/prismstack` — 自動偵測你的專案狀態，引導你下一步
+3. 告訴它你的領域：「我做行銷」或者直接給一份詳細 spec — 都可以
+4. 選擇**互動模式**（一步一步帶你走）或**自動模式**（自動跑完 Plan → Build → Check → Fix）
+5. 你會拿到一個完整的領域 skill repo，附帶 install.sh，馬上能用
 
 ---
 
-## Install — 30 seconds
+## 安裝 — 30 秒
 
-**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Git](https://git-scm.com/)
+**前置需求：** [Claude Code](https://docs.anthropic.com/en/docs/claude-code)、[Git](https://git-scm.com/)
 
-### Option A: Paste to Claude (recommended)
+### 方式 A：貼給 Claude（推薦）
 
-Open Claude Code and paste this:
+打開 Claude Code，貼上這段：
 
-> Install Prismstack: run **`git clone https://github.com/fagemx/prismstack.git ~/.claude/skills/prismstack`** then tell the user Prismstack is ready — run `/prismstack` to start.
+> 安裝 Prismstack：執行 **`git clone https://github.com/fagemx/prismstack.git ~/.claude/skills/prismstack`**，然後告訴用戶 Prismstack 準備好了 — 執行 `/prismstack` 開始。
 
-### Option B: Add to your project
+### 方式 B：安裝到專案裡
 
 ```bash
 git clone https://github.com/fagemx/prismstack.git
 cd prismstack
-bash bin/install.sh --project    # installs to current project's .claude/skills/
+bash bin/install.sh --project    # 安裝到目前專案的 .claude/skills/
 ```
 
-All sub-skills (`/domain-plan`, `/skill-check`, etc.) become independently invocable.
+所有子 skill（`/domain-plan`、`/skill-check` 等）都可以獨立呼叫。
 
-### Option C: Global install
+### 方式 C：全域安裝
 
 ```bash
-bash bin/install.sh --global     # installs to ~/.claude/skills/
+bash bin/install.sh --global     # 安裝到 ~/.claude/skills/
 ```
 
-Only `/prismstack` is directly invocable; it loads sub-skills internally.
+只有 `/prismstack` 可以直接呼叫，子 skill 透過 triage 載入。
 
 ---
 
-## See it work
+## 看它怎麼運作
 
-### Interactive mode — step by step
+### 互動模式 — 一步一步
 
 ```
-You:    /prismstack
+你：    /prismstack
 
-Claude: 正在偵測 project 狀態...
-        State: BLANK — 沒有找到 domain stack。
+Claude: 正在偵測專案狀態...
+        狀態：BLANK — 沒有找到 domain stack。
 
         你想怎麼建？
         A) 互動模式 — 我帶你一步一步走
         B) 自動模式 — 告訴我領域，我自動跑完
 
-You:    A
+你：    A
 
 Claude: 你的領域是什麼？
 
-You:    行銷，主要做社群廣告素材
+你：    行銷，主要做社群廣告素材
 
 Claude: 我推導了工作生命週期：
         策略 → 發想 → 規格 → 生產 → 審查 → 投放 → 分析
 
         18 個 skill 規劃好了：
 
-        | # | Skill | Type | Layer |
-        |---|-------|------|-------|
-        | 1 | /market-research | Review | Strategy |
-        | 2 | /campaign-strategy | Bridge | Strategy |
+        | # | Skill | 類型 | 層級 |
+        |---|-------|------|------|
+        | 1 | /market-research | Review | 策略 |
+        | 2 | /campaign-strategy | Bridge | 策略 |
         | ... | ... | ... | ... |
 
-        Skill Map Quality Score: 8/10
+        Skill Map 品質分數：8/10
 
         A) 這樣可以，開始搭建
         B) 我要加 skill
         C) 我要改
 
-You:    A
+你：    A
 
-Claude: 開始搭建... (每 5 個 skill 停一次確認)
+Claude: 開始搭建...（每 5 個 skill 停一次確認）
         → 18 個 skill 生成完成
-        → validate-repo.sh: 5/5 pass
-        → 安裝到你的 project 嗎？
+        → validate-repo.sh：5/5 通過
+        → 要安裝到你的專案嗎？
 
-You:    好
+你：    好
 
 Claude: ✅ 安裝完成。試試 /market-research 或 /campaign-strategy。
 ```
 
-### Auto mode — one command
+### 自動模式 — 一個指令搞定
 
 ```
-You:    /prismstack
+你：    /prismstack
 
-Claude: State: BLANK
+Claude: 狀態：BLANK
 
         你想怎麼建？
         A) 互動模式
         B) 自動模式
 
-You:    B
+你：    B
 
 Claude: 領域？
-You:    教育課程設計
+你：    教育課程設計
 
 Claude: 品質門檻？
-        A) Draft (12/30) — 最快
-        B) Usable (18/30) — 推薦
-        C) Production (24/30) — 最慢
+        A) Draft（12/30）— 最快
+        B) Usable（18/30）— 推薦
+        C) Production（24/30）— 最慢
 
-You:    B
+你：    B
 
 Claude: 開始自動搭建。你可以去做別的事。
 
-        ⏳ PLAN... 16 skills mapped
-        ⏳ BUILD... 16 skills generated
-        ⏳ CHECK... avg 15/30 (Draft+) — below threshold
-        ⏳ FIX round 1... 12 auto-fixes applied
-        ⏳ RE-CHECK... avg 19/30 (Usable) ✅
+        ⏳ 規劃中... 16 個 skill 已規劃
+        ⏳ 搭建中... 16 個 skill 已生成
+        ⏳ 審查中... 平均 15/30（Draft+）— 未達門檻
+        ⏳ 修復第 1 輪... 12 項自動修復
+        ⏳ 重新審查... 平均 19/30（Usable）✅
 
         ✅ 完成。
-        Skills: 16 | Quality: 19/30 (Usable) | Fix rounds: 1
-        Repo: ./education-stack/
-        Install: cd education-stack && bash bin/install.sh --project
+        Skill 數量：16 | 品質：19/30（Usable）| 修復輪數：1
+        Repo：./education-stack/
+        安裝：cd education-stack && bash bin/install.sh --project
 ```
 
 ---
 
-## The workflow
+## 工作流程
 
-Prismstack is a process, not a collection of tools. Skills are ordered the way a domain stack gets built:
+Prismstack 是一套流程，不是一堆工具。Skill 按照 domain stack 的搭建順序排列：
 
-**Extract → Plan → Build → Check → Fix → Iterate**
+**提取 → 規劃 → 搭建 → 審查 → 修復 → 迭代**
 
-Each skill feeds the next. `/methodology-extract` distills your expertise into structured methodology. `/domain-plan` uses it to design a skill map. `/domain-build` generates skills. `/skill-check` audits quality. Low scores trigger the fix loop. All outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
+每個 skill 的產出是下一個的輸入。`/methodology-extract` 把你的專業提煉成方法論。`/domain-plan` 用它來規劃 skill map。`/domain-build` 生成 skill。`/skill-check` 審查品質。低分觸發修復迴圈。所有產出存到 `~/.gstack/projects/`，下游 skill 自動找到——即使跨 session。
 
-| Skill | Your specialist | What they do |
-|-------|----------------|--------------|
-| `/prismstack` | **Triage Navigator** | Detects project state (BLANK/PLANNED/BUILT/ITERATING), guides you to the right skill. Run this first. Supports interactive and auto modes. |
-| `/methodology-extract` | **Methodology Distiller** | 帶著你的問題看任何材料，提取對你有用的方法論。碰撞式互動：你的直覺 × 任何來源 = 結構化原則。不是問卷，是思維碰撞。 |
-| `/domain-plan` | **Domain Architect** | Derive skill map from your domain: lifecycle mapping, gap analysis, independence tests. Reads your methodology if available. |
-| `/domain-build` | **Stack Builder** | Auto-generate complete domain repo: scaffold, all skills, install.sh, artifact flow wiring. Uses your methodology for higher quality output. |
-| `/skill-check` | **Quality Inspector** | 3 modes: `design` (7Q planning check), `review` (15D + 6 mines), `pack` (structure health). Batch mode with `--all`. Fix loop built in. |
-| `/skill-gen` | **Skill Craftsman** | Add a single new skill to existing stack. Independence tests + 7Q design check + workflow wiring. |
-| `/skill-edit` | **Skill Surgeon** | Edit skill internals: gotchas, scoring, forcing questions, anti-sycophancy. Before/after scoring delta. |
-| `/source-convert` | **Knowledge Translator** | Convert a specific source (article, video, book, repo, prompt, SOP) into skill content. 5-level target placement. |
-| `/tool-builder` | **Tool Craftsman** | Build automation skills: browser, API, CLI, file processing. Dual-layer: hands-on mode + meta mode (builds a skill that can do it). |
-| `/domain-upgrade` | **Stack Steward** | Persistent improvement: listen to needs, collect test feedback, dispatch to the right skill. 3 modes: feedback / upgrade / listen. |
-| `/workflow-edit` | **Workflow Architect** | View/edit artifact flow, skill connections, workflow graph. Validates: no orphans, no cycles, bridge coverage. |
+| Skill | 你的專家 | 做什麼 |
+|-------|---------|--------|
+| `/prismstack` | **導航員** | 偵測專案狀態（BLANK / PLANNED / BUILT / ITERATING），引導你到對的 skill。支援互動和自動模式。 |
+| `/methodology-extract` | **方法論蒸餾師** | 帶著你的問題看任何材料，提取對你有用的方法論。碰撞式互動：你的直覺 × 任何來源 = 結構化原則。不是問卷，是思維碰撞。 |
+| `/domain-plan` | **領域架構師** | 從你的領域推導 skill map：生命週期、缺口分析、獨立性測試。如果有方法論會自動參考。 |
+| `/domain-build` | **堆疊建造者** | 自動生成完整的領域 repo：骨架、所有 skill、install.sh、artifact flow 串接。執行驗收檢查。 |
+| `/skill-check` | **品質檢查員** | 三種模式：`design`（7 問規劃檢查）、`review`（15 維度 + 6 雷區）、`pack`（結構健康度）。支援批量模式 `--all`。內建修復迴圈。 |
+| `/skill-gen` | **技能工匠** | 在現有 stack 中新增單一 skill。獨立性測試 + 7 問設計檢查 + 串接到 workflow。 |
+| `/skill-edit` | **技能外科醫生** | 編輯 skill 內部：gotcha、評分公式、逼問、反敷衍。提供修改前後的分數差異。 |
+| `/source-convert` | **知識翻譯者** | 把特定來源（文章、影片、書、repo、prompt、SOP）轉成 skill 內容。5 級落點判斷。 |
+| `/tool-builder` | **工具匠** | 打造自動化 skill：瀏覽器、API、CLI、檔案處理。雙層模式：直接做 + 產出能做的 skill。 |
+| `/domain-upgrade` | **堆疊管家** | 持續改進：傾聽需求、收集測試回饋、派遣到對的 skill。三種模式：回饋 / 升級 / 傾聽。 |
+| `/workflow-edit` | **工作流架構師** | 查看和編輯 artifact flow、skill 串接、workflow 圖。驗證：無孤立、無循環、bridge 覆蓋。 |
 
 ---
 
@@ -195,12 +193,12 @@ Prismstack 有 5 份內建方法論，教 AI 怎麼幫你建好 skill：
 | 方法論 | 解決什麼問題 |
 |--------|-------------|
 | **Skill Map 推導法** | 怎麼從你的工作流程推導出需要哪些 skill |
-| **Skill 撰寫指南** | 怎麼寫出好的 skill：8 原則 + 7 結構 pattern + 10 個設計 how-to |
+| **Skill 撰寫指南** | 怎麼寫出好的 skill：8 原則 + 7 結構模式 + 10 個設計指南 |
 | **品質標準** | 怎麼判斷 skill 好不好：15 維度 + 校準基準 + 6 個常見陷阱 |
 | **串接指南** | 怎麼讓 skill 之間自動傳遞資料 |
 | **修復迴圈** | 發現問題怎麼修：偵測 → 分類 → 修 → 驗證 → 對比 |
 
-10 個設計 how-to 覆蓋：評分公式設計、找 AI 盲點、修復迴圈設計、停頓點放置、反敷衍機制、逼問設計、中斷恢復、資料串接、輸入辨識、品質對等生成。
+10 個設計指南覆蓋：評分公式設計、找 AI 盲點、修復迴圈設計、停頓點放置、反敷衍機制、逼問設計、中斷恢復、資料串接、輸入辨識、品質對等生成。
 
 ---
 
@@ -214,69 +212,69 @@ Prismstack 的工程方法論源自 [gstack](https://github.com/garrytan/gstack)
 
 **Prismstack 獨有的能力：**
 - 方法論提取（帶著你的問題看任何材料，碰撞出結構化原則）
-- 雙模式（互動 + 自動，generator-evaluator 分離）
+- 雙模式（互動 + 自動，生成者與評判者分離）
 - 輸入敏感度（你給一句話或一份 spec，品質對等生成）
 - 脈絡累積（記得你說過什麼，跨 session 越用越準）
 - 工具打造（雙層：直接自動化 + 產出能自動化的 skill）
 
 ---
 
-## File structure
+## 檔案結構
 
 ```
 prismstack/
-├── README.md                              ← This file
-├── CLAUDE.md                              ← Developer handoff
+├── README.md                              ← 本文件
+├── CLAUDE.md                              ← 開發者指引
 ├── VERSION                                ← 0.5.0
 ├── CHANGELOG.md
 ├── LICENSE                                ← MIT
 ├── bin/
-│   ├── install.sh                         ← Unix installer (--project / --global)
-│   ├── install.ps1                        ← Windows installer
-│   └── prism-slug.sh                      ← Repo slug utility
+│   ├── install.sh                         ← Unix 安裝（--project / --global）
+│   ├── install.ps1                        ← Windows 安裝
+│   └── prism-slug.sh                      ← Repo slug 工具
 ├── skills/
-│   ├── prism-routing/SKILL.md             ← Triage + auto mode orchestrator
-│   ├── methodology-extract/               ← + 3 reference files (collision-based methodology distillation)
-│   ├── domain-plan/                       ← + 4 reference files
-│   ├── domain-build/                      ← + 6 reference files + validate script
-│   ├── skill-check/                       ← + 3 reference files (15D rubric)
-│   ├── skill-gen/                         ← + 2 reference files
-│   ├── skill-edit/                        ← + 1 reference file
-│   ├── source-convert/                    ← + 2 reference files
-│   ├── tool-builder/                      ← + 2 reference files
-│   ├── domain-upgrade/                    ← + 1 reference file
-│   ├── workflow-edit/                     ← + 2 reference files
+│   ├── prism-routing/SKILL.md             ← Triage + 自動模式 orchestrator
+│   ├── methodology-extract/               ← + 3 參考文件（碰撞式方法論蒸餾）
+│   ├── domain-plan/                       ← + 4 參考文件
+│   ├── domain-build/                      ← + 6 參考文件 + 驗收腳本
+│   ├── skill-check/                       ← + 3 參考文件（15 維度品質 rubric）
+│   ├── skill-gen/                         ← + 2 參考文件
+│   ├── skill-edit/                        ← + 1 參考文件
+│   ├── source-convert/                    ← + 2 參考文件
+│   ├── tool-builder/                      ← + 2 參考文件
+│   ├── domain-upgrade/                    ← + 1 參考文件
+│   ├── workflow-edit/                     ← + 2 參考文件
 │   └── shared/
-│       ├── methodology/                   ← 5 digested methodology files (834 lines)
-│       ├── preamble.md                    ← Shared session setup
-│       ├── completion-protocol.md         ← STATUS definitions + extraction
-│       ├── ask-format.md                  ← AskUserQuestion 4-segment format
-│       ├── artifact-conventions.md        ← Naming + storage rules
-│       ├── anti-sycophancy.md             ← 3-layer system
-│       ├── stop-gates.md                  ← Placement rules
-│       └── state-conventions.md           ← Per-project state files
+│       ├── methodology/                   ← 5 份消化方法論
+│       ├── preamble.md                    ← 共享 session 設定
+│       ├── completion-protocol.md         ← 完成狀態定義 + 脈絡萃取
+│       ├── ask-format.md                  ← 提問四段格式
+│       ├── artifact-conventions.md        ← 命名與存儲規則
+│       ├── anti-sycophancy.md             ← 三層反敷衍系統
+│       ├── stop-gates.md                  ← 停頓點規則
+│       └── state-conventions.md           ← 專案狀態文件
 ├── test/
-│   └── install-test.sh                    ← 67 checks
+│   └── install-test.sh                    ← 72 項檢查
 └── docs/
-    ├── prismstack-v2-spec.md              ← Full spec
-    ├── design/dual-mode-design.md         ← Auto mode architecture
-    └── plans/                             ← Implementation plans
+    ├── prismstack-v2-spec.md              ← 完整規格書
+    ├── design/dual-mode-design.md         ← 自動模式架構
+    └── plans/                             ← 實作計畫
 ```
 
 ---
 
-## Troubleshooting
+## 疑難排解
 
-**Skill not showing up?** Run `bash bin/install.sh --project` from your project root. Restart Claude Code.
+**Skill 沒出現？** 在專案根目錄執行 `bash bin/install.sh --project`，重啟 Claude Code。
 
-**Only `/prismstack` works, sub-skills don't?** You're on global install. Sub-skills work through `/prismstack` triage, or use `--project` install for direct access.
+**只有 `/prismstack` 能用，子 skill 不行？** 你用的是全域安裝。子 skill 透過 `/prismstack` triage 使用，或改用 `--project` 安裝。
 
-**Windows?** Use Git Bash or WSL. Or use `pwsh bin/install.ps1 --project`.
+**Windows？** 用 Git Bash 或 WSL。或用 `pwsh bin/install.ps1 --project`。
 
-**Test install:** `bash test/install-test.sh` — should show 72/72 pass.
+**測試安裝：** `bash test/install-test.sh` — 應顯示 72/72 通過。
 
 ---
 
-## License
+## 授權
 
-MIT — see [LICENSE](LICENSE).
+MIT — 見 [LICENSE](LICENSE)。
