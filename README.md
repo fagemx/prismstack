@@ -150,19 +150,20 @@ Claude: 開始自動搭建。你可以去做別的事。
 
 Prismstack is a process, not a collection of tools. Skills are ordered the way a domain stack gets built:
 
-**Plan → Build → Check → Fix → Iterate**
+**Extract → Plan → Build → Check → Fix → Iterate**
 
-Each skill feeds the next. `/domain-plan` produces a skill map that `/domain-build` reads. `/domain-build` generates skills that `/skill-check` audits. Low scores trigger the fix loop. All outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
+Each skill feeds the next. `/methodology-extract` distills your expertise into structured methodology. `/domain-plan` uses it to design a skill map. `/domain-build` generates skills. `/skill-check` audits quality. Low scores trigger the fix loop. All outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
 
 | Skill | Your specialist | What they do |
 |-------|----------------|--------------|
 | `/prismstack` | **Triage Navigator** | Detects project state (BLANK/PLANNED/BUILT/ITERATING), guides you to the right skill. Run this first. Supports interactive and auto modes. |
-| `/domain-plan` | **Domain Architect** | Derive skill map from your domain: lifecycle mapping, gap analysis, independence tests. Outputs skill-map.md + workflow-graph.md. |
-| `/domain-build` | **Stack Builder** | Auto-generate complete domain repo: scaffold, all skills, install.sh, artifact flow wiring. Runs validation. |
+| `/methodology-extract` | **Methodology Distiller** | 帶著你的問題看任何材料，提取對你有用的方法論。碰撞式互動：你的直覺 × 任何來源 = 結構化原則。不是問卷，是思維碰撞。 |
+| `/domain-plan` | **Domain Architect** | Derive skill map from your domain: lifecycle mapping, gap analysis, independence tests. Reads your methodology if available. |
+| `/domain-build` | **Stack Builder** | Auto-generate complete domain repo: scaffold, all skills, install.sh, artifact flow wiring. Uses your methodology for higher quality output. |
 | `/skill-check` | **Quality Inspector** | 3 modes: `design` (7Q planning check), `review` (15D + 6 mines), `pack` (structure health). Batch mode with `--all`. Fix loop built in. |
 | `/skill-gen` | **Skill Craftsman** | Add a single new skill to existing stack. Independence tests + 7Q design check + workflow wiring. |
 | `/skill-edit` | **Skill Surgeon** | Edit skill internals: gotchas, scoring, forcing questions, anti-sycophancy. Before/after scoring delta. |
-| `/source-convert` | **Knowledge Translator** | Convert any source (article, video, book, repo, prompt, SOP, ECC skill) into skill content. 5-level target placement. |
+| `/source-convert` | **Knowledge Translator** | Convert a specific source (article, video, book, repo, prompt, SOP) into skill content. 5-level target placement. |
 | `/tool-builder` | **Tool Craftsman** | Build automation skills: browser, API, CLI, file processing. Dual-layer: hands-on mode + meta mode (builds a skill that can do it). |
 | `/domain-upgrade` | **Stack Steward** | Persistent improvement: listen to needs, collect test feedback, dispatch to the right skill. 3 modes: feedback / upgrade / listen. |
 | `/workflow-edit` | **Workflow Architect** | View/edit artifact flow, skill connections, workflow graph. Validates: no orphans, no cycles, bridge coverage. |
@@ -199,7 +200,7 @@ Prismstack 有 5 份內建方法論，教 AI 怎麼幫你建好 skill：
 | **串接指南** | 怎麼讓 skill 之間自動傳遞資料 |
 | **修復迴圈** | 發現問題怎麼修：偵測 → 分類 → 修 → 驗證 → 對比 |
 
-10 個 how-to 覆蓋：評分公式設計、找 AI 盲點、修復迴圈設計、停頓點放置、反敷衍機制、逼問設計、中斷恢復、資料串接、輸入辨識、品質對等生成。
+10 個設計 how-to 覆蓋：評分公式設計、找 AI 盲點、修復迴圈設計、停頓點放置、反敷衍機制、逼問設計、中斷恢復、資料串接、輸入辨識、品質對等生成。
 
 ---
 
@@ -209,9 +210,10 @@ Prismstack 的工程方法論源自 [gstack](https://github.com/garrytan/gstack)
 
 **核心差異：**
 - gstack = 固定 25 個 Web/SaaS 工程 skill
-- Prismstack = 10 個 builder skill，能為任何領域生成 10-30 個專屬 skill
+- Prismstack = 11 個 builder skill，能為任何領域生成 10-50 個專屬 skill
 
 **Prismstack 獨有的能力：**
+- 方法論提取（帶著你的問題看任何材料，碰撞出結構化原則）
 - 雙模式（互動 + 自動，generator-evaluator 分離）
 - 輸入敏感度（你給一句話或一份 spec，品質對等生成）
 - 脈絡累積（記得你說過什麼，跨 session 越用越準）
@@ -234,6 +236,7 @@ prismstack/
 │   └── prism-slug.sh                      ← Repo slug utility
 ├── skills/
 │   ├── prism-routing/SKILL.md             ← Triage + auto mode orchestrator
+│   ├── methodology-extract/               ← + 3 reference files (collision-based methodology distillation)
 │   ├── domain-plan/                       ← + 4 reference files
 │   ├── domain-build/                      ← + 6 reference files + validate script
 │   ├── skill-check/                       ← + 3 reference files (15D rubric)
@@ -270,7 +273,7 @@ prismstack/
 
 **Windows?** Use Git Bash or WSL. Or use `pwsh bin/install.ps1 --project`.
 
-**Test install:** `bash test/install-test.sh` — should show 67/67 pass.
+**Test install:** `bash test/install-test.sh` — should show 72/72 pass.
 
 ---
 
