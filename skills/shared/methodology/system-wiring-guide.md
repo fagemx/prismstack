@@ -8,14 +8,14 @@
 ## Artifact Flow
 
 ### 存儲
-所有 artifact 存在 `~/.gstack/projects/{slug}/`。
+所有 artifact 存在 `~/.prismstack/projects/{slug}/`。
 
 命名：`{user}-{branch}-{type}-{datetime}.md`
 
 Slug 從 git repo 計算：
 ```bash
 _SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+_PROJECTS_DIR="${HOME}/.prismstack/projects/${_SLUG}"
 mkdir -p "$_PROJECTS_DIR"
 ```
 

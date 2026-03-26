@@ -137,7 +137,7 @@ User-facing documentation. Sections:
 ```
 node_modules/
 .env
-.gstack/
+.prismstack/
 .claude/skills/
 *.log
 ```
@@ -164,7 +164,7 @@ git commit -m "feat: initialize Prismstack project scaffold"
 
 - [ ] **Step 1: Create `bin/prism-slug.sh`**
 
-Utility to get repo slug for artifact paths. Used by skills for `~/.gstack/projects/{slug}/`.
+Utility to get repo slug for artifact paths. Used by skills for `~/.prismstack/projects/{slug}/`.
 
 ```bash
 #!/usr/bin/env bash
@@ -253,7 +253,7 @@ Windows equivalent of install.sh using PowerShell. Same logic, different syntax.
 4. Options (A/B/C with human time / CC time)
 
 **`skills/shared/artifact-conventions.md`** — Naming and storage:
-- Path: `~/.gstack/projects/{slug}/`
+- Path: `~/.prismstack/projects/{slug}/`
 - Filename: `{user}-{branch}-{type}-{datetime}.md`
 - Supersedes chain
 - Discovery bash pattern
@@ -530,7 +530,7 @@ Body structure (~150 lines, details in references/):
 - Iterate until user picks A
 
 **Phase 5: Save Artifacts**
-- Save `skill-map-{datetime}.md` to `~/.gstack/projects/{slug}/`
+- Save `skill-map-{datetime}.md` to `~/.prismstack/projects/{slug}/`
 - Save `workflow-graph-{datetime}.md` to same location
 - Completion: STATUS: DONE, recommend `/domain-build` as next step
 
@@ -644,7 +644,7 @@ Include the skill-writing-doctrine principles:
 Template for generating domain-specific preamble:
 - 領域詞彙定義（由 LLM 根據領域產出）
 - 品牌資產位置（如適用）
-- Artifact 存儲路徑 (`~/.gstack/projects/{slug}/`)
+- Artifact 存儲路徑 (`~/.prismstack/projects/{slug}/`)
 - AskUserQuestion 格式（引用 shared/ask-format.md）
 - Completion protocol（引用 shared/completion-protocol.md）
 
@@ -707,7 +707,7 @@ else
 fi
 
 # 3. Artifact paths consistent
-if grep -r "~/.gstack/projects/" "$REPO_DIR/skills/" >/dev/null 2>&1; then
+if grep -r "~/.prismstack/projects/" "$REPO_DIR/skills/" >/dev/null 2>&1; then
   echo "✅ 3. Artifact discovery/save patterns found"
   ((PASS++))
 else
@@ -783,7 +783,7 @@ Body structure (~150 lines, details in references/):
 - Do NOT regenerate skills that already have SKILL.md files
 
 **Phase 0: Artifact Discovery + Progress Tracking**
-- Search `~/.gstack/projects/{slug}/` for `skill-map-*.md`
+- Search `~/.prismstack/projects/{slug}/` for `skill-map-*.md`
 - If not found → STATUS: BLOCKED, recommend /domain-plan
 - Read skill map, confirm with user
 - Ask: where to create the repo? (default: current directory)

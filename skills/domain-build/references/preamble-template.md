@@ -38,7 +38,7 @@
 
 ## Artifact 存儲
 
-所有 artifact 存儲在: `~/.gstack/projects/{slug}/`
+所有 artifact 存儲在: `~/.prismstack/projects/{slug}/`
 
 命名規則: `{user}-{branch}-{type}-{datetime}.md`
 

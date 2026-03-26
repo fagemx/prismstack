@@ -58,7 +58,7 @@ You are the persistent service layer. After /domain-build creates the stack, you
 ## Phase 0: Context Discovery
 
 ### State
-- Reads: `~/.gstack/projects/{slug}/.prismstack/check-results.json`, `edit-log.jsonl`, `convert-log.jsonl` (what happened since last upgrade)
+- Reads: `~/.prismstack/projects/{slug}/.prismstack/check-results.json`, `edit-log.jsonl`, `convert-log.jsonl` (what happened since last upgrade)
 - Writes: `upgrade-log.jsonl` (append: timestamp, action, dispatched-to, result)
 - Updates: `domain-config.json` → `last_upgrade` timestamp
 
@@ -66,7 +66,7 @@ You are the persistent service layer. After /domain-build creates the stack, you
 
 ```bash
 _SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+_PROJECTS_DIR="${HOME}/.prismstack/projects/${_SLUG}"
 
 # Search for recent /skill-check results
 ls "${_PROJECTS_DIR}"/skill-check-*.md 2>/dev/null

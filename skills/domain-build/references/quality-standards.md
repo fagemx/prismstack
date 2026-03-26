@@ -102,7 +102,7 @@
 **E14. Output Contract（輸出是下一步的接口）**
 - 0 = 輸出是聊天文字
 - 1 = 有 completion summary 但沒有寫到檔案
-- 2 = 輸出寫到 `~/.gstack/projects/` + structured format + 可被下游 skill 讀取
+- 2 = 輸出寫到 `~/.prismstack/projects/` + structured format + 可被下游 skill 讀取
 
 **E15. Workflow Position（在工作流中的位置）**
 - 0 = 不知道自己在工作流的哪裡

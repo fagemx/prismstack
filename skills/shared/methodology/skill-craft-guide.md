@@ -480,7 +480,7 @@ AskUserQuestion:
 **步驟：**
 1. **定義 state file** — 追蹤進度的檔案
    - 格式：markdown table 或 JSON
-   - 位置：`~/.gstack/projects/{slug}/.prismstack/` 或 skill 內部
+   - 位置：`~/.prismstack/projects/{slug}/.prismstack/` 或 skill 內部
    - 內容：每個 phase 的狀態（pending / done / in-progress）
 2. **定義偵測點** — 怎麼知道上次做到哪
    - 檢查 state file
@@ -516,7 +516,7 @@ AskUserQuestion:
    - 找不到怎麼辦？（BLOCKED / 問用戶 / 用預設值）
 2. **定義這個 skill 產出什麼**（downstream artifact）
    - 檔名格式：`{user}-{branch}-{type}-{datetime}.md`
-   - 存到 `~/.gstack/projects/{slug}/`
+   - 存到 `~/.prismstack/projects/{slug}/`
    - 內容格式：下游 skill 能直接 parse 的結構
 3. **定義 supersedes chain**
    - 如果有舊版 artifact → 新版頂部標記 `Supersedes: {old filename}`
@@ -527,7 +527,7 @@ AskUserQuestion:
 **Discovery 模板（寫進 skill 的 Phase 0）：**
 ```bash
 _SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+_PROJECTS_DIR="${HOME}/.prismstack/projects/${_SLUG}"
 _UPSTREAM=$(ls -t "$_PROJECTS_DIR"/*-{upstream-type}-*.md 2>/dev/null | head -1)
 if [ -n "$_UPSTREAM" ]; then
   echo "Found upstream: $_UPSTREAM"

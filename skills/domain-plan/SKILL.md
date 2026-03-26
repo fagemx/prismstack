@@ -66,7 +66,7 @@ allowed-tools:
 
 ```bash
 # Search for prior skill maps from any domain
-for f in ~/.gstack/projects/*/skill-map-*.md; do
+for f in ~/.prismstack/projects/*/skill-map-*.md; do
   [ -f "$f" ] && echo "FOUND: $f"
 done
 ```
@@ -118,8 +118,8 @@ echo "HAS_SCRIPTS: $_HAS_SCRIPTS"
 - 用戶回答詳細 → 全部用上。
 
 ### State
-- Writes: `~/.gstack/projects/{slug}/.prismstack/domain-config.json` (domain name, lifecycle) after Phase 1
-- Writes: `~/.gstack/projects/{slug}/.prismstack/skill-map.json` (structured map) after Phase 4
+- Writes: `~/.prismstack/projects/{slug}/.prismstack/domain-config.json` (domain name, lifecycle) after Phase 1
+- Writes: `~/.prismstack/projects/{slug}/.prismstack/skill-map.json` (structured map) after Phase 4
 - Reads: `domain-config.json` (if exists, pre-fill domain info — don't re-ask)
 
 **⛔ STOP — 等用戶回答後才進 Phase 1。**
@@ -242,7 +242,7 @@ E. 我有自己的版本想貼上來
 
 ```bash
 SLUG=$(echo "$DOMAIN" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-DIR="$HOME/.gstack/projects/$SLUG"
+DIR="$HOME/.prismstack/projects/$SLUG"
 mkdir -p "$DIR"
 ```
 

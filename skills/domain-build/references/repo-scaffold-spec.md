@@ -62,7 +62,7 @@
 - MIT License，年份 + 作者佔位。
 
 **.gitignore**
-- `node_modules/`, `.env`, `.gstack/`, `.claude/skills/`, `*.log`, `.DS_Store`, `tmp/`
+- `node_modules/`, `.env`, `.prismstack/`, `.claude/skills/`, `*.log`, `.DS_Store`, `tmp/`
 
 ### bin/ 目錄
 
@@ -74,7 +74,7 @@
 
 **bin/{domain}-slug.sh**
 - 從 repo 名稱產生 slug（小寫、連字號分隔）。
-- 用於 artifact 路徑：`~/.gstack/projects/{slug}/`。
+- 用於 artifact 路徑：`~/.prismstack/projects/{slug}/`。
 
 ### skills/shared/ 目錄
 
@@ -92,7 +92,7 @@
 
 **shared/artifact-conventions.md**
 - 命名規則：`{user}-{branch}-{type}-{datetime}.md`。
-- 存儲路徑：`~/.gstack/projects/{slug}/`。
+- 存儲路徑：`~/.prismstack/projects/{slug}/`。
 - 讀取規則：最新檔案優先、glob 搜尋 pattern。
 - 寫入規則：永遠新建、不覆蓋舊檔。
 
@@ -130,7 +130,7 @@
 
 1. Routing skill 存在且包含完整 skill 清單
 2. 至少 3 個 skill 有 SKILL.md（first slice 可用）
-3. 每個 skill 的 artifact 路徑使用 `~/.gstack/projects/{slug}/`
+3. 每個 skill 的 artifact 路徑使用 `~/.prismstack/projects/{slug}/`
 4. install.sh 可執行
 5. 至少 3 個 skill 包含 AskUserQuestion 互動
 6. shared/ 四個檔案齊全

@@ -15,7 +15,7 @@
 ### 命名規則
 
 - artifact 檔名：`{type}-{datetime}.md`
-- 儲存位置：`~/.gstack/projects/{slug}/`
+- 儲存位置：`~/.prismstack/projects/{slug}/`
 - datetime 格式：`YYYYMMDD-HHmmss`
 
 範例：

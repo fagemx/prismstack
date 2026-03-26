@@ -222,7 +222,7 @@ Knowledge Layer：
 
 System Layer：
   - Artifact discovery：自動搜尋上游產出
-  - Output contract：寫到 ~/.gstack/projects/{slug}/
+  - Output contract：寫到 ~/.prismstack/projects/{slug}/
   - Workflow position：知道上下游、建議下一步
   - Completion protocol：DONE / DONE_WITH_CONCERNS / BLOCKED / NEEDS_CONTEXT
 
@@ -811,7 +811,7 @@ Step 2 完成不是「所有 skill 檔案都在」。是以下 5 條全過：
 3. Artifact discovery / save 沒斷
    - 隨機抽 3 個 skill，確認：
      - 開頭的 artifact discovery bash block 在空目錄不報錯
-     - 結尾的 save artifact 能寫到 ~/.gstack/projects/{slug}/
+     - 結尾的 save artifact 能寫到 ~/.prismstack/projects/{slug}/
 
 4. install.sh 能在乾淨 repo 裝成功
    - git clone 一個空 repo → 跑 install.sh → 所有 skill 出現在 .claude/skills/
@@ -1400,10 +1400,10 @@ domain gstack 是活的，會隨著使用持續演化。
 - routing skill 生成
 - bin/ 工具 fork
 - test 骨架
-- per-project state 管理（~/.gstack/projects/{slug}/.prismstack/）
+- per-project state 管理（~/.prismstack/projects/{slug}/.prismstack/）
 ```
 
-> **State conventions:** 每個 project 的 prismstack 狀態（check results, build progress, domain config）存放在 `~/.gstack/projects/{slug}/.prismstack/`。詳見 `skills/shared/state-conventions.md`。
+> **State conventions:** 每個 project 的 prismstack 狀態（check results, build progress, domain config）存放在 `~/.prismstack/projects/{slug}/.prismstack/`。詳見 `skills/shared/state-conventions.md`。
 
 ### 用戶參與的部分
 

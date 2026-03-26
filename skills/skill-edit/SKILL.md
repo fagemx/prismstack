@@ -44,7 +44,7 @@ Section 名稱對照（見 `references/editable-sections.md`）：
 ## Phase 0: Target Identification
 
 ### State
-- Reads: `~/.gstack/projects/{slug}/.prismstack/check-results.json` (current score of target skill, for before/after delta)
+- Reads: `~/.prismstack/projects/{slug}/.prismstack/check-results.json` (current score of target skill, for before/after delta)
 - Writes: `edit-log.jsonl` (append: timestamp, skill, section, change summary)
 
 ### 方法論（編輯時參考）

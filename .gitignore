@@ -1,5 +1,5 @@
 node_modules/
 .env
-.gstack/
+.prismstack/
 .claude/skills/
 *.log

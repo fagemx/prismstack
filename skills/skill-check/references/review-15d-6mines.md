@@ -195,7 +195,7 @@
 
 - **0** = 輸出是聊天文字（對話結束後就消失了）
 - **1** = 有 completion summary 或 structured output，但沒有寫到檔案
-- **2** = 輸出寫到持久化位置（`~/.gstack/projects/` 或 project 內）+ structured format + 可被下游 skill 讀取
+- **2** = 輸出寫到持久化位置（`~/.prismstack/projects/` 或 project 內）+ structured format + 可被下游 skill 讀取
 
 **證據要求：** 描述 artifact 的格式和存放位置。2 分必須看到 (1) 明確的寫入路徑，(2) 結構化格式（JSON / Markdown with headers），(3) 下游 skill 有讀取此 artifact 的邏輯。
 

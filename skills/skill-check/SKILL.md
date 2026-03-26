@@ -61,7 +61,7 @@ You are a skill quality inspector. You judge, you don't build. Your job is to fi
 ## Phase 0: Context Discovery
 
 ### State
-- Reads: all skill SKILL.md files + `~/.gstack/projects/{slug}/.prismstack/check-results.json` (prior scores for delta)
+- Reads: all skill SKILL.md files + `~/.prismstack/projects/{slug}/.prismstack/check-results.json` (prior scores for delta)
 - Writes: `check-results.json` (current scores, replaces previous)
 - Reads: `domain-config.json` for context
 
@@ -69,7 +69,7 @@ You are a skill quality inspector. You judge, you don't build. Your job is to fi
 
 ```bash
 _SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+_PROJECTS_DIR="${HOME}/.prismstack/projects/${_SLUG}"
 
 # Search for prior /skill-check results
 ls "${_PROJECTS_DIR}"/skill-check-*.md 2>/dev/null

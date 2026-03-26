@@ -43,7 +43,7 @@ allowed-tools:
 ## Phase 0: Source Intake
 
 ### State
-- Writes: `~/.gstack/projects/{slug}/.prismstack/convert-log.jsonl` (append: timestamp, source type, target placement, skill affected)
+- Writes: `~/.prismstack/projects/{slug}/.prismstack/convert-log.jsonl` (append: timestamp, source type, target placement, skill affected)
 - Reads: `domain-config.json` for context
 
 ### 方法論（轉換時參考）

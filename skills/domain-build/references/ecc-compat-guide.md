@@ -84,7 +84,7 @@ SKILL.md 必須是**可直接讀取的 markdown**，不需要預處理。
 
 生成時直接寫入具體值：
 ```
-✅ ~/.gstack/projects/game-dev/
+✅ ~/.prismstack/projects/game-dev/
 ✅ origin: prismstack-generated
 ```
 
@@ -97,7 +97,7 @@ SKILL.md 必須是**可直接讀取的 markdown**，不需要預處理。
 ```
 
 生成的 skill 必須在**純 Claude Code 環境**下可用。
-唯一的依賴是：`~/.gstack/projects/` 目錄（用於 artifact 存儲，skill 自行建立）。
+唯一的依賴是：`~/.prismstack/projects/` 目錄（用於 artifact 存儲，skill 自行建立）。
 
 ### 3. 不要在 description 中放非觸發資訊
 

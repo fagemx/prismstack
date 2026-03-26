@@ -152,7 +152,7 @@ Prismstack is a process, not a collection of tools. Skills follow the order a do
 
 **Extract → Plan → Build → Check → Fix → Iterate**
 
-Each skill's output feeds the next. `/methodology-extract` distills your expertise into structured methodology. `/domain-plan` uses it to design a skill map. `/domain-build` generates skills. `/skill-check` audits quality. Low scores trigger the fix loop. All outputs are saved to `~/.gstack/projects/` so downstream skills find them automatically — even across sessions.
+Each skill's output feeds the next. `/methodology-extract` distills your expertise into structured methodology. `/domain-plan` uses it to design a skill map. `/domain-build` generates skills. `/skill-check` audits quality. Low scores trigger the fix loop. All outputs are saved to `~/.prismstack/projects/` so downstream skills find them automatically — even across sessions.
 
 | Skill | Your Specialist | What They Do |
 |-------|----------------|--------------|

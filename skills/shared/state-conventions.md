@@ -2,7 +2,7 @@
 
 ## State Directory
 每個 domain project 的 Prismstack 狀態存在：
-`~/.gstack/projects/{slug}/.prismstack/`
+`~/.prismstack/projects/{slug}/.prismstack/`
 
 ## State Files
 | File | Written By | Read By | Purpose |

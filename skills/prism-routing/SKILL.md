@@ -84,7 +84,7 @@ Scan the project for existing Prismstack state. Do not ask the user anything yet
 echo "=== Prismstack Project State Detection ==="
 
 _SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+_PROJECTS_DIR=~/.prismstack/projects/$_SLUG
 _STATE_DIR="$_PROJECTS_DIR/.prismstack"
 mkdir -p "$_STATE_DIR" 2>/dev/null
 

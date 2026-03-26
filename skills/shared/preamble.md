@@ -11,16 +11,16 @@ _BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _USER=$(whoami 2>/dev/null || echo "unknown")
 
 # Shared artifact storage (cross-skill, cross-session)
-mkdir -p ~/.gstack/projects/$_SLUG
-_PROJECTS_DIR=~/.gstack/projects/$_SLUG
+mkdir -p ~/.prismstack/projects/$_SLUG
+_PROJECTS_DIR=~/.prismstack/projects/$_SLUG
 
 # Prismstack state directory
 mkdir -p "$_PROJECTS_DIR/.prismstack"
 _STATE_DIR="$_PROJECTS_DIR/.prismstack"
 
 # Session tracking
-mkdir -p ~/.gstack/sessions
-touch ~/.gstack/sessions/"$PPID"
+mkdir -p ~/.prismstack/sessions
+touch ~/.prismstack/sessions/"$PPID"
 
 # Detect project state
 _HAS_SKILL_MAP=0
@@ -58,9 +58,9 @@ echo "ARTIFACTS: $_ARTIFACT_COUNT"
 - `preferences` → 調整互動風格（STOP 頻率、提問方式）
 - `benchmarks` → 用在 scoring calibration
 
-**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.gstack/projects/{slug}/`) stores all skill outputs. All skills read from this directory on startup. All skills write their output here.
+**Shared artifact directory:** `$_PROJECTS_DIR` (`~/.prismstack/projects/{slug}/`) stores all skill outputs. All skills read from this directory on startup. All skills write their output here.
 
-**State directory:** `$_STATE_DIR` (`~/.gstack/projects/{slug}/.prismstack/`) stores machine-readable state (domain-config.json, skill-map.json, check-results.json, logs).
+**State directory:** `$_STATE_DIR` (`~/.prismstack/projects/{slug}/.prismstack/`) stores machine-readable state (domain-config.json, skill-map.json, check-results.json, logs).
 
 ## AskUserQuestion Format
 

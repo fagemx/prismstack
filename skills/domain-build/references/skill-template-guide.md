@@ -65,7 +65,7 @@ allowed-tools:
 ## Phase 0: Artifact Discovery
 
 搜尋上游 artifact：
-- `~/.gstack/projects/{slug}/{upstream-type}-*.md` — 取最新
+- `~/.prismstack/projects/{slug}/{upstream-type}-*.md` — 取最新
 - 讀取上次 review 紀錄（如果有）
 - STOP: 找不到 artifact → STATUS: BLOCKED
 
@@ -111,7 +111,7 @@ Forcing questions（每次 review 至少問一個）：
 STATUS: DONE
 - 總分: {score}/100
 - P0 issues: {count}
-- 產出: `~/.gstack/projects/{slug}/{type}-review-{datetime}.md`
+- 產出: `~/.prismstack/projects/{slug}/{type}-review-{datetime}.md`
 - 推薦下一步: {downstream skill}
 ```
 
@@ -133,7 +133,7 @@ STATUS: DONE
 
 輸入來源：
 - 檔案路徑（用戶提供）
-- 上游 artifact（自動搜尋 `~/.gstack/projects/{slug}/{type}-*.md`）
+- 上游 artifact（自動搜尋 `~/.prismstack/projects/{slug}/{type}-*.md`）
 - 剪貼簿內容（用戶貼入）
 
 支援格式：{列出所有支援的輸入格式}
@@ -158,7 +158,7 @@ STOP: 無法辨識輸入格式 → 詢問用戶
 ## Output Contract
 
 輸出格式：{描述結構}
-存儲路徑：`~/.gstack/projects/{slug}/{output-type}-{datetime}.md`
+存儲路徑：`~/.prismstack/projects/{slug}/{output-type}-{datetime}.md`
 下游消費者：{哪些 skill 會讀這個}
 
 ## Completion
@@ -230,7 +230,7 @@ STATUS: DONE
 ## Completion
 
 STATUS: DONE
-- 產出: `~/.gstack/projects/{slug}/{type}-{datetime}.md`
+- 產出: `~/.prismstack/projects/{slug}/{type}-{datetime}.md`
 - 品質: {自檢結果}
 - 推薦下一步: {downstream skill}
 ```

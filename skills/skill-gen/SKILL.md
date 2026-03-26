@@ -39,7 +39,7 @@ allowed-tools:
 ## Phase 0: Context Discovery
 
 ### State
-- Reads: `~/.gstack/projects/{slug}/.prismstack/skill-map.json` (what's planned), `domain-config.json` (context)
+- Reads: `~/.prismstack/projects/{slug}/.prismstack/skill-map.json` (what's planned), `domain-config.json` (context)
 - Updates: `skill-map.json` (add new skill entry)
 
 ### 方法論（生成時必讀）
@@ -51,7 +51,7 @@ allowed-tools:
 
 ```bash
 _SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+_PROJECTS_DIR="${HOME}/.prismstack/projects/${_SLUG}"
 
 # Search for existing skill map + routing table
 ls "${_PROJECTS_DIR}"/skill-map-*.md 2>/dev/null

@@ -66,7 +66,7 @@ Entry modes (detect, don't ask):
 
 ```bash
 _SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
-_PROJECTS_DIR="${HOME}/.gstack/projects/${_SLUG}"
+_PROJECTS_DIR="${HOME}/.prismstack/projects/${_SLUG}"
 _STATE_DIR="${_PROJECTS_DIR}/.prismstack"
 _METH_DIR="docs/methodology"
 
