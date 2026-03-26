@@ -9,6 +9,8 @@ description: |
   When you notice the user is at these stages, suggest the appropriate skill:
   - User wants to build a domain skill stack → suggest /domain-plan
   - User says "我做 X 領域", "幫我建一套 skill", "規劃" → suggest /domain-plan
+  - User has existing skills and wants to organize into a stack → suggest /domain-plan (brownfield mode)
+  - User says "整合成 stack", "stack 化", "已經有一些 skill", "我有現有的 skill", "變成 stack 架構" → suggest /domain-plan (brownfield)
   - User has a skill map and wants to build the repo → suggest /domain-build
   - User says "開始搭建", "build", "產出 repo" → suggest /domain-build
   - User wants to check skill quality → suggest /skill-check
@@ -138,11 +140,12 @@ Based on detection results, classify into exactly one state. First match wins:
 
 0. **AUTO_RESUMING** — `HAS_AUTO_RUN=1`: A previous auto mode run was interrupted. Offer to resume.
 1. **ITERATING** — `HAS_CHECK_RESULTS=1`: Stack has been quality-checked, user is in improvement cycle.
-2. **BUILT** — `HAS_DOMAIN_STACK=1` AND `DOMAIN_SKILL_COUNT >= 3`: A domain stack has been built.
-3. **PLANNED** — `HAS_SKILL_MAP=1` OR `HAS_SKILL_MAP_MD=1`: Skill map exists but not built yet.
-4. **CONFIGURED** — `HAS_DOMAIN_CONFIG=1`: Domain identified but no skill map yet.
-5. **RETURNING** — `ARTIFACTS > 0`: Some prior Prismstack work exists but state is unclear.
-6. **BLANK** — Nothing found. First time user.
+2. **BUILT** — `HAS_DOMAIN_STACK=1` AND `DOMAIN_SKILL_COUNT >= 3` AND `HAS_DOMAIN_CONFIG=1`: A Prismstack-managed domain stack.
+3. **BROWNFIELD** — `HAS_DOMAIN_STACK=1` AND `DOMAIN_SKILL_COUNT >= 1` AND `HAS_DOMAIN_CONFIG=0`: Skills exist but not Prismstack-managed. Candidate for brownfield integration.
+4. **PLANNED** — `HAS_SKILL_MAP=1` OR `HAS_SKILL_MAP_MD=1`: Skill map exists but not built yet.
+5. **CONFIGURED** — `HAS_DOMAIN_CONFIG=1`: Domain identified but no skill map yet.
+6. **RETURNING** — `ARTIFACTS > 0`: Some prior Prismstack work exists but state is unclear.
+7. **BLANK** — Nothing found. First time user.
 
 ---
 
@@ -164,17 +167,38 @@ Present ONE AskUserQuestion based on the classified state.
 
 > [Re-ground] 正在對 {project} 做 Prismstack 導航。沒有找到任何 domain stack 相關的 artifact。
 >
-> [Simplify] 你看起來是第一次用 Prismstack。Prismstack 幫你把 gstack 的方法論搬到任何工作領域。
+> [Simplify] 你看起來是第一次用 Prismstack。Prismstack 幫你把你的工作方法論變成可管理的 AI skill 系統。
 >
 > 你想怎麼建？
 > A) **互動模式** — 我帶你一步一步走，每步確認
 >    適合：你有特定需求、有材料想整合、想參與決策
 > B) **自動模式** — 告訴我領域，我自己跑完 plan → build → check → fix
 >    適合：先出一版能跑的，之後再調
-> C) 我有現成的材料想轉成 skill → /source-convert
-> D) 我只是看看 Prismstack 能做什麼 → 介紹 10 個 skill
+> C) **整合現有** — 我已經有一些 skill / 自動化腳本，想整合成 stack → /domain-plan (brownfield)
+>    適合：已有散落的 skill、SOP、工具，要系統化
+> D) 我有現成的材料想轉成 skill → /source-convert
+> E) 我只是看看 Prismstack 能做什麼 → 介紹 11 個 skill
 >
-> RECOMMENDATION: 第一次建議 A。了解流程後用 B 更快。
+> RECOMMENDATION: 有現有 skill 選 C。從零開始第一次建議 A。了解流程後用 B 更快。
+
+### BROWNFIELD
+
+> [Re-ground] 找到 {N} 個現有 skill，但這不是 Prismstack 管理的 stack（沒有 domain-config）。
+>
+> 現有 skill：{列出找到的 skill 名稱}
+>
+> 這些 skill 可以整合成一個可管理的 stack。Prismstack 會：
+> 1. 盤點現有 skill 的完整度
+> 2. 推導完整的工作生命週期
+> 3. 找出缺口（缺什麼 skill、缺什麼機制）
+> 4. 改造 + 補齊 → 完整 stack
+>
+> A) **開始整合** → /domain-plan (brownfield mode)
+> B) 我不想整合，從零開始 → /domain-plan (greenfield)
+> C) 先看看現有 skill 品質如何 → /skill-check review --all
+> D) 其他需求
+>
+> RECOMMENDATION: Choose A — 保留現有成果，補齊缺口。
 
 ### CONFIGURED
 

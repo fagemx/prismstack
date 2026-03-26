@@ -195,3 +195,163 @@ Skill Map Quality Score（5 維度，每項 0-2 分）：
 | 先做完所有 skill 再測 | 不知道哪些有用 | Wave 制：先做 5 個核心 |
 | 把知識做成 skill | 「百科全書」不是 skill | Skill 是工作姿態，知識放 references/ |
 | 忽略入口 skill | 用戶素材進不了 pipeline | 入口 skill 是 gateway |
+
+---
+
+## Brownfield Mode（現有 Skill 整合）
+
+> 場景：用戶已有散落的 skill、自動化腳本、或半成品 workflow，要整合成可管理的 stack。
+> 與 Greenfield 的差異：不是從零推導，是從現有出發、補缺口、建連接。
+
+### 偵測信號
+
+以下任一成立 → 進入 brownfield mode：
+- 目標目錄有 `skills/*/SKILL.md`（掃描到現有 skill）
+- 用戶說「我有現有的 skill」「整合成 stack」「stack 化」「已經有一些 skill」
+- 用戶指向一個已有 skill 的 repo/目錄
+
+### BF Step 1: Skill 盤點（Inventory）
+
+掃描目標目錄，對每個找到的 SKILL.md：
+
+1. **讀取完整內容**
+2. **分類**（Review / Bridge / Production / Control / Runtime Helper）
+3. **完整度評估**（6 項檢查）：
+
+| 檢查項 | 有 | 缺 |
+|--------|----|----|
+| Role lock（角色鎖定） | ✅ | 缺 role lock |
+| Scoring / 品質判斷 | ✅ | 缺 scoring |
+| Stop gates | ✅ | 缺 stop gate |
+| Artifact flow（上下游） | ✅ | 缺 artifact flow |
+| Gotchas / AI 盲點 | ✅ | 缺 gotchas |
+| Anti-sycophancy | ✅ | 缺 anti-sycophancy |
+
+4. **辨識隱含關係**：從 skill 內容推斷它的上游輸入和下游產出，即使沒有明確寫出 artifact flow
+5. **掃描非 skill 資產**：自動化腳本（src/）、config 檔、工具程式碼 — 這些是潛在的 Runtime Helper 或 tool-builder 目標
+
+產出：**Skill Inventory Table**
+
+```
+| # | Skill | 類型 | 完整度 | 隱含上游 | 隱含下游 | 適配判定 |
+|---|-------|------|--------|---------|---------|---------|
+| 1 | script-breakdown | Production | 4/6 | 腳本文字 | 分鏡文件 | 🔧 改造 |
+| 2 | performance-direction | Production | 3/6 | 分鏡文件 | 帶表演的分鏡 | 🔧 改造 |
+| 3 | explore-site | Runtime Helper | 2/6 | 網站 URL | plugin.js | 🔧 改造 |
+| ... |
+```
+
+### BF Step 2: 適配分類
+
+每個現有 skill 分三類：
+
+| 分類 | 判斷標準 | 處理方式 |
+|------|---------|---------|
+| **✅ 直接用** | 完整度 5-6/6，有明確 artifact flow | 只加 wiring（discovery/save 路徑） |
+| **🔧 改造** | 完整度 2-4/6，核心邏輯好但缺機制 | 保留核心邏輯，補缺少的機制 |
+| **❌ 重寫** | 完整度 0-1/6，或職責不清、跟其他 skill 嚴重重疊 | 重新設計，但參考原有內容 |
+
+**改造的具體意思**：不是重寫 skill，是在現有 SKILL.md 上追加：
+- 缺 artifact flow → 加 Phase 0 discovery + 結尾 save
+- 缺 scoring → 加 scoring formula
+- 缺 stop gate → 在關鍵判斷點加 STOP
+- 缺 gotchas → 從使用經驗或領域知識補
+- 缺 anti-sycophancy → 加 forbidden phrases + forcing questions
+
+### BF Step 3: 雙向生命週期推導
+
+**Bottom-up（從現有 skill 反推）：**
+1. 把盤點的 skill 按隱含的工作順序排列
+2. 每個 skill 對應一個生命週期階段
+3. 產出「現有覆蓋的生命週期」
+
+**Top-down（從領域推導應有的）：**
+1. 使用 Step 1 的標準方法推導完整生命週期
+2. 對標 10 個通用姿態
+
+**比對：**
+```
+應有：素材輸入 → 腳本拆解 → 表演設計 → 生成指令 → 批次生產 → 品質審查 → 迭代
+現有：           腳本拆解 → 表演設計 → 生成指令
+缺口：素材輸入 ←                              → 批次生產 → 品質審查 → 迭代
+```
+
+### BF Step 4: 差異分析
+
+產出三張清單：
+
+**1. 現有 skill 處理清單**
+```
+| Skill | 適配 | 需要補的機制 |
+|-------|------|-------------|
+| /script-breakdown | 🔧 | artifact flow, anti-sycophancy |
+| /performance-direction | 🔧 | artifact flow, scoring |
+```
+
+**2. 缺口 skill 清單**
+```
+| Skill | 類型 | 為什麼需要 |
+|-------|------|-----------|
+| /extract-scripts | Bridge | Excel → 腳本文字，現有 skill 無法處理 |
+| /video-produce | Control | triage entry，用戶不知道從哪開始 |
+| /generate | Runtime Helper | 包裝自動化引擎 |
+```
+
+**3. 非 skill 資產處理建議**
+```
+| 資產 | 路徑 | 建議 |
+|------|------|------|
+| 自動化引擎 | src/ | 用 /tool-builder 包裝成 /generate skill |
+| Excel 處理 | skills/xlsx/ | 當作通用工具，/extract-scripts 調用它 |
+| 站點探索 | skills/explore-site/ | 保留為獨立工具 skill |
+```
+
+### BF Step 5: 回到標準流程
+
+差異分析完成後，合併成完整 skill map（現有 + 缺口），然後回到標準的：
+- Step 4: 獨立性測試（全部 skill，包含現有的）
+- Step 5: Merge vs Split
+- Step 6: 分類
+- Step 7: 數量校準
+- Step 8: Artifact Flow 圖
+
+**注意**：標準流程中，每個 skill 多帶一個 `source` 標記：
+
+```
+| # | Skill | 類型 | Source |
+|---|-------|------|--------|
+| 1 | /extract-scripts | Bridge | 🆕 新增 |
+| 2 | /script-breakdown | Production | 🔧 改造 |
+| 3 | /shotgen | Production | 🔧 改造 |
+| 4 | /generate | Runtime Helper | 🆕 新增（tool-builder） |
+```
+
+這個 `source` 標記會傳給 /domain-build，決定每個 skill 的建置方式。
+
+---
+
+## Brownfield 品質門檻
+
+在標準的 5 維度品質門檻之外，brownfield mode 額外檢查：
+
+| 維度 | 0 分 | 1 分 | 2 分 |
+|------|------|------|------|
+| **Inventory Accuracy** | 現有 skill 分類有誤 | 大部分正確 | 全部正確 |
+| **Adaptation Scope** | 改造範圍不清 | 列出但不完整 | 每個 skill 有明確的改造清單 |
+
+Brownfield 總分 = 標準 5 維度（10 分）+ 額外 2 維度（4 分）= 14 分滿分。
+- **12-14** → 可搭建
+- **8-11** → 需調整
+- **< 8** → 重新盤點
+
+---
+
+## Brownfield 反模式
+
+| 反模式 | 問題 | 修正 |
+|--------|------|------|
+| 全部重寫 | 浪費現有成果，用戶不認得自己的 skill | 優先改造，只有完整度 0-1 才重寫 |
+| 只加 wiring 不補機制 | 串起來了但品質沒提升 | 改造必須補齊 scoring + stop gate |
+| 忽略非 skill 資產 | 自動化腳本、工具沒整合進 stack | 掃描 src/、scripts/、config/，評估是否需要包裝 |
+| 強制統一風格 | 現有 skill 的寫法被完全覆蓋 | 保留核心邏輯和術語，只補缺少的機制 |
+| 照搬現有順序 | 現有順序可能有缺口 | 必須做雙向推導，不能只 bottom-up |

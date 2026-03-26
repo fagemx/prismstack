@@ -57,6 +57,11 @@ allowed-tools:
 
 ## Phase 0: Domain Discovery
 
+### 方法論（先讀再做）
+- Read `{PRISM_DIR}/shared/methodology/skill-map-methodology.md` — skill map 推導的完整方法（生命週期、缺口法、獨立性測試、分類、數量校準、brownfield mode）
+
+{PRISM_DIR} = 找到的 Prismstack 安裝路徑（~/.claude/skills/prismstack 或 .claude/skills/prismstack）
+
 ### 0a. 先前執行偵測
 
 ```bash
@@ -73,14 +78,36 @@ done
 
 如果用戶選 A → 讀取該 skill map，跳到 Phase 3（修改模式）。
 
-### State
-- Writes: `~/.gstack/projects/{slug}/.prismstack/domain-config.json` (domain name, lifecycle) after Phase 1
-- Writes: `~/.gstack/projects/{slug}/.prismstack/skill-map.json` (structured map) after Phase 4
-- Reads: `domain-config.json` (if exists, pre-fill domain info — don't re-ask)
+### 0b. Brownfield 偵測
 
-### 0b. 領域問題
+```bash
+# 如果用戶指定了目標目錄，掃描現有 skill
+_TARGET_DIR="${1:-.}"  # 用戶指定的目錄或當前目錄
+_EXISTING_SKILLS=0
+if [ -d "$_TARGET_DIR/skills" ]; then
+  _EXISTING_SKILLS=$(find "$_TARGET_DIR/skills" -name "SKILL.md" -maxdepth 2 2>/dev/null | wc -l | tr -d ' ')
+fi
+# 也掃描自動化腳本
+_HAS_SRC=0
+[ -d "$_TARGET_DIR/src" ] && _HAS_SRC=1
+_HAS_SCRIPTS=0
+[ -d "$_TARGET_DIR/scripts" ] && _HAS_SCRIPTS=1
 
-問用戶一個問題：
+echo "EXISTING_SKILLS: $_EXISTING_SKILLS"
+echo "HAS_SRC: $_HAS_SRC"
+echo "HAS_SCRIPTS: $_HAS_SCRIPTS"
+```
+
+**Brownfield 偵測信號**（任一成立）：
+- `_EXISTING_SKILLS > 0`
+- 用戶說「我有現有的 skill」「整合成 stack」「stack 化」「已經有一些 skill」
+- 用戶指向一個已有 skill 的 repo/目錄
+
+如果偵測到 brownfield → 進入 **Brownfield Path**（見下方），跳過 0c 的領域問題。
+
+### 0c. 領域問題（Greenfield only）
+
+只有在沒偵測到 brownfield 時才問：
 
 > 你的領域是什麼？簡單說就好，例如「遊戲開發」、「影劇製作」、「行銷」。
 > 如果你有更多細節（子領域、特殊工作流、團隊規模），一起說。
@@ -90,10 +117,10 @@ done
 - 用戶回答簡短 → 用你的領域知識補齊，繼續。
 - 用戶回答詳細 → 全部用上。
 
-### 方法論
-- Read `{PRISM_DIR}/shared/methodology/skill-map-methodology.md` — skill map 推導的完整方法（生命週期、缺口法、獨立性測試、分類、數量校準）
-
-{PRISM_DIR} = 找到的 Prismstack 安裝路徑（~/.claude/skills/prismstack 或 .claude/skills/prismstack）
+### State
+- Writes: `~/.gstack/projects/{slug}/.prismstack/domain-config.json` (domain name, lifecycle) after Phase 1
+- Writes: `~/.gstack/projects/{slug}/.prismstack/skill-map.json` (structured map) after Phase 4
+- Reads: `domain-config.json` (if exists, pre-fill domain info — don't re-ask)
 
 **⛔ STOP — 等用戶回答後才進 Phase 1。**
 
@@ -231,6 +258,90 @@ STATUS: DONE
 
 ---
 
+## Brownfield Path（現有 Skill 整合路徑）
+
+當 Phase 0b 偵測到 brownfield 時，走這條路徑。完整方法論見 `skill-map-methodology.md` 的 Brownfield Mode 章節。
+
+### BF Phase 1: Skill 盤點
+
+讀取目標目錄所有 `skills/*/SKILL.md`，對每個 skill：
+1. 讀完整內容
+2. 分類（Review / Bridge / Production / Control / Runtime Helper）
+3. 6 項完整度檢查（role lock / scoring / stop gate / artifact flow / gotchas / anti-sycophancy）
+4. 推斷隱含的上下游
+5. 掃描非 skill 資產（src/、scripts/、config/）
+
+呈現 **Skill Inventory Table** 給用戶：
+
+```
+找到 N 個現有 skill + M 個非 skill 資產：
+
+| # | Skill | 類型 | 完整度 | 隱含上游 | 隱含下游 | 適配判定 |
+|---|-------|------|--------|---------|---------|---------|
+| 1 | /script-breakdown | Production | 4/6 | 腳本文字 | 分鏡文件 | 🔧 改造 |
+| 2 | ... |
+
+非 skill 資產：
+| 資產 | 路徑 | 性質 | 建議 |
+|------|------|------|------|
+| 自動化引擎 | src/ | Node.js + Playwright | 評估是否包裝成 skill |
+```
+
+同時問用戶領域：
+
+> 基於現有 skill，你的領域看起來是「{推斷的領域}」。
+> 對嗎？還是你要補充更多？
+
+**⛔ STOP — 用戶確認盤點結果 + 領域後才繼續。**
+
+### BF Phase 2: 雙向推導 + 差異分析
+
+**Bottom-up**：從現有 skill 排列出目前覆蓋的工作階段。
+**Top-down**：從領域推導應有的完整生命週期（同 Greenfield Phase 1）。
+
+比對呈現：
+
+```
+應有生命週期：[stage1] → [stage2] → ... → [stageN]
+現有覆蓋：           [stage2] → [stage3] → [stage4]
+缺口：      [stage1] ←                              → [stage5] → ... → [stageN]
+```
+
+產出三張清單（見 methodology 的 BF Step 4）：
+1. 現有 skill 處理清單（每個的適配判定 + 需補機制）
+2. 缺口 skill 清單（每個的類型 + 為什麼需要）
+3. 非 skill 資產處理建議
+
+**⛔ STOP — 用戶確認差異分析後才繼續。**
+
+### BF Phase 3: 合併為完整 Skill Map
+
+把現有 skill（帶適配標記）+ 缺口 skill 合併成一份 skill map。
+
+對每個 skill 跑標準流程：
+- 獨立性測試（Step 4）
+- Merge vs Split（Step 5）
+- 5 類分類（Step 6）
+- 數量校準（Step 7）
+- Artifact Flow 圖（Step 8）
+
+**關鍵差異**：skill map 中每個 skill 帶 `source` 標記：
+
+| Source | 意義 | domain-build 處理 |
+|--------|------|-------------------|
+| 🆕 新增 | 現有完全沒有 | 正常生成 |
+| 🔧 改造 | 現有但需補機制 | 讀現有 SKILL.md，追加缺少的部分 |
+| ✅ 直接用 | 現有且完整 | 只加 artifact flow wiring |
+| 🔨 包裝 | 非 skill 資產 | 用 tool-builder 或手動包裝成 skill |
+
+呈現完整 skill map + artifact flow 給用戶。評分（使用標準 5 維度 + brownfield 額外 2 維度）。
+
+**⛔ STOP — 用戶確認後進 Phase 4（標準的 User Confirmation）。**
+
+之後流程回到標準的 Phase 4 → Phase 5。
+
+---
+
 ## Anti-Sycophancy
 
 禁止說：
@@ -253,6 +364,10 @@ STATUS: DONE
 - **Claude 容易產出太多 skill（>25）** — 合併太薄的。用 merge 啟發法。
 - **Claude 容易前深後淺** — 主動檢查 bridge layer。前期 skill 數量多不代表品質好，後期 skill 少通常代表遺漏。
 - **Claude 容易幫用戶說 yes** — Phase 4 不要替用戶選 A。等用戶自己說。
+- **Brownfield: Claude 傾向全部重寫** — 看到品質不高的現有 skill 就想重寫。改造優先，除非完整度 0-1/6。
+- **Brownfield: Claude 忽略非 skill 資產** — src/ 裡的自動化腳本、config 檔是重要資產，必須掃描並評估。
+- **Brownfield: Claude 只做 bottom-up** — 只從現有 skill 推導，忘了 top-down 補全。必須雙向推導。
+- **Brownfield: Claude 改造時破壞原有邏輯** — 改造是「追加機制」不是「重寫邏輯」。用戶的術語、流程、分Phase 方式要保留。
 
 ---
 
