@@ -221,47 +221,76 @@ Prismstack's engineering methodology is derived from [gstack](https://github.com
 
 ---
 
-## File Structure
+## How It Works Under the Hood
+
+### What's inside a skill
+
+Each skill Prismstack generates isn't a prompt — it's a complete work node:
 
 ```
-prismstack/
-├── README.md                              ← Chinese version
-├── README.en.md                           ← This file
-├── CLAUDE.md                              ← Developer handoff
-├── VERSION                                ← 0.5.0
-├── CHANGELOG.md
-├── LICENSE                                ← MIT
-├── bin/
-│   ├── install.sh                         ← Unix installer (--project / --global)
-│   ├── install.ps1                        ← Windows installer
-│   └── prism-slug.sh                      ← Repo slug utility
-├── skills/
-│   ├── prism-routing/SKILL.md             ← Triage + auto mode orchestrator
-│   ├── methodology-extract/               ← + 3 reference files (collision-based methodology distillation)
-│   ├── domain-plan/                       ← + 4 reference files
-│   ├── domain-build/                      ← + 6 reference files + validation script
-│   ├── skill-check/                       ← + 3 reference files (15D quality rubric)
-│   ├── skill-gen/                         ← + 2 reference files
-│   ├── skill-edit/                        ← + 1 reference file
-│   ├── source-convert/                    ← + 2 reference files
-│   ├── tool-builder/                      ← + 2 reference files
-│   ├── domain-upgrade/                    ← + 1 reference file
-│   ├── workflow-edit/                     ← + 2 reference files
-│   └── shared/
-│       ├── methodology/                   ← 5 digested methodology files
-│       ├── preamble.md                    ← Shared session setup
-│       ├── completion-protocol.md         ← STATUS definitions + context extraction
-│       ├── ask-format.md                  ← 4-segment question format
-│       ├── artifact-conventions.md        ← Naming + storage rules
-│       ├── anti-sycophancy.md             ← 3-layer system
-│       ├── stop-gates.md                  ← Placement rules
-│       └── state-conventions.md           ← Per-project state files
-├── test/
-│   └── install-test.sh                    ← 72 checks
-└── docs/
-    ├── prismstack-v2-spec.md              ← Full spec
-    ├── design/dual-mode-design.md         ← Auto mode architecture
-    └── plans/                             ← Implementation plans
+Your /ad-check skill (creative QA) contains:
+
+Role lock       →  "You are an ad quality inspector, not a helper"
+Trigger         →  When to use, when NOT to use, adjacent skills
+Scoring         →  Composition 25% / Brand 20% / CTA 20% / Color 15% / ...
+Stop gates      →  Pauses after each dimension for your confirmation
+Anti-sycophancy →  Forbidden: "looks good overall" — must score per dimension with evidence
+AI blind spots  →  "Claude tends to ignore text obscured by characters" + redirect
+Forcing Qs      →  "Can you still read this CTA at mobile screen size?"
+Fix loop        →  Issue found → auto-classify → fix what's fixable → re-score → delta
+Upstream/down   →  Auto-finds /ad-layout output, recommends /compliance-review next
+```
+
+### How skills chain together
+
+```
+/brief-intake produces brief-001.md
+    ↓ auto-saved to shared directory
+/creative-direction auto-discovers the brief on startup
+    ↓ review complete, produces direction-001.md
+/production-plan auto-discovers the review
+    ↓ splits into tasks, produces task-batch-001.md
+/ad-layout auto-discovers the task list
+    ↓ ...chains all the way to launch
+```
+
+You never need to tell AI "go read that file." Each skill knows where to find upstream output.
+
+### How quality is guaranteed
+
+```
+After generation, auto-review (15 dimensions, 0-2 points each):
+
+Entry layer:    Clear trigger? Role locked? Mode routing?
+Flow layer:     Progress tracked? Stop gates? Interrupt recovery?
+Knowledge layer: AI blind spots? Scoring formula? Benchmarks?
+Structure layer: Files split well? Helper scripts? State memory?
+System layer:   Finds upstream? Output format correct? Knows next step?
+
+Below threshold → auto fix loop:
+  1. Record baseline score
+  2. Classify issues (auto-fix / ask user / needs redesign)
+  3. Auto-fix what's fixable
+  4. Re-score
+  5. Report delta (before 17 → after 23)
+```
+
+### How your knowledge enters the skill
+
+```
+You say: "Ad review should check composition, brand consistency, CTA — the rest doesn't matter"
+
+Prismstack hears:
+  → 3 scoring dimensions (composition, brand, CTA)
+  → Weight hint ("the rest doesn't matter" = these three are high-weight)
+  → Auto-generates: Composition 25% / Brand 20% / CTA 20% / Other 35%
+  → Asks you to confirm (not asking what dimensions — showing its interpretation for correction)
+
+One sentence → Draft quality (12-15/30)
+Expert notes → Usable quality (18-22/30)
+Full spec → Production quality (24-28/30)
+
+Input quality = output quality. Won't waste your expertise, won't pretend one sentence produces perfection.
 ```
 
 ---

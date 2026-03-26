@@ -221,46 +221,76 @@ Prismstack 的工程方法論源自 [gstack](https://github.com/garrytan/gstack)
 
 ---
 
-## 檔案結構
+## 怎麼運作的
+
+### 一個 skill 裡面有什麼
+
+每個 Prismstack 產出的 skill 不是一段 prompt，是一個完整的工作節點：
 
 ```
-prismstack/
-├── README.md                              ← 本文件
-├── CLAUDE.md                              ← 開發者指引
-├── VERSION                                ← 0.5.0
-├── CHANGELOG.md
-├── LICENSE                                ← MIT
-├── bin/
-│   ├── install.sh                         ← Unix 安裝（--project / --global）
-│   ├── install.ps1                        ← Windows 安裝
-│   └── prism-slug.sh                      ← Repo slug 工具
-├── skills/
-│   ├── prism-routing/SKILL.md             ← Triage + 自動模式 orchestrator
-│   ├── methodology-extract/               ← + 3 參考文件（碰撞式方法論蒸餾）
-│   ├── domain-plan/                       ← + 4 參考文件
-│   ├── domain-build/                      ← + 6 參考文件 + 驗收腳本
-│   ├── skill-check/                       ← + 3 參考文件（15 維度品質 rubric）
-│   ├── skill-gen/                         ← + 2 參考文件
-│   ├── skill-edit/                        ← + 1 參考文件
-│   ├── source-convert/                    ← + 2 參考文件
-│   ├── tool-builder/                      ← + 2 參考文件
-│   ├── domain-upgrade/                    ← + 1 參考文件
-│   ├── workflow-edit/                     ← + 2 參考文件
-│   └── shared/
-│       ├── methodology/                   ← 5 份消化方法論
-│       ├── preamble.md                    ← 共享 session 設定
-│       ├── completion-protocol.md         ← 完成狀態定義 + 脈絡萃取
-│       ├── ask-format.md                  ← 提問四段格式
-│       ├── artifact-conventions.md        ← 命名與存儲規則
-│       ├── anti-sycophancy.md             ← 三層反敷衍系統
-│       ├── stop-gates.md                  ← 停頓點規則
-│       └── state-conventions.md           ← 專案狀態文件
-├── test/
-│   └── install-test.sh                    ← 72 項檢查
-└── docs/
-    ├── prismstack-v2-spec.md              ← 完整規格書
-    ├── design/dual-mode-design.md         ← 自動模式架構
-    └── plans/                             ← 實作計畫
+你的 /ad-check skill（素材品檢）裡面有：
+
+角色鎖定     →  「你是廣告品檢員，不是 helper」
+觸發條件     →  什麼時候用、什麼時候不用、跟哪些 skill 相鄰
+評分公式     →  構圖 25% / 品牌一致 20% / CTA 20% / 色彩 15% / ...
+停頓點       →  每個審查維度結束後停下來問你
+反敷衍機制   →  禁止說「整體不錯」，必須逐維度打分附證據
+AI 盲點      →  「Claude 容易忽略文字被角色遮擋」+ 怎麼防止
+逼問         →  「這個 CTA 縮到手機螢幕大小還看得到嗎？」
+修復迴圈     →  發現問題 → 自動分類 → 能修的直接修 → 重新打分 → 對比
+上下游       →  自動找到 /ad-layout 的產出，做完推薦 /compliance-review
+```
+
+### Skill 之間怎麼串接
+
+```
+/brief-intake 產出 brief-001.md
+    ↓ 自動存到共享目錄
+/creative-direction 啟動時自動找到這份 brief
+    ↓ 審查完產出 direction-001.md
+/production-plan 啟動時自動找到審查結果
+    ↓ 拆成任務，產出 task-batch-001.md
+/ad-layout 啟動時自動找到任務清單
+    ↓ ...一路串到投放
+```
+
+你不需要手動告訴 AI「去讀那個檔案」。每個 skill 知道去哪裡找上游的產出。
+
+### 品質怎麼保證
+
+```
+生成 skill 後自動審查（15 個維度，0-2 分）：
+
+入口層：觸發描述清楚嗎？角色鎖定了嗎？入口路由有嗎？
+流程層：進度有追蹤嗎？有停頓點嗎？中斷能恢復嗎？
+知識層：有 AI 盲點嗎？有評分公式嗎？有參考基準嗎？
+結構層：檔案拆分合理嗎？有輔助腳本嗎？有狀態記憶嗎？
+系統層：能找到上游嗎？產出格式對嗎？知道下一步是什麼嗎？
+
+低於門檻 → 自動進修復迴圈：
+  1. 記錄修復前分數
+  2. 分類問題（能自動修 / 需要問你 / 需要重新設計）
+  3. 自動修能修的
+  4. 重新打分
+  5. 報告差異（修復前 17 分 → 修復後 23 分）
+```
+
+### 你的知識怎麼進入 skill
+
+```
+你說：「審素材要看構圖、品牌一致、CTA，其他不重要」
+
+Prismstack 聽到的：
+  → 3 個評分維度（構圖、品牌一致、CTA）
+  → 權重暗示（「其他不重要」= 這三個佔高權重）
+  → 自動生成：構圖 25% / 品牌一致 20% / CTA 20% / 其他 35%
+  → 問你確認（不是問你要什麼維度，是給你解讀讓你修正）
+
+你給一句話 → 產出 Draft 品質（12-15/30）
+你給專業筆記 → 產出 Usable 品質（18-22/30）
+你給完整 spec → 產出 Production 品質（24-28/30）
+
+輸入品質 = 輸出品質。不浪費你的專業，也不假裝一句話能產出完美結果。
 ```
 
 ---
