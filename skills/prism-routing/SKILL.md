@@ -21,6 +21,8 @@ description: |
   - User says "這篇文章很好", "這個 repo 想用", "轉換" → suggest /source-convert
   - User wants to automate a website, API, or tool → suggest /tool-builder
   - User says "自動化這個網站", "做一個工具", "API 串接" → suggest /tool-builder
+  - User has materials and wants to extract methodology → suggest /methodology-extract
+  - User says "這個可能有用", "去看看", "幫我整理方法論", "我覺得這跟...有關" → suggest /methodology-extract
   - User wants to upgrade or iterate on existing stack → suggest /domain-upgrade
   - User says "升級", "測試回饋", "迭代", "這裡不好用" → suggest /domain-upgrade
   - User wants to change skill connections or workflow → suggest /workflow-edit
@@ -202,8 +204,9 @@ Present ONE AskUserQuestion based on the classified state.
 > B) 加新 skill → /skill-gen
 > C) 改現有 skill → /skill-edit
 > D) 轉換外部材料進來 → /source-convert
-> E) 調整 workflow → /workflow-edit
-> F) 用真實案例測試
+> E) 從材料/經驗提取方法論 → /methodology-extract
+> F) 調整 workflow → /workflow-edit
+> G) 用真實案例測試
 >
 > RECOMMENDATION: Choose A — 搭完第一件事就是檢查品質。
 
@@ -437,6 +440,10 @@ elif current_state == "DONE_WITH_CONCERNS":
 ## Workflow Pipeline
 
 ```
+Methodology Phase:
+  /methodology-extract → /domain-plan
+  /methodology-extract → /domain-build
+
 Plan Phase:
   /domain-plan → /domain-build
 
