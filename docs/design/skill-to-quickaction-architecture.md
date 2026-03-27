@@ -439,7 +439,7 @@ Phase E: 混合模式
 
 ---
 
-## 待測試（更新 2026-03-27）
+## 待測試（更新 2026-03-27 final）
 
 1. [x] ~~Claude Code CLI spawn 能不能穩定跑 skill pipeline？~~ ✅ 已驗證
 2. [x] ~~STOP gate 的 AskUserQuestion 能不能攔截？~~ ✅ 已驗證，結構完整
@@ -447,11 +447,13 @@ Phase E: 混合模式
 4. [x] ~~多 skill pipeline 編排~~ ✅ ad-pipeline 跑通（2 支圖片，8 張成品）
 5. [x] ~~Express endpoint 包裝 + SSE 推送~~ ✅ src/server/，stop_gate 事件完整
 6. [x] ~~STOP gate 可靠觸發~~ ✅ `**STOP.**` gstack 語法 + ToolSearch 自動找到工具
-7. [ ] Quick Action 卡片觸發 agent pipeline（接 conversapix-edit 前端）
-8. [ ] 批量模式和並行執行
-9. [ ] TS / 代理混合模式切換
-10. [ ] 影片 pipeline 端到端測試
-11. ~~[ ] Claude API + SKILL.md 壓縮成 system prompt？~~ → 不需要，直接用 CLI 訂閱制
+7. [x] ~~pipeline-gateway 獨立服務~~ ✅ Bun + bun:sqlite，5/5 測試通過
+8. [x] ~~Quick Action 卡片觸發 agent pipeline~~ ✅ conversapix-edit 已接入 PipelineGatewayPanel
+9. [ ] 端到端測試（conversapix-edit UI → gateway → claude → 即夢 → 成品回 UI）
+10. [ ] 批量模式和並行執行
+11. [ ] TS / 代理混合模式切換
+12. [ ] 影片 pipeline 端到端測試
+13. ~~[ ] Claude API + SKILL.md 壓縮成 system prompt？~~ → 不需要，直接用 CLI 訂閱制
 
 ---
 
