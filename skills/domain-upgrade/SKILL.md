@@ -106,6 +106,9 @@ Route to the matching mode below.
 
 ### Step 1 — Collect
 
+讀取 `shared/methodology/functional-test-guide.md` —
+用真實任務測試 skill 效果的方法（結構 vs 功能的差異、測試迴圈、記錄格式）。
+
 Ask the user:
 - 什麼 worked？（繼續保持的）
 - 什麼 didn't work？（需要修的）

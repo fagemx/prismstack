@@ -163,3 +163,42 @@
 4. 將 pattern 轉成 skill 的 phases 和 gotchas
 
 **常見陷阱：** Git history 噪音多 — 要過濾出有意義的 pattern，不是統計 commit frequency。
+
+### External Codebase / SDK
+
+**識別信號：** 用戶指向一個外部工具的 source code、SDK repo、或 CLI codebase。
+
+**轉換步驟：**
+1. Clone 或讀取 codebase
+2. 識別：公開 API 表面、CLI 指令、設定選項
+3. 抽取供 skill 使用的部分：
+   - 可用操作 → skill 的 phases 或 mode routing 選項
+   - 設定選項 → skill 的 config 模式
+   - 錯誤碼/訊息 → 錯誤分類用的 gotchas
+   - 未記載行為（source vs docs 差異）→ workaround 文件
+4. 產出：`references/{tool}-integration-guide.md`
+5. 定位：通常是 Level 5（參考資產）或 Level 3（判斷修補）
+
+**常見陷阱：** Codebase 通常很大 — 聚焦在公開 API 和錯誤處理，不深入內部實作。
+
+### API Documentation
+
+**識別信號：** 用戶提供 API docs URL、Swagger/OpenAPI spec、或 SDK readme。
+
+**轉換步驟：**
+1. 完整閱讀 API 文件
+2. 抽取供 skill 使用的部分：
+   - Endpoints → 可用操作
+   - Auth 方式 → 設定指引
+   - Rate limits → 並行約束
+   - Error responses → 錯誤分類
+   - Webhooks/callbacks → 非同步處理模式
+3. 產出：`references/{api}-quickstart.md`，包含：
+   - Auth 設定（逐步）
+   - 核心操作（含已測試範例）
+   - 已知限制
+   - 錯誤處理指引
+4. 定位：通常是 Level 5（參考資產），放在 `shared/references/`
+
+**常見陷阱：** API 文件經常不完整或過時。從文件抽取後，
+務必對照實際 API 行為驗證（標記未驗證項目）。

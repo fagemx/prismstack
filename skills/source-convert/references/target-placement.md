@@ -138,3 +138,15 @@ D. 跳過，不轉換
 
 **核心原則：** 不確定時，選較小的 level。Level 3 比 Level 1 安全。
 過度生成 skill 比不夠生成更危險 — 多一個爛 skill 比少一條 gotcha 更糟。
+
+### Level 5 特例：共享知識庫（shared/references/）
+
+如果來源是 external codebase 或 API documentation，且**多個 skill 都需要引用**：
+- 建立檔案在 `skills/shared/references/` 而不是單一 skill 的 `references/`
+- 命名：`{tool-or-api}-{content-type}.md`
+- 在所有引用此 reference 的 SKILL.md 中加上：
+  `讀取 shared/references/{filename} — {tool} 整合細節`
+- 更新 shared/ 目錄的索引（如果有的話）
+
+**判斷標準：** 如果只有一個 skill 需要 → 放該 skill 的 `references/`。
+如果兩個以上 skill 需要 → 放 `shared/references/`。

@@ -82,6 +82,11 @@
 - 1 = 有 bash code blocks 但都是 inline
 - 2 = 有 scripts/ 目錄或 bundled helper
 
+**腳本層額外條件：** 如果 skill 涉及批次處理、外部 CLI、或 poll-wait 模式，
+scripts/ 目錄必須包含獨立腳本（不是 inline bash）。
+參考 skill-craft-guide.md How-To 11 的判定標準。
+未達此條件者，D11 最高給 1 分。
+
 **D12 Config / Memory**
 - 0 = 沒有
 - 1 = 有 review log 但沒有 per-project config

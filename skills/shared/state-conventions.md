@@ -127,3 +127,88 @@
   }
 }
 ```
+
+---
+
+## 批次佇列約定（Batch Queue Conventions）
+
+### 1. queue.json schema — 通用批次任務佇列格式
+
+```json
+{
+  "config": {
+    "max_concurrent": 10,
+    "poll_interval_seconds": 300,
+    "retry_max": 3,
+    "retry_backoff_base": 30
+  },
+  "tasks": [
+    {
+      "id": "task-001",
+      "type": "text2video",
+      "input": {},
+      "status": "pending",
+      "submitted_at": null,
+      "completed_at": null,
+      "attempt": 0,
+      "error": null,
+      "output": null
+    }
+  ]
+}
+```
+
+欄位說明：
+- `config.max_concurrent`：最大並行任務數
+- `config.poll_interval_seconds`：輪詢間隔（秒）
+- `config.retry_max`：最大重試次數
+- `config.retry_backoff_base`：重試退避基數（秒）
+- `tasks[].id`：唯一 ID
+- `tasks[].type`：任務類型（由 skill 定義）
+- `tasks[].input`：任務輸入（由 skill 定義）
+- `tasks[].status`：pending / submitted / processing / success / failed / blocked
+- `tasks[].output`：成功後的產出路徑或資料
+
+### 2. batch-state.json schema — Runtime 追蹤
+
+```json
+{
+  "started_at": "2026-04-09T...",
+  "last_poll_at": "2026-04-09T...",
+  "total_tasks": 69,
+  "completed": 35,
+  "failed": 34,
+  "remaining": 0,
+  "failure_rate": 0.49,
+  "credits_spent": 5775
+}
+```
+
+### 3. Poll-and-retry 通用演算法
+
+```
+while 有 pending 或 submitted:
+  available = max_concurrent - count(submitted)
+  submit(pending[:available])
+  for each submitted:
+    poll status
+    if success → download output, mark success, release slot
+    if failed → attempt++, if attempt < retry_max → reset to pending with backoff, else mark failed
+    if blocked → mark blocked (不重試)
+  sleep poll_interval_seconds
+```
+
+### 4. State Files 表格新增
+
+| File | Written By | Read By | Purpose |
+|------|-----------|---------|---------|
+| `queue.json` | Production/Runtime Helper | batch-engine scripts | 批次任務佇列 |
+| `batch-state.json` | batch-engine scripts | skills（進度報告）| 批次執行狀態 |
+| `functional-test-log.jsonl` | 手動測試 / /domain-upgrade | /domain-upgrade, /skill-edit | 功能測試歷史 |
+| `experiments.jsonl` | Production/Runtime Helper | /domain-upgrade | A/B 實驗歷史 |
+
+### 5. Convention Rules
+
+- 佇列檔案 per-task-type（不共用一個全域佇列）
+- batch-state 為暫態（完成後可刪除，重要事件記入 decision-log.jsonl）
+- skill 不同步輪詢 — 委派給 scripts/
