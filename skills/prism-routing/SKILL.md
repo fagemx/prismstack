@@ -31,8 +31,11 @@ description: |
   - User says "升級", "測試回饋", "迭代", "這裡不好用" → suggest /domain-upgrade
   - User wants to change skill connections or workflow → suggest /workflow-edit
   - User says "改 workflow", "skill 串接", "調整流程" → suggest /workflow-edit
+  - User needs guidance, teaching, or doesn't know next step → suggest /super-guide
+  - User says "不知道下一步", "怎麼用", "為什麼這樣設計", "卡住了", "帶我做", "教我", "怎麼串 pipeline", "怎麼自動化" → suggest /super-guide
 
   First-time users: suggest starting with /domain-plan — "告訴我你要做什麼領域".
+  Users who seem confused or need understanding: suggest /super-guide — "讓引導員帶你".
 
   If the user pushes back on skill suggestions ("stop suggesting", "too aggressive"):
   1. Stop suggesting for the rest of this session
@@ -233,6 +236,7 @@ Present ONE AskUserQuestion based on the classified state.
 > E) 從材料/經驗提取方法論 → /methodology-extract
 > F) 調整 workflow → /workflow-edit
 > G) 用真實案例測試
+> H) 我需要引導 / 不知道怎麼用 → /super-guide
 >
 > RECOMMENDATION: Choose A — 搭完第一件事就是檢查品質。
 
@@ -244,6 +248,7 @@ Present ONE AskUserQuestion based on the classified state.
 > B) 針對特定 skill 修改 → /skill-edit
 > C) 重新檢查品質 → /skill-check review --all
 > D) 看 workflow 健康度 → /workflow-edit
+> E) 我需要引導 / 不理解為什麼 → /super-guide
 >
 > RECOMMENDATION: Choose A — /domain-upgrade 會幫你看該改什麼。
 
@@ -296,9 +301,47 @@ When `/domain-build` finishes creating a new domain repo, automatically:
 
 ---
 
-## Auto Mode: 自動 Plan → Build → Check → Fix 迴圈
+## Auto Mode: State Machine Pipeline
 
 當用戶選擇 B（自動模式）時進入此流程。
+
+### State Machine
+
+```
+                 ┌──────────┐
+                 │  START   │
+                 └────┬─────┘
+                      │
+                 ┌────▼─────┐
+                 │   PLAN   │ ◄─── ESCALATE: skill map 結構問題
+                 └────┬─────┘          ↑
+                      │                │ backtrack
+                 ┌────▼─────┐          │
+                 │  BUILD   │ ◄─── ESCALATE: skill 獨立性 / workflow 斷點
+                 └────┬─────┘          ↑
+                      │                │ backtrack
+                 ┌────▼─────┐          │
+                 │  CHECK   │──────────┘
+                 └────┬─────┘
+                      │
+              ┌───────▼───────┐
+              │ score >= 門檻? │
+              └───┬───────┬───┘
+                  │yes    │no
+                  │  ┌────▼────┐
+                  │  │   FIX   │
+                  │  └────┬────┘
+                  │       │
+                  │  ┌────▼─────────┐
+                  │  │ re-CHECK     │──→ 分數沒升? → DONE_WITH_CONCERNS
+                  │  └────┬─────────┘
+                  │       │ 夠了 ↓
+              ┌───▼───────▼───┐
+              │     DONE      │
+              └───────────────┘
+```
+
+每個 phase 的子 Agent 透過 preamble 的 `SPAWNED` 偵測自動進入 spawned session 模式。決策依據見 `shared/methodology/auto-decision-guide.md`。
 
 ### Auto Phase 0: 收集輸入
 
@@ -322,20 +365,27 @@ dispatch Agent(subagent_type="general-purpose", prompt="""
 
 讀取方法論：
   cat {PRISM_DIR}/shared/methodology/skill-map-methodology.md
+讀取決策指南：
+  cat {PRISM_DIR}/shared/methodology/auto-decision-guide.md
 
 用戶的領域輸入：{domain_input}
+{backtrack_constraints_if_any}
 
-按 /domain-plan 的 Phase 0-5 執行，但：
-- 跳過所有 STOP gates（自動模式，不問用戶）
-- 跳過 AskUserQuestion（自動做最佳決策）
-- 品質級別按 How-To 9 偵測輸入品質
-- 產出存到 {PROJECTS_DIR}/
+按 /domain-plan 的 Phase 0-5 執行。
+Preamble 會偵測 SPAWNED=true，自動切換為 spawned session 模式。
+品質級別按 How-To 9 偵測輸入品質。
+產出存到 {PROJECTS_DIR}/
 
 完成後報告：skill_count, artifact_path
 """)
 ```
 
 更新 state: plan.status = "done", current_state = "BUILD"
+
+如果是回退（`backtrack.from` 不為 null）：
+- 把 `backtrack.constraints` 注入到 prompt 的 `{backtrack_constraints_if_any}` 位置
+- Agent 針對 constraints 修改 skill map，不從頭推導
+- 完成後 reset backtrack 為 null
 
 ### Auto Phase 2: BUILD
 
@@ -346,11 +396,15 @@ dispatch Agent(subagent_type="general-purpose", prompt="""
 讀取方法論：
   cat {PRISM_DIR}/shared/methodology/skill-craft-guide.md
   cat {PRISM_DIR}/shared/methodology/system-wiring-guide.md
+讀取決策指南：
+  cat {PRISM_DIR}/shared/methodology/auto-decision-guide.md
 
 Skill map: {plan.artifact}
 建到: {repo_path}
+{backtrack_constraints_if_any}
 
-按 /domain-build 的 Phase 0-7 執行，但跳過 STOP gates。
+按 /domain-build 的 Phase 0-7 執行。
+Preamble 會偵測 SPAWNED=true，自動切換為 spawned session 模式。
 每個 skill 按 How-To 10 品質對等生成。
 完成後跑 validate-repo.sh，失敗的自動修。
 
@@ -376,25 +430,51 @@ dispatch Agent(subagent_type="general-purpose", prompt="""
 
 你不知道這些 skill 是怎麼生成的。你只看到成品。
 嚴格打分。每個 2 分都要有證據。
+不讀 auto-decision-guide.md — 你是獨立評判者。
 
 報告：per-skill scores, avg_score, below_threshold skills, mines triggered
+對每個低分 skill，分類問題為 AUTO-FIX / ASK / ESCALATE（含回退目標）。
 """)
 ```
 
 讀取結果。更新 state。
 
-### Auto Phase 4: FIX or DONE
+### Auto Phase 4: FIX, BACKTRACK, or DONE
 
 ```
+讀取 CHECK 結果。
+
+# 1. 檢查是否有 ESCALATE 項目需要回退
+escalate_items = check 結果中 type == "ESCALATE" 的項目
+
+if escalate_items 存在 AND backtrack.round < 2:
+    # 判斷回退目標
+    for item in escalate_items:
+        if item.target == "PLAN":
+            寫入 auto-run-state.json:
+              backtrack.from = "CHECK"
+              backtrack.round += 1
+              backtrack.reason = item.reason
+              backtrack.constraints = item.constraints
+            current_state = "PLAN"  # 回退到 PLAN
+            → 跳到 Auto Phase 1
+        elif item.target == "BUILD":
+            寫入 auto-run-state.json:
+              backtrack.from = "CHECK"
+              backtrack.round += 1
+              backtrack.reason = item.reason
+              backtrack.constraints = item.constraints
+            current_state = "BUILD"  # 回退到 BUILD
+            → 跳到 Auto Phase 2
+
+# 2. 如果沒有 ESCALATE 或回退已用完，走原有 fix 邏輯
 if check.avg_score >= quality_threshold AND mines == 0:
     current_state = "DONE"
 elif fix.rounds_completed >= max_fix_rounds:
     current_state = "DONE_WITH_CONCERNS"
 elif fix.last_avg_score != null AND check.avg_score <= fix.last_avg_score:
-    # 分數沒有進步，停下來
     current_state = "DONE_WITH_CONCERNS"
 else:
-    # 進入 fix
     fix.last_avg_score = check.avg_score
 
     dispatch Agent(prompt="""
@@ -402,13 +482,18 @@ else:
 
     讀取指南：
       cat {PRISM_DIR}/shared/methodology/fix-loop-guide.md
+    讀取決策指南：
+      cat {PRISM_DIR}/shared/methodology/auto-decision-guide.md
 
     審查結果：{check_results}
     修復目標：score < {threshold} 的 skills
 
-    AUTO-FIX 項目直接修。ASK 項目選最佳選項（不問用戶）。
-    ESCALATE 項目標記但不修。
+    Preamble 會偵測 SPAWNED=true，自動切換為 spawned session 模式。
+    AUTO-FIX 項目直接修。
+    ASK 項目用 auto-decision-guide 的原則決策。
+    ESCALATE 項目標記但不修（由上層 state machine 處理）。
     每個修改都 atomic commit。
+    每個決策記入 auto-decisions.jsonl。
 
     報告：fixes_applied, escalated_items
     """)
@@ -417,49 +502,62 @@ else:
     current_state = "CHECK"  # re-check
 ```
 
-### Auto Phase 5: 交付
+### Auto Phase 5: 交付 + 審批門
 
 ```
-if current_state == "DONE":
-    向用戶報告：
-    「✅ 自動搭建完成。
+if current_state == "DONE" OR current_state == "DONE_WITH_CONCERNS":
 
-     領域：{domain}
-     Skills：{skill_count} 個
-     品質：avg {avg_score}/30（{grade}）
-     Fix 輪數：{rounds}
+    # 讀取 auto-decisions.jsonl，找出需要用戶確認的決策
+    taste_decisions = auto-decisions.jsonl 中 "surfaced": true 的
+    deferred_decisions = auto-decisions.jsonl 中 "deferred": true 的
 
-     Repo 在：{repo_path}
-     安裝：cd {repo_path} && bash bin/install.sh --project
+    if current_state == "DONE":
+        向用戶報告：
+        「✅ 自動搭建完成。
 
-     建議下一步：在新 repo 裡跑 /skill-check review --all 做更深度的檢查」
+         領域：{domain}
+         Skills：{skill_count} 個
+         品質：avg {avg_score}/30（{grade}）
+         Fix 輪數：{rounds}
+         回退輪數：{backtrack.round}
 
-elif current_state == "DONE_WITH_CONCERNS":
-    向用戶報告：
-    「⚠️ 自動搭建完成，但有未解決問題。
+         Repo 在：{repo_path}
+         安裝：cd {repo_path} && bash bin/install.sh --project」
 
-     品質：avg {avg_score}/30
-     未通過的 skills：{below_threshold}
-     ESCALATE 項目：{escalated}
+    elif current_state == "DONE_WITH_CONCERNS":
+        向用戶報告：
+        「⚠️ 自動搭建完成，但有未解決問題。
 
-     建議：切換到互動模式，用 /skill-edit 手動改進。」
+         品質：avg {avg_score}/30
+         未通過的 skills：{below_threshold}
+         ESCALATE 項目：{escalated}
+
+         建議：切換到互動模式，用 /skill-edit 手動改進。」
+
+    # 審批門（如果有 taste 或 deferred 決策）
+    if taste_decisions OR deferred_decisions:
+        列出所有需要確認的決策（見 auto-decision-guide.md 的「最終審批門」格式）
+        等用戶確認或修改
 ```
 
 ### Safety Valves
 
-```
 | 條件 | 動作 |
 |------|------|
 | fix 3 輪後分數還不夠 | DONE_WITH_CONCERNS |
 | 連續 2 輪分數不升 | DONE_WITH_CONCERNS（避免死循環） |
+| 回退超過 2 次 | DONE_WITH_CONCERNS（回退用完） |
+| 回退後 re-check 分數反而降了 | 停止，revert 到回退前版本 |
+| 同一 ESCALATE 問題第二次出現 | 不再回退，標記未解決 |
 | 用戶打斷（任何輸入） | 停下來，報告當前狀態，問要繼續還是切互動模式 |
-```
 
 ### Resumability
 
 如果中斷（context 溢出、用戶關閉 session）：
 - 下次啟動 /prismstack → Phase 1 偵測到 auto-run-state.json
-- 顯示上次進度：「偵測到上次的自動搭建：{domain}，停在 {current_state}。要繼續嗎？」
+- 顯示上次進度：「偵測到上次的自動搭建：{domain}，停在 {current_state}。」
+- 如果有 `backtrack` 狀態 → 「上次在回退第 {round} 輪，原因：{reason}」
+- 「要繼續嗎？」
 
 ---
 
