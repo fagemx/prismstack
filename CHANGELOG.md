@@ -1,4 +1,31 @@
 # Changelog
+## [0.6.0] - 2026-04-15
+
+### Added
+- `/super-guide` — hands-on teaching coach with 3 modes (contextual teaching / Q&A / diagnosis)
+- `auto-decision-guide.md` — 6 decision principles + 3 classifications (Mechanical / Taste / User Required) for auto mode
+- `iteration-loop-guide.md` — 8-phase iterative improvement loop for Production/Runtime Helper skills
+- Session timeline (`timeline.jsonl`) — tracks skill usage across sessions with predictive suggestions
+- Operational reflection — skills self-reflect on failures before completion
+- Confidence scoring + decay for accumulated context entries
+- Evidence gate — verification required before STATUS reporting (enforced for Review/Check, advisory for others)
+- Guard check in fix loop — two-tier verification prevents breaking adjacent dimensions
+- 8-dimension stress test matrix in functional test guide (advanced, for mature stacks)
+- Adversarial refinement (principle 10) — debate-based generation for gotchas, scoring, role identity
+- Smart defaults derivation rules for all 5 skill templates
+- 6 pipeline composition patterns (Sequential / Fan-Out / Fan-In / Review Loop / Gateway / Feedback Injection)
+- Spawned session protocol — sub-skills auto-detect when running inside auto mode orchestrator
+
+### Changed
+- Auto mode rewritten as state machine with backtrack capability (ESCALATE → back to PLAN or BUILD)
+- Auto mode now includes approval gate for Taste and User Required decisions
+- Preamble upgraded: session lifecycle, timeline read/write, learnings injection, spawned detection
+- Skill craft guide: 8 → 10 principles (added pressure testing + adversarial refinement)
+- Quality standards: C8 requires evidence for Production reviews, B5 includes guard awareness
+- Context accumulation: 4 → 5 signal types (added `operational`), confidence + decay rules
+- Fix loop: ESCALATE items now carry backtrack targets for auto mode
+- Restrictive methodology softened: Draft/Usable skip heavy checks, Production keeps full rigor
+
 ## [0.5.0] - 2026-03-25
 
 ### Changed

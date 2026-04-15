@@ -167,6 +167,7 @@ Each skill's output feeds the next. `/methodology-extract` distills your experti
 | `/tool-builder` | **Tool Craftsman** | Build automation skills: browser, API, CLI, file processing. Dual-layer: hands-on mode + meta mode (builds a skill that can do it). |
 | `/domain-upgrade` | **Stack Steward** | Persistent improvement: listen to needs, collect test feedback, dispatch to the right skill. 3 modes: feedback / upgrade / listen. |
 | `/workflow-edit` | **Workflow Architect** | View/edit artifact flow, skill connections, workflow graph. Validates: no orphans, no cycles, bridge coverage. |
+| `/super-guide` | **Hands-On Coach** | Stuck? Don't know the next step? The coach uses your own stack as teaching material. 3 modes: contextual teaching / Q&A / diagnosis. |
 
 ---
 
@@ -190,17 +191,33 @@ Prismstack turns your expertise into a **manageable system**:
 
 ## Methodology
 
-Prismstack includes 5 built-in methodology files that teach AI how to build good skills:
+Prismstack includes 9 built-in methodology files that teach AI how to build good skills:
+
+**Building scaffolds (how to build):**
 
 | Methodology | What It Solves |
 |-------------|---------------|
 | **Skill Map Derivation** | How to figure out which skills your workflow needs |
-| **Skill Craft Guide** | How to write a good skill: 8 principles + 7 structural patterns + 10 design how-tos |
-| **Quality Standards** | How to judge skill quality: 15 dimensions + calibration benchmarks + 6 common traps |
-| **System Wiring Guide** | How to make skills automatically pass data to each other |
-| **Fix Loop Guide** | How to fix issues: detect → classify → fix → verify → compare |
+| **Skill Craft Guide** | How to write a good skill: 10 principles + 7 structural patterns + 5 templates (each with smart defaults derivation rules) |
+| **System Wiring Guide** | How to chain skills together + 6 pipeline composition patterns (Sequential / Fan-Out / Fan-In / Review Loop / Gateway / Feedback Injection) |
+| **Iteration Loop Guide** | In-skill iterative improvement: 8-phase loop (Review → Ideate → Modify → Snapshot → Verify → Guard → Decide → Log) |
 
-The 10 design how-tos cover: scoring formula design, finding AI blind spots, fix loop design, stop gate placement, anti-sycophancy mechanisms, forcing question design, interrupt recovery, artifact flow, input sensitivity, and proportional output.
+**Quality assurance (how to improve):**
+
+| Methodology | What It Solves |
+|-------------|---------------|
+| **Quality Standards** | How to judge skill quality: 15 dimensions + calibration benchmarks + 6 common traps |
+| **Fix Loop Guide** | How to fix issues: detect → classify → fix → guard check → verify → compare |
+| **Functional Test Guide** | Test skills with real tasks: 9-step test loop + 8-dimension stress test matrix (advanced, for mature stacks) |
+
+**System automation (how to run automatically):**
+
+| Methodology | What It Solves |
+|-------------|---------------|
+| **Auto Decision Guide** | 6 decision principles for auto mode + 3 decision classifications (Mechanical / Taste / User Required) |
+| **Context Accumulation Guide** | Remember user expertise across sessions: 5 signal types + confidence decay + auto-injection at startup |
+
+The 10 principles in Skill Craft Guide cover: trigger-first, role switching, flow externalization, gotchas as highest value, strict where fragile, main+references split, recovery definition, readable output, pressure testing (Production tier), and adversarial refinement for generation.
 
 ---
 
@@ -210,14 +227,18 @@ Prismstack's engineering methodology is derived from [gstack](https://github.com
 
 **Core difference:**
 - gstack = 25 fixed Web/SaaS engineering skills
-- Prismstack = 11 builder skills that generate 10–50 domain-specific skills
+- Prismstack = 12 builder skills (including hands-on coach) that generate 10–50 domain-specific skills
 
 **Unique to Prismstack:**
 - Methodology extraction (look at any material through your problem's lens, distill structured principles)
 - Dual mode (interactive + autonomous, with generator-evaluator separation)
 - Input sensitivity (give one sentence or a full spec — output quality matches input quality)
-- Context accumulation (remembers what you said, improves across sessions)
+- Context accumulation (remembers what you said, improves across sessions, confidence decay prevents stale info)
 - Tool building (dual-layer: automate directly + produce a skill that can automate)
+- Adversarial refinement (Author-A → Critic → Author-B → Synthesize — debate produces better skill content)
+- Smart defaults (auto-derive scoring weights, gotchas, role identity from domain signals — less user input needed)
+- Pipeline pattern library (6 composition patterns + selection guide for effective workflows)
+- Auto mode upgrade (state machine + backtrack + 6 decision principles + approval gate)
 
 ---
 
