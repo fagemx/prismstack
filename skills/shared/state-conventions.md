@@ -16,6 +16,7 @@
 | `upgrade-log.jsonl` | /domain-upgrade | /domain-upgrade (resume) | Upgrade dispatch history |
 | `workflow-snapshot.md` | /workflow-edit | /workflow-edit (resume) | Last known workflow graph |
 | `discovery-notes.md` | /tool-builder | /tool-builder (resume) | Exploration discoveries |
+| `timeline.jsonl` | Preamble (start) + Completion (complete) | Preamble (recovery, prediction) | Skill 使用歷史（append-only） |
 
 ## Convention Rules
 1. State dir created on first skill run (mkdir -p)
@@ -36,6 +37,24 @@
   "last_upgrade": null
 }
 ```
+
+## timeline.jsonl Schema
+
+每行一筆 JSON，append-only：
+```json
+{"ts":"2026-04-15T10:00:00Z","skill":"domain-plan","event":"started","branch":"main","session":"12345-1713168000"}
+{"ts":"2026-04-15T10:32:00Z","skill":"domain-plan","event":"completed","branch":"main","outcome":"done","duration_s":"1920","session":"12345-1713168000"}
+```
+
+| 欄位 | 說明 | 存在 |
+|------|------|------|
+| `ts` | UTC timestamp | 全部 |
+| `skill` | Skill 名稱（從 YAML frontmatter `name:` 讀取） | 全部 |
+| `event` | `started` / `completed` | 全部 |
+| `branch` | Git branch | 全部 |
+| `outcome` | `done` / `done_with_concerns` / `blocked` / `needs_context` | 僅 completed |
+| `duration_s` | 從 start 到 complete 的秒數 | 僅 completed |
+| `session` | `$$-$(date +%s)` — 辨識同一個 session | 全部 |
 
 ## Context Accumulation（跨 session 脈絡累積）
 
@@ -66,16 +85,19 @@
 
   "accumulated": {
     "expertise": [
-      {"content": "審素材看構圖、品牌一致、CTA", "extracted_as": "scoring 3 dimensions", "session": "2026-03-25"}
+      {"content": "審素材看構圖、品牌一致、CTA", "extracted_as": "scoring 3 dimensions", "confidence": 9, "source": "user-stated", "ts": "2026-03-25T14:00:00Z"}
     ],
     "corrections": [
-      {"content": "gotcha 不對，要查字型大小", "skill": "/ad-check", "section": "gotchas", "session": "2026-03-25"}
+      {"content": "gotcha 不對，要查字型大小", "skill": "/ad-check", "section": "gotchas", "confidence": 9, "source": "correction", "ts": "2026-03-25T15:00:00Z"}
     ],
     "preferences": [
-      {"content": "STOP gates 太多", "applied_to": "simple Review skills", "session": "2026-03-25"}
+      {"content": "STOP gates 太多", "applied_to": "simple Review skills", "confidence": 9, "source": "user-stated", "ts": "2026-03-25T16:00:00Z"}
     ],
     "benchmarks": [
-      {"content": "CPM 超過 280 要警告", "skill": "/performance-review", "session": "2026-03-25"}
+      {"content": "CPM 超過 280 要警告", "skill": "/performance-review", "confidence": 9, "source": "user-stated", "ts": "2026-03-25T17:00:00Z"}
+    ],
+    "operational": [
+      {"content": "這個領域的 review 不能用數字評分，用戶偏好 pass/fail", "confidence": 7, "source": "observed", "ts": "2026-03-26T10:00:00Z"}
     ]
   }
 }
