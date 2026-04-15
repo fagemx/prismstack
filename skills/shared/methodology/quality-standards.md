@@ -50,7 +50,7 @@
 **B5 STOP Gates**
 - 0 = 沒有 STOP 規則
 - 1 = 有但不是每個 section 都有
-- 2 = 每個 section 結尾都有 STOP + 明確的 "resolve all before proceeding"
+- 2 = 每個 section 結尾都有 STOP + 明確的 "resolve all before proceeding" + 修改後有 guard check（驗證其他維度沒被破壞）
 
 **B6 Recovery / Interrupt Handling**
 - 0 = 沒有
@@ -65,7 +65,7 @@
 **C8 Scoring / Quantitative Rigor**
 - 0 = 沒有評分，只有定性判斷
 - 1 = 有評分但靠 AI 直覺
-- 2 = 有明確公式 + 每個維度有分數 + 分數有校準基準
+- 2 = 有明確公式 + 每個維度有分數 + 分數有校準基準 + 每個分數必須附證據（file:line 或 specific example），禁止「整體不錯」等模糊語言
 
 **C9 Domain Benchmarks**
 - 0 = 沒有參考數據
@@ -106,6 +106,14 @@ scripts/ 目錄必須包含獨立腳本（不是 inline bash）。
 - 0 = 不知道自己在工作流的哪裡
 - 1 = 結尾推薦下一個 skill
 - 2 = 開頭知道上游是誰（讀 artifact），結尾知道下游是誰（推薦 + 寫 artifact）
+
+### 審查原則（跨維度）
+
+以下原則適用於所有維度的審查：
+
+1. **Evidence Before Score** — 每個 2 分都要有具體證據。沒有證據的 2 分降為 1 分。
+2. **Guard Awareness** — 修改一個維度時，掃描相鄰維度有沒有被影響（詳見 fix-loop-guide.md 的 Guard Check）。
+3. **Mechanical Over Subjective** — 能用數字量化的維度（C8 Scoring、C9 Benchmarks），不接受主觀判斷。
 
 ---
 
