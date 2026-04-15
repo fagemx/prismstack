@@ -2,6 +2,26 @@
 
 Every Prismstack skill ends with one of these statuses:
 
+## Operational Reflection（在萃取之前執行）
+
+完成任務後、進入萃取之前，回答這些問題：
+- 有指令或方法失敗嗎？（例：生成的 skill 驗收沒過、scoring formula 不合理）
+- 有走錯路又回頭嗎？（例：先 merge 再 split，浪費了時間）
+- 發現什麼 domain-specific 怪癖？（例：這個領域的 review 不能用數字評分）
+
+如果有 → 寫入 `domain-config.json` 的 `accumulated` section：
+```json
+{
+  "type": "operational",
+  "content": "描述發現的問題和走錯的路",
+  "confidence": 7,
+  "source": "observed",
+  "ts": "2026-04-15T10:00:00Z"
+}
+```
+
+如果沒有 → 跳過（大部分 session 不會有）。然後進入下方的萃取步驟。
+
 ## Completion 萃取步驟
 
 **在報告 STATUS 之前，自動執行一次萃取：**
@@ -54,3 +74,19 @@ Cannot continue.
 ## STATUS: NEEDS_CONTEXT
 Missing information to proceed.
 - Include: what information is needed, why it's needed, what to do with it
+
+## Timeline Complete Event（在 STATUS 報告之後執行）
+
+報告 STATUS 後，寫入 timeline complete 事件：
+
+```bash
+_TEL_END=$(date +%s)
+_TEL_DUR=$(( _TEL_END - _TEL_START ))
+echo "{\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"skill\":\"SKILL_NAME\",\"event\":\"completed\",\"branch\":\"$_BRANCH\",\"outcome\":\"OUTCOME\",\"duration_s\":\"$_TEL_DUR\",\"session\":\"$_SESSION_ID\"}" >> "$_STATE_DIR/timeline.jsonl" 2>/dev/null || true
+```
+
+- `SKILL_NAME`：從當前 skill 的 YAML frontmatter `name:` 欄位讀取（例：`domain-plan`、`skill-check`）
+- `OUTCOME`：從 STATUS 映射 — DONE → `done`、DONE_WITH_CONCERNS → `done_with_concerns`、BLOCKED → `blocked`、NEEDS_CONTEXT → `needs_context`
+- `_TEL_START`、`_SESSION_ID`、`$_STATE_DIR`、`$_BRANCH`：來自 preamble 的變數
+
+如果 skill 異常退出（沒有正式 completion），不寫 complete event。下次 preamble 偵測到有 started 但沒有 completed 的 session → 推斷上次中斷。
