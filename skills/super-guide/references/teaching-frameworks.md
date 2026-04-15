@@ -322,7 +322,7 @@
 
 ## 框架 8: 腳本層決策法
 
-> 來源：jimeng-auto 實戰經驗 — 18 個 skill 中 16 個純 prompt、2 個用腳本
+> 來源：真實 domain stack 實戰經驗 — 18 個 skill 中 16 個純 prompt、2 個用腳本
 > 適用：用戶在建 skill 時問「要不要寫腳本」「怎麼呼叫 API」「要不要加 scripts/」
 
 ### 步驟

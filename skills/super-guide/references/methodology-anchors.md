@@ -375,7 +375,7 @@ Why 5（根因）：/domain-plan 沒有在 Phase 3 問用戶要 benchmarks
 
 ## 錨點 14: 腳本三層模型
 
-> 來源：jimeng-auto 實戰經驗 + skill-craft-guide How-To 11
+> 來源：真實 domain stack 實戰經驗 + skill-craft-guide How-To 11
 
 **一句話：** 大部分 skill 不需要寫腳本 — 直接用專案已有的 CLI 就好。只有需要封裝領域工具或批次引擎時才建 scripts/。
 

@@ -858,7 +858,7 @@ scripts/{tool-name}.py --task {action} [--input {file}] [--output {file}] [optio
 # exit code: 0=成功、1=部分失敗、2=完全失敗
 
 # 範例：
-python scripts/runninghub.py --task generate --workflow face-swap --input photo.jpg
+python scripts/api-client.py --task generate --workflow face-swap --input photo.jpg
 python scripts/recalc.py input.xlsx output.xlsx
 python scripts/api-client.py --check  # 健康檢查
 ```
@@ -875,15 +875,15 @@ Phase N+1: SKILL.md 讀取 result，做判斷
 Phase N+2: 根據判斷，可能再次調用腳本（不同參數）
 ```
 
-**範例（真實：RunningHub API 客戶端）：**
+**範例（真實：外部 API 客戶端）：**
 ```markdown
 ## Phase 2: 提交任務
 bash
 # 檢查 API 可用性
-python scripts/runninghub.py --check
+python scripts/api-client.py --check
 
 # 提交生成任務
-python scripts/runninghub.py \
+python scripts/api-client.py \
   --task generate \
   --workflow "$_WORKFLOW_ID" \
   --input "$_INPUT_FILE" \
