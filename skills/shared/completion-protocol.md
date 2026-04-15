@@ -59,7 +59,7 @@ Every Prismstack skill ends with one of these statuses:
 - 在 domain-config.json 的 accumulated 裡只保留最新的
 - 加 `"supersedes": "之前的 content"` 標記
 
-## Evidence Gate（在報告 STATUS 之前執行）
+## Evidence Gate（建議在報告 STATUS 之前執行）
 
 報告任何 STATUS 之前，必須驗證你的聲明有證據支持。
 
@@ -73,9 +73,9 @@ Every Prismstack skill ends with one of these statuses:
 3. **讀完整 output：** 不是看「pass/fail」，是讀完整結果。
 4. **才能報告 STATUS。**
 
-### 禁止語言
+### 建議避免的語言
 
-在 STATUS 報告中，禁止以下模糊語言（除非附帶具體證據）：
+在 STATUS 報告中，建議避免以下模糊語言。Review 和 Check 類 skill 強制執行，其他類 skill 建議但不強制：
 - ❌ 「應該沒問題」→ ✅ 「validate-repo.sh 5/5 通過」
 - ❌ 「整體品質不錯」→ ✅ 「平均 22/30（Usable），最低 18，最高 26」
 - ❌ 「已修復」→ ✅ 「修復前 17/30 → 修復後 23/30，delta +6」

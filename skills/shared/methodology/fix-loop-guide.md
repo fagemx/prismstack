@@ -89,9 +89,9 @@ ESCALATE items: 列出，不修，建議用戶下一步
 | 修了一個但更多維度變差了 | 停下來，考慮 revert |
 | ASK items > 5 個 | 分批問（5 個一批），不要一次丟 20 個問題給用戶 |
 
-### Guard Check（每個 AUTO-FIX 完成後）
+### Guard Check（跨維度修改時執行）
 
-修了一個問題後，不只看目標維度有沒有改善，也要看其他維度有沒有被打破：
+修改影響到多個維度時（例：改了 description 可能影響 role，改了 Phase 0 可能影響 flow），檢查相鄰維度有沒有被打破。單維度的小修改（例：只加一個 gotcha）跳過 guard check：
 
 ```
 for each completed fix:

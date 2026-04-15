@@ -114,7 +114,7 @@
 
 以下原則適用於所有維度的審查：
 
-1. **Evidence Before Score** — 每個 2 分都要有具體證據。沒有證據的 2 分降為 1 分。
+1. **Evidence Before Score** — 每個 2 分建議附具體證據。Production 審查（24+ 分門檻）中，沒有證據的 2 分降為 1 分。Draft/Usable 審查中不降分，但會標記「建議補證據」。
 2. **Guard Awareness** — 修改一個維度時，掃描相鄰維度有沒有被影響（詳見 fix-loop-guide.md 的 Guard Check）。
 3. **Mechanical Over Subjective** — 能用數字量化的維度（C8 Scoring、C9 Benchmarks），不接受主觀判斷。
 
