@@ -53,11 +53,14 @@ Step 5: Delta Report    → before → after 對比
 
 ### ESCALATE 範圍
 
-| 問題 | 回報 |
-|------|------|
-| Skill 不應該存在（fails independence test） | 建議合併到哪個 skill |
-| Workflow 有斷點 | 建議用 /workflow-edit 修 |
-| 整個 skill map 前深後淺 | 建議回 /domain-plan 重新規劃 |
+| 問題 | 回報 | 回退目標（Auto Mode） |
+|------|------|---------------------|
+| Skill 不應該存在（fails independence test） | 建議合併到哪個 skill | → BUILD（從 skill map 移除，重 build 受影響部分） |
+| Workflow 有斷點 | 建議用 /workflow-edit 修 | → BUILD（重新 build workflow 串接，不重做 skill 內容） |
+| 整個 skill map 前深後淺 | 建議回 /domain-plan 重新規劃 | → PLAN（重新跑 Plan，帶 check 發現作為 constraints） |
+
+**互動模式：** ESCALATE 項目回報給用戶，由用戶決定下一步。
+**自動模式：** ESCALATE 項目觸發 state machine 回退（見 prism-routing/SKILL.md 的 State Machine 段落）。回退時把 `reason` 和 `constraints` 寫入 `auto-run-state.json` 的 `backtrack` 欄位，上游 Agent 讀到後針對性修改，不從頭推導。
 
 ## Step 3: Fix Loop
 
