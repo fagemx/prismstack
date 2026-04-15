@@ -180,11 +180,22 @@ Synthesize: CTA 25% / 構圖 20% / 可讀性 20% / 品牌一致 20% / 色彩 15%
 - **Gotchas**：Claude 在這個審查維度常犯的錯
 - **Completion**：Health Score + STATUS + 下一步建議
 
+**Smart Defaults（自動推導）：**
+- **Scoring 權重：** 從用戶描述的「最重要的事」推導。用戶說「品質最重要」→ 品質相關維度佔 40-50%。用戶沒說 → 均分。
+- **Gotchas：** 從領域的「常見錯誤」推導。問：「這個領域的新手最常犯什麼錯？AI 最容易忽略什麼？」各產出 3 個。
+- **Role Identity：** 從領域的「最尖銳的專家稱號」推導。不是 "reviewer"，是領域裡最嚴格的那個角色（「經濟數學家」「品管主任」「法規審查員」）。
+- **Forcing Questions：** 從 Gotchas 反推。每個 gotcha 對應一個逼問：「你確定 X 不會出問題嗎？」
+
 ### Bridge Type
 - **角色**：轉譯者（連接兩個不同世界）
 - **Input parsing**：偵測輸入格式、completeness audit
 - **Translation logic**：從 A 格式到 B 格式的明確規則
 - **Output contract**：下游 skill 需要的精確格式
+
+**Smart Defaults（自動推導）：**
+- **Input parsing：** 從上游 skill 的 output contract 推導。上游產出什麼格式 → 就 parse 什麼格式。
+- **Translation logic：** 從上下游的「語言差異」推導。上游是業務語言、下游是技術語言 → 翻譯規則就是「業務術語 → 技術對應」的映射表。
+- **Gotchas：** 從「翻譯容易丟失的資訊」推導。問：「從 A 格式轉到 B 格式，什麼資訊容易被吞掉？」
 
 ### Production Type
 - **角色**：建造者（讓東西出現）
@@ -193,10 +204,21 @@ Synthesize: CTA 25% / 構圖 20% / 可讀性 20% / 品牌一致 20% / 色彩 15%
 - **Error handling**：build 失敗時的回退策略
 - **Validation**：產出是否符合 spec
 
+**Smart Defaults（自動推導）：**
+- **Build target：** 從用戶說的「我要產出什麼」推導。越具體越好：不是「廣告素材」，是「1080x1080 靜態 Banner + 文案 ≤20 字 + CTA 按鈕」。
+- **Execution steps：** 從 build target 反推。最終產出需要哪些中間步驟？每步產出什麼中間 artifact？
+- **Gotchas：** 從「產出品質最常出問題的地方」推導。問：「上次做這個，哪裡要重做？」
+- **迭代迴圈：** 如果品質需要多輪改進 → 嵌入 `iteration-loop-guide.md` 的 8 phase 迴圈，指標用 scoring formula。
+
 ### Control Type
 - **Routing table**：根據用戶狀態 → 建議哪個 skill
 - **Health check**：檢查 skill 之間的串接是否正常
 - **Conflict resolution**：多個 skill 都匹配時怎麼選
+
+**Smart Defaults（自動推導）：**
+- **Routing table：** 從 skill map 的所有 skill 推導。每個 skill 的 trigger condition → 成為 routing 條件。
+- **Health check：** 從 artifact flow 推導。每條 producer→consumer 路線 → 一個 health check 項目。
+- **Conflict resolution：** 預設規則 = 「最具體的 trigger 優先」。如果兩個 skill 都匹配，選 description 更 specific 的。
 
 ### Runtime Helper Type
 - **角色**：工具專家（某個外部工具/API/CLI 的專精使用者）
@@ -218,6 +240,12 @@ Synthesize: CTA 25% / 構圖 20% / 可讀性 20% / 品牌一致 20% / 色彩 15%
   2. 降級能力（部分功能不可用，有替代方案）
   3. 阻斷（工具完全不可用，回報 BLOCKED）
 - **Graceful degradation**：工具不可用時給明確安裝/修復指引
+
+**Smart Defaults（自動推導）：**
+- **Discovery phase：** 從工具的安裝方式推導。`which tool` + `tool --version` + 一個最簡 API call。
+- **Integration checklist：** 從工具的文件推導 6 項檢查（安裝、認證、速率限制、錯誤分類、未記載行為、輸出格式）。
+- **Fallback chain：** 預設 3 級：完整能力 → 降級能力（部分功能替代方案）→ BLOCKED。
+- **Gotchas：** 從工具的「未記載行為」推導。跑 discovery loop 發現的每個意外 → 一個 gotcha。
 
 ---
 
