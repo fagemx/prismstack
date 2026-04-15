@@ -59,6 +59,33 @@ Every Prismstack skill ends with one of these statuses:
 - 在 domain-config.json 的 accumulated 裡只保留最新的
 - 加 `"supersedes": "之前的 content"` 標記
 
+## Evidence Gate（在報告 STATUS 之前執行）
+
+報告任何 STATUS 之前，必須驗證你的聲明有證據支持。
+
+### 規則
+
+1. **識別驗證指令：** 這次 skill 執行的成果，有沒有可以機械驗證的部分？
+   - 生成了 skill → `validate-repo.sh` 跑了嗎？結果是什麼？
+   - 做了 review → 每個維度的分數有具體引用嗎（file:line 或 specific example）？
+   - 修了問題 → 修復前後的分數差異有嗎？
+2. **執行驗證：** 如果有可驗證的部分，跑一次驗證指令。
+3. **讀完整 output：** 不是看「pass/fail」，是讀完整結果。
+4. **才能報告 STATUS。**
+
+### 禁止語言
+
+在 STATUS 報告中，禁止以下模糊語言（除非附帶具體證據）：
+- ❌ 「應該沒問題」→ ✅ 「validate-repo.sh 5/5 通過」
+- ❌ 「整體品質不錯」→ ✅ 「平均 22/30（Usable），最低 18，最高 26」
+- ❌ 「已修復」→ ✅ 「修復前 17/30 → 修復後 23/30，delta +6」
+
+### 例外
+
+- STATUS: BLOCKED — 不需要驗證（你被阻塞了，沒東西可驗證）
+- STATUS: NEEDS_CONTEXT — 不需要驗證（你在等資訊）
+- 無法機械驗證的成果（例：方法論討論）→ 改用「具體引用」替代（引用用戶說了什麼、引用文件的哪一段）
+
 ## STATUS: DONE
 All steps completed. Evidence provided. Artifacts saved.
 - Include: summary of what was done, artifact locations, recommended next skill
