@@ -17,6 +17,7 @@
 | `workflow-snapshot.md` | /workflow-edit | /workflow-edit (resume) | Last known workflow graph |
 | `discovery-notes.md` | /tool-builder | /tool-builder (resume) | Exploration discoveries |
 | `timeline.jsonl` | Preamble (start) + Completion (complete) | Preamble (recovery, prediction) | Skill 使用歷史（append-only） |
+| `auto-decisions.jsonl` | Auto mode skills | 最終審批門、/domain-upgrade | 自動決策 audit trail（append-only） |
 
 ## Convention Rules
 1. State dir created on first skill run (mkdir -p)
@@ -55,6 +56,17 @@
 | `outcome` | `done` / `done_with_concerns` / `blocked` / `needs_context` | 僅 completed |
 | `duration_s` | 從 start 到 complete 的秒數 | 僅 completed |
 | `session` | `$$-$(date +%s)` — 辨識同一個 session | 全部 |
+
+## auto-decisions.jsonl Schema
+
+自動模式下每個決策的記錄，append-only：
+```json
+{"ts":"2026-04-15T10:05:00Z","phase":"build","skill":"ad-check","type":"mechanical","decision":"added completion protocol","principle":"P6"}
+{"ts":"2026-04-15T10:12:00Z","phase":"plan","skill":"market-research","type":"taste","decision":"kept independent (2/3 tests passed)","principle":"P3","surfaced":true}
+{"ts":"2026-04-15T10:20:00Z","phase":"build","skill":"brand-voice","type":"user_required","decision":"kept user weight: CTA 30%","principle":"P1","deferred":true}
+```
+
+詳見 `shared/methodology/auto-decision-guide.md`。
 
 ## Context Accumulation（跨 session 脈絡累積）
 
@@ -146,9 +158,25 @@
     "rounds_completed": 0,
     "total_fixes": 0,
     "last_avg_score": null
+  },
+  "backtrack": {
+    "from": null,
+    "round": 0,
+    "reason": null,
+    "constraints": []
   }
 }
 ```
+
+### backtrack 欄位
+
+Auto mode state machine 回退時寫入：
+- `from`：回退來源（`"CHECK"` 或 `"FIX"`）
+- `round`：第幾次回退（安全閥：最多 2 次）
+- `reason`：ESCALATE 問題的一句話描述
+- `constraints`：上游 Agent 必須遵守的約束條件（例：`["執行階段需要至少 3 個 skill"]`）
+
+回退完成後，`backtrack` reset 為 null 值。
 
 ---
 
