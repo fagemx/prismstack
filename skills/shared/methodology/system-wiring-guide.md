@@ -123,6 +123,106 @@ Preamble 確保每個 skill 啟動時都知道自己在哪個 project、什麼 b
 
 ---
 
+## Pipeline 組合模式
+
+Artifact flow 教的是「怎麼串」（機械層）。這裡教的是「什麼時候該用什麼串法」（策略層）。
+
+### 模式 1: Sequential Chain（順序鏈）
+
+```
+/plan → /build → /review → /ship
+```
+
+**特徵：** 每一步的產出是下一步的唯一輸入。線性、簡單、可預測。
+**適用：** 工作流程有明確的先後順序，每步只需要上一步的結果。
+**範例：** 內容產製（構思 → 撰寫 → 審查 → 發布）
+
+### 模式 2: Fan-Out（扇出）
+
+```
+/brief → /ad-layout
+       → /ad-copy
+       → /ad-video
+```
+
+**特徵：** 一個 skill 的產出被多個下游 skill 消費。並行展開。
+**適用：** 一份 spec 需要產出多種格式、多個變體、或多個維度的產出。
+**範例：** 廣告 brief 產出後，同時生成圖片版、文案版、影片版。
+**注意：** Fan-out 的下游 skill 必須各自獨立（不互相依賴），否則用 Sequential。
+
+### 模式 3: Fan-In（扇入）
+
+```
+/market-data  →
+/user-survey  → /strategy-synthesis
+/competitor   →
+```
+
+**特徵：** 多個 skill 的產出匯聚到一個下游 skill。
+**適用：** 決策需要綜合多個來源的資訊。
+**範例：** 策略規劃需要市場數據 + 用戶調研 + 競品分析。
+**注意：** 匯聚 skill 的 Phase 0 要搜尋多種 artifact type（不是只找一種）。
+
+### 模式 4: Review Loop（審查迴圈）
+
+```
+/generate → /review → 通過? → /ship
+                ↓ 不通過
+           /generate（帶 review feedback）
+```
+
+**特徵：** 生成和審查之間形成迴圈，直到品質達標。
+**適用：** 產出品質需要多輪迭代。審查者和生成者是不同角色。
+**範例：** 素材生成 → 品質審查 → 修改 → 再審。
+**注意：** 必須有停止條件（最大輪數或目標分數），否則死循環。可嵌入 `iteration-loop-guide.md` 的 8 phase 迴圈。
+
+### 模式 5: Gateway（閘門）
+
+```
+/intake → /classify → type A → /process-a
+                    → type B → /process-b
+                    → type C → /process-c
+```
+
+**特徵：** 一個 Control 類 skill 根據輸入特徵路由到不同的處理 skill。
+**適用：** 輸入類型多樣，需要不同的處理方式。
+**範例：** 素材入庫 → 分類（圖片/影片/文字）→ 各走不同審查流程。
+**注意：** Gateway skill 不處理內容，只做路由。保持輕量。
+
+### 模式 6: Feedback Injection（回饋注入）
+
+```
+/operate → /retrospect → insights → /operate（下一輪帶 insights）
+```
+
+**特徵：** 後期 skill 的發現回流到前期 skill，形成改進循環。
+**適用：** 長期運營的 stack，需要越用越好。
+**範例：** 投放 → 數據分析 → 發現 CTA 轉換率低 → 下次生成時帶著這個 insight。
+**注意：** 回饋注入透過 `domain-config.json` 的 `accumulated` section，不是直接修改上游 skill。
+
+### 選擇模式的判斷
+
+| 你的情境 | 推薦模式 |
+|---------|---------|
+| 工作是線性流程 | Sequential Chain |
+| 一份 spec 要產出多種東西 | Fan-Out |
+| 決策需要多個來源 | Fan-In |
+| 品質需要多輪迭代 | Review Loop |
+| 輸入類型多樣 | Gateway |
+| 需要越用越好 | Feedback Injection |
+| 複合情境 | 組合使用（例：Gateway + Review Loop） |
+
+### 常見組合
+
+```
+完整產製線：Gateway → Fan-Out → Review Loop → Fan-In → Ship
+快速原型：Sequential Chain（3-5 個 skill）
+品質導向：Sequential + Review Loop（每個階段都有審查迴圈）
+數據驅動：Sequential + Feedback Injection（每輪帶歷史 insights）
+```
+
+---
+
 ## Workflow Validation Checklist
 
 搭建完或修改後跑：
