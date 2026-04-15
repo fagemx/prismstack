@@ -89,6 +89,26 @@ ESCALATE items: 列出，不修，建議用戶下一步
 | 修了一個但更多維度變差了 | 停下來，考慮 revert |
 | ASK items > 5 個 | 分批問（5 個一批），不要一次丟 20 個問題給用戶 |
 
+### Guard Check（每個 AUTO-FIX 完成後）
+
+修了一個問題後，不只看目標維度有沒有改善，也要看其他維度有沒有被打破：
+
+```
+for each completed fix:
+  1. Verify: 目標維度有改善嗎？（例：A1 Trigger 從 0 → 1）
+  2. Guard: 其他維度有變差嗎？（快速掃描相鄰維度）
+     - 如果修 A1 Trigger 時改了 description → 檢查 A2 Role 有沒有被影響
+     - 如果修 C7 Gotchas 時加了大段內容 → 檢查 D10 Disclosure（是不是 SKILL.md 變太長）
+     - 如果修 E13 Discovery 時改了 Phase 0 → 檢查 B4 Externalization（flow 有沒有斷）
+
+  if Verify pass AND Guard pass → keep fix
+  if Verify pass AND Guard fail → rework（帶 Guard 失敗的約束，最多 2 次）
+  if Verify fail → revert fix
+  if rework 2 次仍 Guard fail → revert，標記為 ASK（需要用戶判斷 tradeoff）
+```
+
+**Guard 不是完整 re-review。** 它是快速掃描（~30 秒），只看被修改的檔案影響到的相鄰維度。完整的 re-review 在 Step 4 做。
+
 ## Step 4: Re-score
 
 所有修復完成後，重新跑一次打分：
