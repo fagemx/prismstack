@@ -765,14 +765,145 @@ _OUT="$_PROJECTS_DIR/${_USER}-${_BRANCH}-{type}-$(date +%Y-%m-%d-%H%M).md"
 
 ### How-To 11: 設計 Companion Scripts（腳本層）
 
-**何時 skill 需要 scripts/**：
+Skill 的腳本分三層。大部分 skill 不需要 scripts/ 目錄 — 只有特定場景才需要。
 
-判定樹：
-- 涉及批次處理（>10 項任務）？→ 需要 queue script
-- 呼叫外部 CLI 工具且有複雜 flag？→ 需要 wrapper script
-- 有 poll-wait-retry 迴圈？→ 需要 polling engine
-- 需要無 Claude 上下文的 headless 執行？→ 需要獨立 script
-- 以上皆非？→ inline bash 足夠（不需要 scripts/）
+#### 三層模型
+
+```
+Layer 1: 純 Prompt 驅動（最常見，~80% 的 skill）
+  SKILL.md 直接指揮專案已有的 CLI 或 code
+  例：node src/index.js -c config.json
+  例：python main.py --input data.csv
+  不需要 scripts/ — 專案本身的工具就夠了
+
+Layer 2: 工具型腳本（~15% 的 skill）
+  scripts/ 裡的可重用領域工具
+  有 CLI 介面、有狀態、跨次調用可重用
+  SKILL.md 調用它、讀取結果、做判斷
+  例：python scripts/api-client.py --task generate --id 123
+  例：python scripts/recalc.py input.xlsx output.xlsx
+
+Layer 3: 批次引擎（~5% 的 skill）
+  Headless 長時間批次處理器
+  讀 queue.json、管理並行、無 LLM 互動
+  例：bash scripts/batch-engine.sh queue.json
+```
+
+#### Layer 判定樹
+
+```
+你的 skill 需要呼叫外部工具或 API 嗎？
+  │
+  ├─ 不需要 → Layer 1（純 prompt）
+  │    SKILL.md 直接做，不需要 scripts/
+  │
+  └─ 需要 → 專案已經有 CLI 或程式碼可以直接呼叫嗎？
+       │
+       ├─ 有 → Layer 1（純 prompt）
+       │    SKILL.md 直接呼叫專案的 CLI：node src/xxx.js
+       │    不要重新包裝已經能用的東西
+       │
+       └─ 沒有 → 這個工具會被多次調用或多個 skill 共用嗎？
+            │
+            ├─ 不會（一次性操作）→ inline bash（<50 行）
+            │    超過 50 行 → 移到 scripts/
+            │
+            └─ 會 → 需要 scripts/ — 判斷 Layer 2 或 Layer 3：
+                 │
+                 ├─ 每次調用需要 SKILL.md 看結果做判斷？→ Layer 2（工具型）
+                 │    腳本有 CLI 介面，SKILL.md 是決策者
+                 │
+                 └─ 不需要人判斷，跑完整批就好？→ Layer 3（批次引擎）
+                      腳本讀 queue、自己跑完、寫 log
+```
+
+#### Layer 1: 純 Prompt 驅動
+
+**適用場景：** 專案已有 CLI、已有可呼叫的程式碼、或工作完全靠 LLM 推理完成。
+
+**設計原則：**
+- SKILL.md 直接寫呼叫命令，不要多一層包裝
+- 把命令寫在 Phase 裡，讓 Claude 照著跑
+- 如果需要不同參數 → 用 config 檔或環境變數，不用 wrapper script
+
+**範例（真實：影片生成 skill 呼叫專案 CLI）：**
+```markdown
+## Phase 3: 生成
+bash
+node src/batch-gen.js -c configs/production.config.json \
+  --input "$_PROJECTS_DIR/prompt-queue.json" \
+  --output "$_PROJECTS_DIR/output/"
+```
+
+**判斷標準：** 如果你的 skill 可以用一行命令完成核心操作 → Layer 1 就夠了。不要為了「看起來專業」而加 scripts/。
+
+#### Layer 2: 工具型腳本
+
+**適用場景：** 需要封裝領域知識的可重用工具 — API 客戶端、資料轉換器、外部服務整合。
+
+**設計原則：**
+- 腳本是**工具**，SKILL.md 是**決策者**
+- 腳本有 CLI 介面（`--task`、`--input`、`--output`）
+- 腳本可以有狀態（session、認證、cache）
+- SKILL.md 調用腳本 → 讀取結果 → 根據結果決定下一步
+- 腳本可以跨多個 skill 共用
+
+**CLI 介面規範：**
+```
+scripts/{tool-name}.py --task {action} [--input {file}] [--output {file}] [options]
+
+# 輸出規範：
+# stdout: 結構化結果（JSON 或可解析的文字）
+# stderr: 錯誤訊息和 debug 資訊
+# exit code: 0=成功、1=部分失敗、2=完全失敗
+
+# 範例：
+python scripts/runninghub.py --task generate --workflow face-swap --input photo.jpg
+python scripts/recalc.py input.xlsx output.xlsx
+python scripts/api-client.py --check  # 健康檢查
+```
+
+**SKILL.md ↔ 工具型腳本的互動模式：**
+```
+Phase N:   調用腳本，取得結果
+           result=$(python scripts/tool.py --task X --input Y)
+Phase N+1: SKILL.md 讀取 result，做判斷
+           - 成功 → 繼續下一步
+           - 部分失敗 → 決定重試策略
+           - 完全失敗 → 診斷原因
+（這裡可以有 STOP gate — 因為 SKILL.md 需要根據結果問用戶）
+Phase N+2: 根據判斷，可能再次調用腳本（不同參數）
+```
+
+**範例（真實：RunningHub API 客戶端）：**
+```markdown
+## Phase 2: 提交任務
+bash
+# 檢查 API 可用性
+python scripts/runninghub.py --check
+
+# 提交生成任務
+python scripts/runninghub.py \
+  --task generate \
+  --workflow "$_WORKFLOW_ID" \
+  --input "$_INPUT_FILE" \
+  --output "$_PROJECTS_DIR/output/"
+
+# 讀取結果，SKILL.md 判斷是否需要重新提交
+```
+
+**與 Layer 3 的關鍵差異：** Layer 2 腳本每次調用都回傳結果給 SKILL.md，由 SKILL.md 做決策。Layer 3 腳本自己跑完整批，SKILL.md 只看最終結果。
+
+#### Layer 3: 批次引擎
+
+**適用場景：** 大量重複任務、無需人工判斷的批次處理、長時間跑的自動化。
+
+**設計原則：**
+- scripts 讀 queue.json、寫 batch-state.json（依 state-conventions.md）
+- scripts 是純自動化 — 無 LLM 互動、無 AskUserQuestion
+- scripts 寫 log 到 `{output_dir}/{script-name}.log`
+- scripts 使用 exit code：0=成功、1=部分失敗、2=完全失敗
+- SKILL.md 是編排者；scripts 是執行者
 
 **腳本類型與命名**：
 ```
@@ -782,27 +913,31 @@ queue-generator.sh      — 將 skill 參數轉為 queue.json
 {tool}-wrapper.sh       — 外部 CLI 薄包裝（處理路徑、認證、錯誤翻譯）
 ```
 
-**架構規則**：
-- scripts 讀 queue.json、寫 batch-state.json（依 state-conventions.md）
-- scripts 是純自動化 — 無 LLM 互動、無 AskUserQuestion
-- scripts 寫 log 到 `{output_dir}/{script-name}.log`
-- scripts 使用 exit code：0=成功、1=部分失敗、2=完全失敗
-- SKILL.md 是編排者；scripts 是執行者
-
-**SKILL.md ↔ scripts 生命週期**：
+**SKILL.md ↔ 批次引擎的生命週期**：
 ```
 Phase N-1: 生成輸入資料（queue.json 或參數）
-STOP gate: 用戶審查輸入
+STOP gate: 用戶審查輸入（任務數量、預估成本、風險）
 Phase N:   bash scripts/{script}.sh {args} — 委派給 script
+           （SKILL.md 等待完成，不介入）
 Phase N+1: 讀取產出，摘要，評分
 ```
 
+#### 通用規則（所有 Layer）
+
 **Anti-patterns**：
 - ❌ SKILL.md 內含 200 行 inline bash 做批次邏輯（移到 scripts/）
-- ❌ script 呼叫 LLM API（scripts 只做確定性自動化）
+- ❌ inline bash 超過 50 行還不拆（移到 scripts/）
+- ❌ 為已有 CLI 的專案重寫 wrapper（直接用 Layer 1）
+- ❌ Layer 3 腳本呼叫 LLM API（Layer 3 只做確定性自動化）
 - ❌ script 沒有 log（無法除錯）
 - ❌ script 硬編碼領域路徑（用 preamble 的環境變數）
-- ❌ inline bash 超過 50 行還不拆（移到 scripts/）
+- ❌ 把 Layer 2 的工具型腳本當 Layer 3 設計（工具型需要回傳結果給 SKILL.md）
+
+**Layer 判斷的實戰經驗：**
+- 大部分 domain stack 的 skill（review、ideation、direction）= Layer 1
+- 需要呼叫外部 API 的 skill = 通常 Layer 2
+- 需要批次產出（>10 個任務並行）= 通常 Layer 3
+- 一個 skill 可以同時用 Layer 1 + Layer 2（prompt 驅動 + 在特定 Phase 調用工具腳本）
 
 ---
 

@@ -78,14 +78,17 @@
 - 2 = SKILL.md 是骨架（<200 行），details 在 references/
 
 **D11 Helper Code / Scripts**
-- 0 = 純 markdown
-- 1 = 有 bash code blocks 但都是 inline
-- 2 = 有 scripts/ 目錄或 bundled helper
+- 0 = 純 markdown，且 skill 需要呼叫外部工具但沒有任何呼叫指令
+- 1 = Layer 1（純 prompt 驅動）：SKILL.md 直接呼叫專案已有 CLI 或 inline bash（<50 行）
+- 2 = Layer 2/3（工具型腳本或批次引擎）：有 scripts/ 目錄、有 CLI 介面、有 exit code 規範
 
-**腳本層額外條件：** 如果 skill 涉及批次處理、外部 CLI、或 poll-wait 模式，
-scripts/ 目錄必須包含獨立腳本（不是 inline bash）。
-參考 skill-craft-guide.md How-To 11 的判定標準。
-未達此條件者，D11 最高給 1 分。
+**Layer 判定（參考 skill-craft-guide.md How-To 11）：**
+- 專案已有 CLI 且 skill 直接呼叫 → Layer 1 = D11 滿分（不需要多餘的 scripts/）
+- 需要封裝 API 客戶端、資料轉換等可重用工具 → Layer 2，需要 scripts/
+- 需要批次處理 >10 項任務 → Layer 3，需要 scripts/ + queue.json
+- **關鍵：** 不是「有 scripts/ = 分高」，是「用對 Layer = 分高」
+- Layer 1 skill 硬加 scripts/ wrapper 反而扣分（過度包裝）
+- 需要 Layer 2/3 卻只用 inline bash → D11 最高 1 分
 
 **D12 Config / Memory**
 - 0 = 沒有

@@ -373,6 +373,47 @@ Why 5（根因）：/domain-plan 沒有在 Phase 3 問用戶要 benchmarks
 
 ---
 
+## 錨點 14: 腳本三層模型
+
+> 來源：jimeng-auto 實戰經驗 + skill-craft-guide How-To 11
+
+**一句話：** 大部分 skill 不需要寫腳本 — 直接用專案已有的 CLI 就好。只有需要封裝領域工具或批次引擎時才建 scripts/。
+
+**三層：**
+
+| Layer | 名稱 | 佔比 | 什麼時候用 | 範例 |
+|-------|------|------|-----------|------|
+| **1** | 純 Prompt 驅動 | ~80% | 專案已有 CLI 或工作靠 LLM 推理 | `node src/index.js -c config.json` |
+| **2** | 工具型腳本 | ~15% | 需要可重用的領域工具（API 客戶端、資料轉換） | `python scripts/api-client.py --task X` |
+| **3** | 批次引擎 | ~5% | >10 個任務並行、無需人判斷的批次處理 | `bash scripts/batch-engine.sh queue.json` |
+
+**教學鉤子：** 想像你在廚房做菜 —
+- Layer 1：食材已經洗好切好了（專案有 CLI），你只要下鍋（SKILL.md 呼叫）
+- Layer 2：你需要一把特殊的刀（工具腳本），做好後可以反覆用
+- Layer 3：你開了一條流水線（批次引擎），丟食材進去自動出成品
+
+**常見混淆：**
+- 「有 scripts/ 才專業？」→ 錯。80% 的 skill 不需要 scripts/。為了看起來專業而加 wrapper = 過度包裝
+- 「Layer 2 的腳本可以呼叫 LLM 嗎？」→ 可以在腳本裡呼叫 API，但判斷和決策留在 SKILL.md
+- 「Layer 2 和 Layer 3 的差別？」→ Layer 2 每次調用回傳結果給 SKILL.md 做判斷。Layer 3 自己跑完整批，SKILL.md 只看最終結果
+
+**判定樹（快速版）：**
+```
+需要呼叫外部工具嗎？
+  ├─ 不需要 → Layer 1
+  └─ 需要 → 專案已有 CLI？
+       ├─ 有 → Layer 1（直接用）
+       └─ 沒有 → 會被多次/多 skill 共用？
+            ├─ 不會 → inline bash（<50 行）
+            └─ 會 → 每次需要 SKILL.md 判斷結果？
+                 ├─ 需要 → Layer 2
+                 └─ 不需要 → Layer 3
+```
+
+**深入：** `shared/methodology/skill-craft-guide.md` How-To 11
+
+---
+
 ## 怎麼用這份文件
 
 引導員不應該把錨點原文貼給用戶。正確用法：
