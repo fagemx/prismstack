@@ -179,7 +179,34 @@
 4. 產出：`references/{tool}-integration-guide.md`
 5. 定位：通常是 Level 5（參考資產）或 Level 3（判斷修補）
 
-**常見陷阱：** Codebase 通常很大 — 聚焦在公開 API 和錯誤處理，不深入內部實作。
+**含可執行 CLI / SDK / 服務時的分支判斷：**
+
+如果來源附帶可實際執行的工具（CLI binary、安裝套件、跑得起來的 service），純做 Level 5 reference
+會失去一半價值（用戶只拿到「設計指導」但沒有「自動化執行」）。必問用戶要走哪條路：
+
+```
+**STOP.** AskUserQuestion to confirm execution layer:
+
+> 來源 [{tool}] 含可執行 [{CLI / SDK / API}]。
+> 純做 reference 會丟掉自動化執行能力。
+>
+> RECOMMENDATION: Choose B — 大部分情況下含執行層更有價值。
+>
+> A) 純設計層：只取知識和判斷邏輯，產出 references/（用戶自己跑工具）
+> B) 含執行層：fork 到 /tool-builder 包成可呼叫的 skill
+> C) 並存：reference 給設計指導 + tool-builder skill 給執行
+> D) 跳過
+
+**One question only. Wait for answer before proceeding.**
+```
+
+- 選 A → 繼續走 Level 3 / 5 標準流程
+- 選 B → /source-convert 結束，hand off 到 `/tool-builder`，帶上抽取的 API surface 和 integration guide
+- 選 C → 兩個 skill 都建：reference asset + tool-builder skill，互相 cross-link
+
+**常見陷阱：**
+- Codebase 通常很大 — 聚焦在公開 API 和錯誤處理，不深入內部實作。
+- Claude 預設選 A（純設計）— 因為比較簡單。但如果工具是用戶日常使用的，B 或 C 才是對的。
 
 ### API Documentation
 

@@ -294,6 +294,119 @@ STATUS: DONE
 
 **⛔ STOP — 用戶確認盤點結果 + 領域後才繼續。**
 
+### BF Phase 1.5: External Adaptation Decisions（條件觸發）
+
+**何時跑：** 來源是「外部 stack」（不是用戶自己長期維護的本地 skill）。
+偵測信號（任一成立）：
+- BF Phase 1 盤點到的 SKILL.md 主要語言不是繁體中文
+- 目錄含可執行套件清單（`setup.py` / `pyproject.toml` / `package.json` / `Cargo.toml` / `go.mod` 等）
+- 目錄含大量 examples / cases / fixtures / templates（> 10 個）
+- 用戶說「我從 X 拿了一套 skill」/「想把 Y 的 skill 移植進來」
+
+**全部不成立** → 跳過此 Phase，直接進 BF Phase 2。
+
+**任一成立** → 跑下方 3 個 forcing questions。答案會影響後續 skill map 的形狀和工作量估計。
+
+#### Q1: 語言處理
+
+prismstack 標準是繁體中文 skill content。如果來源不是：
+
+```
+**STOP.** AskUserQuestion to confirm language handling:
+
+> 盤點到的 skill 主要語言是 [{detected language}]，prismstack 標準是繁體中文。
+>
+> RECOMMENDATION: Choose A — 全翻是 prismstack 一致性的成本，不能省。
+>
+> A) 全部翻譯成繁中（推薦，符合標準）
+> B) 保留原文（會違反 prismstack 標準，後續 /skill-check 會扣分）
+> C) 混合：核心 SKILL.md 翻譯，cases/references 保留原文
+> D) 取消
+
+**One question only. Wait for answer before proceeding.**
+```
+
+選擇影響：BF Phase 3 的工作量估計（全翻 = 每個 skill +30-50% 工時）。
+
+#### Q2: 執行層 vs 設計層
+
+如果來源含可執行邏輯（CLI / SDK / 服務）：
+
+```
+**STOP.** AskUserQuestion to confirm execution scope:
+
+> 來源含可執行 [{CLI / SDK / 服務 — 具體點出檔案}]。
+> 純做設計層 skill 會丟掉自動化執行能力。
+>
+> RECOMMENDATION: Choose B — 大部分情況下含執行層才有 skill 化的價值。
+>
+> A) 純設計層：skill 只做設計指導，用戶自己跑工具
+> B) 含執行層：在 skill map 加 1-2 個 Runtime Helper / tool-builder skill 包裝執行
+> C) 並存：設計指導 skill + 執行 skill 兩套，互相 cross-link
+> D) 取消
+
+**One question only. Wait for answer before proceeding.**
+```
+
+選擇影響：
+- 選 A → skill map 不變，所有 skill 都是 Production / Review type
+- 選 B/C → skill map 加 Runtime Helper / tool-builder skill，由 /domain-build 透過 /tool-builder 子流程處理
+
+#### Q3: Cases 處理
+
+如果來源含 examples / cases / fixtures / templates：
+
+先掃描數量：
+
+```bash
+# 偵測常見 case 目錄
+for d in cases examples fixtures templates presets; do
+  [ -d "$_TARGET_DIR/$d" ] && find "$_TARGET_DIR/$d" -type f | wc -l
+  for s in "$_TARGET_DIR"/skills/*/{cases,examples,fixtures,templates}; do
+    [ -d "$s" ] && find "$s" -type f | wc -l
+  done
+done | awk '{s+=$1} END {print s}'
+```
+
+依數量套 `shared/methodology/case-import-guide.md` 的規則，問用戶：
+
+```
+**STOP.** AskUserQuestion to confirm case import strategy:
+
+> 來源含 [{N}] 個 examples / cases / templates。
+> 依 case-import-guide：
+>   < 10 → 全部複製｜10-30 → 擇優 1-3 + 連結｜> 30 → 擇優 5 + 索引
+>
+> RECOMMENDATION: Choose A — 套用標準規則。
+>
+> A) 套用標準規則（依數量 [{建議規則}]）
+> B) 全部複製（即使數量大，警告：repo 會變重）
+> C) 全部不複製（只在 references/ 加索引）
+> D) 我自己指定哪幾個
+
+**One question only. Wait for answer before proceeding.**
+```
+
+選擇影響：BF Phase 3 產出的 skill map 中，每個 skill 的 `cases/` 資產規劃。
+
+#### Phase 1.5 結束
+
+3 個答案記入 `domain-config.json`（用 context-accumulation-guide 的 4 種信號之一）：
+
+```json
+{
+  "external_source": {
+    "language_strategy": "translate-all | keep-original | mixed",
+    "execution_scope": "design-only | with-execution | both",
+    "case_strategy": "standard | copy-all | none | manual"
+  }
+}
+```
+
+下游 BF Phase 2-3 讀取這些值決定改造範圍。
+
+詳見 `shared/methodology/ceremony-checklist.md`（補齊清單）和 `shared/methodology/case-import-guide.md`（cases 處理）。
+
 ### BF Phase 2: 雙向推導 + 差異分析
 
 **Bottom-up**：從現有 skill 排列出目前覆蓋的工作階段。

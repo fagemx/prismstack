@@ -7,7 +7,7 @@
 
 ---
 
-## 5 個落點層級
+## 6 個落點層級
 
 | Level | 落點 | 說明 | 範例 |
 |-------|------|------|------|
@@ -16,6 +16,7 @@
 | **3** | Judgment patch | 零散但有價值的判斷碎片：gotcha、benchmark、forcing question | 一條實戰經驗 → 加進 /game-qa 的 gotchas |
 | **4** | Workflow patch | 改變的不是 skill 內容，而是 skill 之間的串接 | 「review 完應該先過 balance 再過 player experience」→ 改 workflow 順序 |
 | **5** | Reference asset | 有參考價值但不直接進 skill | 一本書的理論背景 → 放 references/，skill 需要時引用 |
+| **6** | Stack import | 來源本身已經是 multi-skill stack（≥3 skill + 有 routing/workflow） | 一個含 root + 5 個 sub-skill 的外部 skill pack → fast-path 到 /domain-plan brownfield |
 
 ---
 
@@ -24,6 +25,16 @@
 依序問以下問題，第一個符合的就是落點：
 
 ```
+Step 0: Multi-skill stack 偵測（fast-path）
+  來源是不是已經是一個 multi-skill stack？
+  判定信號（任一即是）：
+    - 來源目錄結構含 ≥3 個 SKILL.md（或等價檔案）
+    - 來源含 routing skill / orchestrator / 明確 workflow 圖
+    - 來源 README 描述「skill collection」/「skill pack」/「skill stack」
+  ├─ 是 → Level 6（Stack import）→ fast-path 到 /domain-plan brownfield
+  │      停止判斷，不走 Step 1-4
+  └─ 否 → 繼續 Step 1
+
 Step 1: 獨立性三測試
   這個來源能通過「獨立姿態 + 獨立產出 + 獨立觸發」全部三項嗎？
   ├─ 三項全過 → Level 1（New skill）
@@ -93,6 +104,44 @@ Step 4: 關係變更測試
 - 檔案格式：markdown，標注來源和用途
 - 在相關 skill 的 SKILL.md 中加上引用路徑
 
+### Level 6: Stack Import / Adapt
+- **不走 /source-convert 標準流程**，fast-path 到 `/domain-plan` brownfield
+- /source-convert 的 Phase 3 不執行轉換，改為產出 hand-off package：
+  - 來源 stack 的 inventory（每個 skill 的角色、完整度、語言、依賴）
+  - 預先決策的三個 forcing questions（語言處理、執行 vs 設計、cases 處理）
+  - 引用 `shared/methodology/ceremony-checklist.md` 作為改造範本
+  - 引用 `shared/methodology/case-import-guide.md` 處理大量 examples
+- 用戶執行 `/domain-plan`（brownfield mode），帶上述 hand-off package
+- /domain-plan 的 BF Phase 1（Skill 盤點）會接手做完整盤點
+- 詳見 `source-convert/SKILL.md` 的 Phase 2 Level 6 分支
+
+**判定門檻：** 這個層級觸發成本高（需要 brownfield 全流程），所以決策樹 Step 0 的判定信號要嚴格。
+單一 skill repo（即使結構完整）→ Level 1，不是 Level 6。
+
+---
+
+## Level 6 的 fast-path 確認
+
+如果 Step 0 命中 Level 6，跟用戶確認時用：
+
+```
+**STOP.** AskUserQuestion to confirm stack import:
+
+> 來源 [{stack name}] 含 {N} 個 skill + {workflow/routing 描述}。
+> 這不是單一來源轉換能處理的範圍 — 走 /source-convert 會卡關。
+>
+> RECOMMENDATION: Choose A — fast-path 到 /domain-plan brownfield。
+>
+> A) 確認，hand off 到 /domain-plan brownfield（我會準備 inventory + 預先決策）
+> B) 強制走 source-convert Level 1-5（會失真，不建議）
+> C) 跳過，不轉換
+
+**One question only. Wait for answer before proceeding.**
+```
+
+選 A → /source-convert 結束，輸出 hand-off package，提示用戶執行 /domain-plan。
+選 B → 警告失真風險，繼續走 Step 1-4 判斷。
+
 ---
 
 ## 跟用戶確認落點（AskUserQuestion 格式）
@@ -135,6 +184,7 @@ D. 跳過，不轉換
 | 一本書 → Level 1（新 skill） | 通常是 Level 3 + Level 5（幾條規則 + 理論放 references） |
 | 一個 prompt → Level 1（新 skill） | 先跑獨立性測試 — 很多 prompt 是現有 skill 的改進 |
 | 用戶的想法 → Level 1（新 skill） | 先結構化再判斷 — 很多想法其實是 Level 3 |
+| 一整個 skill stack → Level 1（新 skill） | Level 6（Stack import）— 走 /domain-plan brownfield，不走 /source-convert |
 
 **核心原則：** 不確定時，選較小的 level。Level 3 比 Level 1 安全。
 過度生成 skill 比不夠生成更危險 — 多一個爛 skill 比少一條 gotcha 更糟。
